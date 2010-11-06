@@ -1,9 +1,9 @@
 <?php
 /* Plugin name: AJAX Thumbnail Rebuild
-   Plugin URI: http://breiti.cc/wordpress/ajax-thumbnail-rebuild
+   Plugin URI: http://software.breiti.cc/wordpress/ajax-thumbnail-rebuild
    Author: junkcoder
    Author URI: http://breiti.cc
-   Version: 1.02
+   Version: 1.03
    Description: Rebuild all thumbnails
    Max WP Version: 3.0.1
 
@@ -124,7 +124,7 @@ class AjaxThumbnailRebuild {
 
 				<input type="checkbox" name="thumbnails[]" checked="checked" value="<?php echo $s ?>" />
 				<label>
-					<em><?php echo $s ?></em> (width : <?php echo $width ?>, height : <?php echo $width ?>, crop : <?php echo $crop ?>)
+					<em><?php echo $s ?></em> (width : <?php echo $width ?>, height : <?php echo $height ?>, crop : <?php echo $crop ?>)
 				</label>
 				<br/>
 			<?php endforeach;?>
@@ -139,7 +139,7 @@ class AjaxThumbnailRebuild {
 
 		<p style="clear:both; padding-top:2em;">
 		If you find this plugin useful, I'd be happy to read your comments on
-		the <a href="http://breiti.cc/wordpress/ajax-thumbnail-rebuild" target="_blank">plugin homepage</a>.<br />
+		the <a href="http://software.breiti.cc/wordpress/ajax-thumbnail-rebuild" target="_blank">plugin homepage</a>.<br />
 		If you experience any problems, feel free to leave a comment too.
 		</p>
 
