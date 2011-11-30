@@ -46,7 +46,7 @@ class AjaxThumbnailRebuild {
 
 		function regenerate() {
 			jQuery("#ajax_thumbnail_rebuild").attr("disabled", true);
-			setMessage("<p>Reading attachments...</p>");
+			setMessage("<p><?php _e('Reading attachments...', 'ajax-thumbnail-rebuild') ?></p>");
 
 			inputs = jQuery( 'input:checked' );
 			var thumbnails= '';
@@ -67,17 +67,17 @@ class AjaxThumbnailRebuild {
 					var curr = 0;
 
 					if (!list) {
-						setMessage("No attachments found.");
+						setMessage("<?php _e('No attachments found.', 'ajax-thumbnail-rebuild')?>");
 						return;
 					}
 
 					function regenItem() {
 						if (curr >= list.length) {
 							jQuery("#ajax_thumbnail_rebuild").removeAttr("disabled");
-							setMessage("Done.");
+							setMessage("<?php _e('Done.', 'ajax-thumbnail-rebuild') ?>");
 							return;
 						}
-						setMessage("Regenerating " + (curr+1) + " of " + list.length + " (" + list[curr].title + ")...");
+						setMessage(<?php _e('"Regenerating " + (curr+1) + "of " + list.length + " (" + list[curr].title + ")..."', 'ajax-thumbnail-rebuild'); ?>)
 
 						jQuery.ajax({
 							url: "<?php bloginfo('wpurl'); ?>/wp-admin/admin-ajax.php",
@@ -96,7 +96,7 @@ class AjaxThumbnailRebuild {
 					regenItem();
 				},
 				error: function(request, status, error) {
-					setMessage("Error " + request.status);
+					setMessage("<?php _e('Error', 'ajax-thumbnail-rebuild') ?>" + request.status);
 				}
 			});
 		}
@@ -105,7 +105,7 @@ class AjaxThumbnailRebuild {
 		</script>
 
 		<form method="post" action="" style="display:inline; float:left; padding-right:30px;">
-		    <h4>Select which thumbnails you want to rebuild:</h4>
+		    <h4><?php _e('Select which thumbnails you want to rebuild', 'ajax-thumbnail-rebuild'); ?>:</h4>
 			<p>
 
 			<?php
@@ -116,14 +116,14 @@ class AjaxThumbnailRebuild {
 				<label>
 					<em><?php echo $s['name'] ?></em>
 					&nbsp;(<?php echo $s['width'] ?> x <?php echo $s['height'] ?>
-					<?php if ($s['crop'])  echo _e('cropped', 'ajax-thumbnail-rebuild'); ?>)
+					<?php if ($s['crop']) _e('cropped', 'ajax-thumbnail-rebuild'); ?>)
 				</label>
 				<br/>
 			<?php endforeach;?>
 			</p>
 			<p>
 				<input type="checkbox" id="onlypostthumbs" name="onlypostthumbs" />
-				<label>Only rebuild post thumbnails</label>
+				<label><?php _e('Only rebuild post thumbnails', 'ajax-thumbnail-rebuild'); ?></label>
 			</p>
 
 			<input type="button" onClick="javascript:regenerate();" class="button"
@@ -132,10 +132,10 @@ class AjaxThumbnailRebuild {
 			<br />
 		</form>
 
-		<div id="thumb" style="display:none;"><h4>Last image:</h4><img id="thumb-img" /></div>
+		<div id="thumb" style="display:none;"><h4><?php _e('Last image', 'ajax-thumbnail-rebuild'); ?>:</h4><img id="thumb-img" /></div>
 
 		<p style="clear:both; padding-top:2em;">
-		If you find this plugin useful, I'd be happy to read your comments on
+		If you find this plugin useful, I\'d be happy to read your comments on
 		the <a href="http://breiti.cc/wordpress/ajax-thumbnail-rebuild" target="_blank">plugin homepage</a>.<br />
 		If you experience any problems, feel free to leave a comment too.
 		</p>
@@ -279,5 +279,7 @@ function wp_generate_attachment_metadata_custom( $attachment_id, $file, $thumbna
 
 	return apply_filters( 'wp_generate_attachment_metadata', $metadata, $attachment_id );
 }
+
+load_plugin_textdomain('ajax-thumbnail-rebuild', false, basename( dirname( __FILE__ ) ) . '/languages' );
 
 ?>
