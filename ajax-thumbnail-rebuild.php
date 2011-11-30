@@ -6,6 +6,7 @@
    Version: 1.05
    Description: Rebuild all thumbnails
    Max WP Version: 3.0.1
+   Text Domain: ajax-thumbnail-rebuild
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
