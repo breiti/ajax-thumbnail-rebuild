@@ -115,9 +115,8 @@ class AjaxThumbnailRebuild {
 				<input type="checkbox" name="thumbnails[]" checked="checked" value="<?php echo $s['name'] ?>" />
 				<label>
 					<em><?php echo $s['name'] ?></em>
-					&nbsp;(width: <?php echo $s['width'] ?>,
-					&nbsp;height: <?php echo $s['height'] ?>,
-					&nbsp;crop: <?php echo $s['crop'] ?>)
+					&nbsp;(<?php echo $s['width'] ?> x <?php echo $s['height'] ?>
+					<?php if ($s['crop'])  echo _e('cropped', 'ajax-thumbnail-rebuild'); ?>)
 				</label>
 				<br/>
 			<?php endforeach;?>
