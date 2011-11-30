@@ -109,29 +109,15 @@ class AjaxThumbnailRebuild {
 			<p>
 
 			<?php
-			global $_wp_additional_image_sizes;
-
-			foreach ( get_intermediate_image_sizes() as $s ):
-
-				if ( isset( $_wp_additional_image_sizes[$s]['width'] ) ) // For theme-added sizes
-					$width = intval( $_wp_additional_image_sizes[$s]['width'] );
-				else                                                     // For default sizes set in options
-					$width = get_option( "{$s}_size_w" );
-
-				if ( isset( $_wp_additional_image_sizes[$s]['height'] ) ) // For theme-added sizes
-					$height = intval( $_wp_additional_image_sizes[$s]['height'] );
-				else                                                      // For default sizes set in options
-					$height = get_option( "{$s}_size_h" );
-
-				if ( isset( $_wp_additional_image_sizes[$s]['crop'] ) )   // For theme-added sizes
-					$crop = intval( $_wp_additional_image_sizes[$s]['crop'] );
-				else                                                      // For default sizes set in options
-					$crop = get_option( "{$s}_crop" );
+			foreach ( ajax_thumbnail_rebuild_get_sizes() as $s ):
 			?>
 
-				<input type="checkbox" name="thumbnails[]" checked="checked" value="<?php echo $s ?>" />
+				<input type="checkbox" name="thumbnails[]" checked="checked" value="<?php echo $s['name'] ?>" />
 				<label>
-					<em><?php echo $s ?></em> (width : <?php echo $width ?>, height : <?php echo $height ?>, crop : <?php echo $crop ?>)
+					<em><?php echo $s['name'] ?></em>
+					&nbsp;(width: <?php echo $s['width'] ?>,
+					&nbsp;height: <?php echo $s['height'] ?>,
+					&nbsp;crop: <?php echo $s['crop'] ?>)
 				</label>
 				<br/>
 			<?php endforeach;?>
@@ -219,6 +205,34 @@ add_action('wp_ajax_ajax_thumbnail_rebuild', 'ajax_thumbnail_rebuild_ajax');
 
 add_action( 'plugins_loaded', create_function( '', 'global $AjaxThumbnailRebuild; $AjaxThumbnailRebuild = new AjaxThumbnailRebuild();' ) );
 
+function ajax_thumbnail_rebuild_get_sizes() {
+	global $_wp_additional_image_sizes;
+
+	foreach ( get_intermediate_image_sizes() as $s ) {
+		$sizes[$s] = array( 'name' => '', 'width' => '', 'height' => '', 'crop' => FALSE );
+
+		/* Read theme added sizes or fall back to default sizes set in options... */
+
+		$sizes[$s]['name'] = $s;
+
+		if ( isset( $_wp_additional_image_sizes[$s]['width'] ) )
+			$sizes[$s]['width'] = intval( $_wp_additional_image_sizes[$s]['width'] ); 
+		else
+			$sizes[$s]['width'] = get_option( "{$s}_size_w" );
+
+		if ( isset( $_wp_additional_image_sizes[$s]['height'] ) )
+			$sizes[$s]['height'] = intval( $_wp_additional_image_sizes[$s]['height'] );
+		else
+			$sizes[$s]['height'] = get_option( "{$s}_size_h" );
+
+		if ( isset( $_wp_additional_image_sizes[$s]['crop'] ) )
+			$sizes[$s]['crop'] = intval( $_wp_additional_image_sizes[$s]['crop'] );
+		else
+			$sizes[$s]['crop'] = get_option( "{$s}_crop" );
+	}
+
+	return $sizes;
+}
 
 /**
  * Generate post thumbnail attachment meta data.
@@ -243,25 +257,7 @@ function wp_generate_attachment_metadata_custom( $attachment_id, $file, $thumbna
 		// Make the file path relative to the upload dir
 		$metadata['file'] = _wp_relative_upload_path($file);
 
-		// make thumbnails and other intermediate sizes
-		global $_wp_additional_image_sizes;
-
-		foreach ( get_intermediate_image_sizes() as $s ) {
-			$sizes[$s] = array( 'width' => '', 'height' => '', 'crop' => FALSE );
-			if ( isset( $_wp_additional_image_sizes[$s]['width'] ) )
-				$sizes[$s]['width'] = intval( $_wp_additional_image_sizes[$s]['width'] ); // For theme-added sizes
-			else
-				$sizes[$s]['width'] = get_option( "{$s}_size_w" ); // For default sizes set in options
-			if ( isset( $_wp_additional_image_sizes[$s]['height'] ) )
-				$sizes[$s]['height'] = intval( $_wp_additional_image_sizes[$s]['height'] ); // For theme-added sizes
-			else
-				$sizes[$s]['height'] = get_option( "{$s}_size_h" ); // For default sizes set in options
-			if ( isset( $_wp_additional_image_sizes[$s]['crop'] ) )
-				$sizes[$s]['crop'] = intval( $_wp_additional_image_sizes[$s]['crop'] ); // For theme-added sizes
-			else
-				$sizes[$s]['crop'] = get_option( "{$s}_crop" ); // For default sizes set in options
-		}
-
+		$sizes = ajax_thumbnail_rebuild_get_sizes();
 		$sizes = apply_filters( 'intermediate_image_sizes_advanced', $sizes );
 
 		foreach ($sizes as $size => $size_data ) {
