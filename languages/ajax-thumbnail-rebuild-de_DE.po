@@ -1,0 +1,84 @@
+# Copyright (C) 2010 AJAX Thumbnail Rebuild
+# This file is distributed under the same license as the AJAX Thumbnail Rebuild package.
+msgid ""
+msgstr ""
+"Project-Id-Version: AJAX Thumbnail Rebuild 1.05\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/ajax-thumbnail-rebuild\n"
+"POT-Creation-Date: 2011-11-30 20:52:54+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2010-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: ajax-thumbnail-rebuild.php:32
+msgid "Rebuild all Thumbnails"
+msgstr "Alle Miniaturbilder neu erstellen"
+
+#: ajax-thumbnail-rebuild.php:32
+msgid "Rebuild Thumbnails"
+msgstr "Miniaturbilder neu erstellen"
+
+#: ajax-thumbnail-rebuild.php:49
+msgid "Reading attachments..."
+msgstr "Anhänge lesen..."
+
+#: ajax-thumbnail-rebuild.php:70
+msgid "No attachments found."
+msgstr "Keine Anhänge gefunden."
+
+#: ajax-thumbnail-rebuild.php:77
+msgid "Done."
+msgstr "Fertig."
+
+#: ajax-thumbnail-rebuild.php:80
+msgid ""
+"\"Regenerating \" + (curr+1) + \"of \" + list.length + \" (\" + list[curr]."
+"title + \")...\""
+msgstr "\"Miniaturbild \" + (curr+1) + \"of \" + list.length + \" (\" + list[curr]."
+"title + \") neu erstellen...\""
+
+#: ajax-thumbnail-rebuild.php:99
+msgid "Error"
+msgstr "Fehler"
+
+#: ajax-thumbnail-rebuild.php:108
+msgid "Select which thumbnails you want to rebuild"
+msgstr "Neu zu erstellende Miniaturbilder auswählen"
+
+#: ajax-thumbnail-rebuild.php:119
+msgid "cropped"
+msgstr "beschneiden"
+
+#: ajax-thumbnail-rebuild.php:126
+msgid "Only rebuild post thumbnails"
+msgstr ""
+
+#: ajax-thumbnail-rebuild.php:131
+msgid "Regenerate All Thumbnails"
+msgstr "Alle Miniaturbilder neu erstellen"
+
+#: ajax-thumbnail-rebuild.php:135
+msgid "Last image"
+msgstr "Letztes Bild"
+
+#. Plugin Name of the plugin/theme
+msgid "AJAX Thumbnail Rebuild"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "http://breiti.cc/wordpress/ajax-thumbnail-rebuild"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "Rebuild all thumbnails"
+msgstr "Miniaturbilder neu erstellen"
+
+#. Author of the plugin/theme
+msgid "junkcoder"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://breiti.cc"
+msgstr ""
