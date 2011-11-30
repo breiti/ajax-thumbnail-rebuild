@@ -66,6 +66,11 @@ class AjaxThumbnailRebuild {
 					var list = eval(result);
 					var curr = 0;
 
+					if (!list) {
+						setMessage("No attachments found.");
+						return;
+					}
+
 					function regenItem() {
 						if (curr >= list.length) {
 							jQuery("#ajax_thumbnail_rebuild").removeAttr("disabled");
