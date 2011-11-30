@@ -127,6 +127,8 @@ class AjaxThumbnailRebuild {
 				<label><?php _e('Only rebuild post thumbnails', 'ajax-thumbnail-rebuild'); ?></label>
 			</p>
 
+			<p><?php _e("Note: If you've changed the dimensions of your thumbnails, existing thumbnail images will not be deleted.",
+			'ajax-thumbnail-rebuild'); ?></p>
 			<input type="button" onClick="javascript:regenerate();" class="button"
 			       name="ajax_thumbnail_rebuild" id="ajax_thumbnail_rebuild"
 			       value="<?php _e( 'Regenerate All Thumbnails', 'ajax-thumbnail-rebuild' ) ?>" />
