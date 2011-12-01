@@ -69,6 +69,7 @@ class AjaxThumbnailRebuild {
 
 					if (!list) {
 						setMessage("<?php _e('No attachments found.', 'ajax-thumbnail-rebuild')?>");
+						jQuery("#ajax_thumbnail_rebuild").removeAttr("disabled");
 						return;
 					}
 
