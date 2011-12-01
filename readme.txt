@@ -2,7 +2,7 @@
 Contributors: junkcoder
 Tags: ajax, thumbnail, rebuild, regenerate, admin
 Requires at least: 2.8
-Tested up to: 3.2
+Tested up to: 3.2.1
 Stable tag: 1.05
 
 AJAX Thumbnail Rebuild allows you to rebuild all thumbnails at once without script timeouts on your server.
