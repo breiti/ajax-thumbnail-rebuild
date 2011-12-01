@@ -102,18 +102,26 @@ class AjaxThumbnailRebuild {
 			});
 		}
 
+		jQuery(document).ready(function() {
+			jQuery('#size-toggle').click(function() {
+				jQuery("#sizeselect").find("input[type=checkbox]").each(function() {
+					jQuery(this).attr("checked", !jQuery(this).attr("checked"));
+				});
+			});
+		});
+
 		// ]]>
 		</script>
 
 		<form method="post" action="" style="display:inline; float:left; padding-right:30px;">
 		    <h4><?php _e('Select which thumbnails you want to rebuild', 'ajax-thumbnail-rebuild'); ?>:</h4>
-			<p>
-
+			<a href="javascript:void(0);" id="size-toggle"><?php _e('Toggle all', 'ajax-thumbnail-rebuild'); ?></a>
+			<div id="sizeselect">
 			<?php
 			foreach ( ajax_thumbnail_rebuild_get_sizes() as $s ):
 			?>
 
-				<input type="checkbox" name="thumbnails[]" checked="checked" value="<?php echo $s['name'] ?>" />
+				<input type="checkbox" name="thumbnails[]" id="sizeselect" checked="checked" value="<?php echo $s['name'] ?>" />
 				<label>
 					<em><?php echo $s['name'] ?></em>
 					&nbsp;(<?php echo $s['width'] ?> x <?php echo $s['height'] ?>
@@ -121,7 +129,7 @@ class AjaxThumbnailRebuild {
 				</label>
 				<br/>
 			<?php endforeach;?>
-			</p>
+			</div>
 			<p>
 				<input type="checkbox" id="onlypostthumbs" name="onlypostthumbs" />
 				<label><?php _e('Only rebuild post thumbnails', 'ajax-thumbnail-rebuild'); ?></label>
