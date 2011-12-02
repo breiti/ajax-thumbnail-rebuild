@@ -4,64 +4,76 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AJAX Thumbnail Rebuild 1.05\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/ajax-thumbnail-rebuild\n"
-"POT-Creation-Date: 2011-11-30 20:52:54+00:00\n"
+"POT-Creation-Date: 2011-12-02 18:02:56+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "PO-Revision-Date: 2010-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
 
-#: ajax-thumbnail-rebuild.php:32
+#: ajax-thumbnail-rebuild.php:33
 msgid "Rebuild all Thumbnails"
 msgstr "Alle Miniaturbilder neu erstellen"
 
-#: ajax-thumbnail-rebuild.php:32
+#: ajax-thumbnail-rebuild.php:33
 msgid "Rebuild Thumbnails"
 msgstr "Miniaturbilder neu erstellen"
 
-#: ajax-thumbnail-rebuild.php:49
+#: ajax-thumbnail-rebuild.php:50
 msgid "Reading attachments..."
 msgstr "Anhänge lesen..."
 
-#: ajax-thumbnail-rebuild.php:70
+#: ajax-thumbnail-rebuild.php:71
 msgid "No attachments found."
 msgstr "Keine Anhänge gefunden."
 
-#: ajax-thumbnail-rebuild.php:77
+#: ajax-thumbnail-rebuild.php:79
 msgid "Done."
 msgstr "Fertig."
 
-#: ajax-thumbnail-rebuild.php:80
-msgid ""
-"\"Regenerating \" + (curr+1) + \"of \" + list.length + \" (\" + list[curr]."
-"title + \")...\""
-msgstr "\"Miniaturbild \" + (curr+1) + \"of \" + list.length + \" (\" + list[curr]."
-"title + \") neu erstellen...\""
+#: ajax-thumbnail-rebuild.php:82
+msgid "\"Rebuilding \" + %s + \" of \" + %s + \" (\" + %s + \")...\""
+msgstr "\"Erzeuge \" + %s + \" von \" + %s + \" (\" + %s + \") neu...\""
 
-#: ajax-thumbnail-rebuild.php:99
+#: ajax-thumbnail-rebuild.php:101
 msgid "Error"
 msgstr "Fehler"
 
-#: ajax-thumbnail-rebuild.php:108
+#: ajax-thumbnail-rebuild.php:118
 msgid "Select which thumbnails you want to rebuild"
 msgstr "Neu zu erstellende Miniaturbilder auswählen"
 
 #: ajax-thumbnail-rebuild.php:119
+msgid "Toggle all"
+msgstr "Auswahl umkehren"
+
+#: ajax-thumbnail-rebuild.php:129
 msgid "cropped"
 msgstr "beschneiden"
 
-#: ajax-thumbnail-rebuild.php:126
-msgid "Only rebuild post thumbnails"
-msgstr ""
+#: ajax-thumbnail-rebuild.php:136
+msgid "Only rebuild featured images"
+msgstr "Nur Artikelbilder neu erstellen"
 
-#: ajax-thumbnail-rebuild.php:131
-msgid "Regenerate All Thumbnails"
-msgstr "Alle Miniaturbilder neu erstellen"
+#: ajax-thumbnail-rebuild.php:139
+msgid ""
+"Note: If you've changed the dimensions of your thumbnails, existing "
+"thumbnail images will not be deleted."
+msgstr "Hinweis: Bei Änderung der Dimensionen werden alte Bilder nicht gelöscht."
 
-#: ajax-thumbnail-rebuild.php:135
+#: ajax-thumbnail-rebuild.php:143
+msgid "Rebuild All Thumbnails"
+msgstr "Alle Miniaturbilder neu erzeugen"
+
+#: ajax-thumbnail-rebuild.php:147
 msgid "Last image"
 msgstr "Letztes Bild"
+
+#: ajax-thumbnail-rebuild.php:150
+msgid ""
+"If you find this plugin useful, I'd be happy to read your comments on the %"
+"splugin homepage%s. If you experience any problems, feel free to leave a "
+"comment too."
+msgstr ""
 
 #. Plugin Name of the plugin/theme
 msgid "AJAX Thumbnail Rebuild"

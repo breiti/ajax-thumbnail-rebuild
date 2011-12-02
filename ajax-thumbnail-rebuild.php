@@ -30,7 +30,7 @@ class AjaxThumbnailRebuild {
 	}
 
 	function addAdminMenu() {
-		add_management_page( __( 'Rebuild all Thumbnails', 'ajax-thumbnail-rebuild' ), __( 'Rebuild Thumbnails', 'ajax_thumbnail_rebuild'
+		add_management_page( __( 'Rebuild all Thumbnails', 'ajax-thumbnail-rebuild' ), __( 'Rebuild Thumbnails', 'ajax-thumbnail-rebuild'
  ), 'manage_options', 'ajax-thumbnail-rebuild', array(&$this, 'ManagementPage') );
 	}
 
@@ -79,7 +79,7 @@ class AjaxThumbnailRebuild {
 							setMessage("<?php _e('Done.', 'ajax-thumbnail-rebuild') ?>");
 							return;
 						}
-						setMessage(<?php _e('"Regenerating " + (curr+1) + "of " + list.length + " (" + list[curr].title + ")..."', 'ajax-thumbnail-rebuild'); ?>)
+						setMessage(<?php printf( __('"Rebuilding " + %s + " of " + %s + " (" + %s + ")..."', 'ajax-thumbnail-rebuild'), "(curr+1)", "list.length", "list[curr].title"); ?>);
 
 						jQuery.ajax({
 							url: "<?php bloginfo('wpurl'); ?>/wp-admin/admin-ajax.php",
@@ -140,16 +140,17 @@ class AjaxThumbnailRebuild {
 			'ajax-thumbnail-rebuild'); ?></p>
 			<input type="button" onClick="javascript:regenerate();" class="button"
 			       name="ajax_thumbnail_rebuild" id="ajax_thumbnail_rebuild"
-			       value="<?php _e( 'Regenerate All Thumbnails', 'ajax-thumbnail-rebuild' ) ?>" />
+			       value="<?php _e( 'Rebuild All Thumbnails', 'ajax-thumbnail-rebuild' ) ?>" />
 			<br />
 		</form>
 
 		<div id="thumb" style="display:none;"><h4><?php _e('Last image', 'ajax-thumbnail-rebuild'); ?>:</h4><img id="thumb-img" /></div>
 
 		<p style="clear:both; padding-top:2em;">
-		If you find this plugin useful, I\'d be happy to read your comments on
-		the <a href="http://breiti.cc/wordpress/ajax-thumbnail-rebuild" target="_blank">plugin homepage</a>.<br />
-		If you experience any problems, feel free to leave a comment too.
+		<?php printf( __("If you find this plugin useful, I'd be happy to read your comments on the %splugin homepage%s. If you experience any problems, feel free to leave a comment too.",
+				 'ajax-thumbnail-rebuild'),
+			         '<a href="http://breiti.cc/wordpress/ajax-thumbnail-rebuild" target="_blank">', '</a>');
+		?>
 		</p>
 
 		<?php
