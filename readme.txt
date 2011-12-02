@@ -3,7 +3,7 @@ Contributors: junkcoder
 Tags: ajax, thumbnail, rebuild, regenerate, admin
 Requires at least: 2.8
 Tested up to: 3.2.1
-Stable tag: 1.05
+Stable tag: 1.06
 
 AJAX Thumbnail Rebuild allows you to rebuild all thumbnails at once without script timeouts on your server.
 
@@ -22,6 +22,14 @@ This plugin requires JavaScript to be enabled.
 Upload the plugin to your blog, activate it, done. You can then rebuild all thumbnails in the tools section (Tools -> Rebuild Thumbnails).
 
 == Changelog ==
+
+= 1.06 =
+
+* FIX: Don't forget metadata for sizes that aren't rebuilt.
+* FIX: Option to only rebuild featured images should now work correctly.
+* FIX: Don't fail if there are no attachments.
+* NEW: It's now possible to toggle all selected sizes.
+* NEW: Added translation: German.
 
 = 1.05 =
 
