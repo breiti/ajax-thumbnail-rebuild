@@ -57,12 +57,12 @@ class AjaxThumbnailRebuild {
 				} );
 			}
 
-			var onlypostthumbs = jQuery("#onlypostthumbs").attr('checked') ? 1 : 0;
+			var onlyfeatured = jQuery("#onlyfeatured").attr('checked') ? 1 : 0;
 
 			jQuery.ajax({
 				url: "<?php bloginfo('wpurl'); ?>/wp-admin/admin-ajax.php", 
 				type: "POST",
-				data: "action=ajax_thumbnail_rebuild&do=getlist&onlypostthumbs="+onlypostthumbs,
+				data: "action=ajax_thumbnail_rebuild&do=getlist&onlyfeatured="+onlyfeatured,
 				success: function(result) {
 					var list = eval(result);
 					var curr = 0;
@@ -132,8 +132,8 @@ class AjaxThumbnailRebuild {
 			<?php endforeach;?>
 			</div>
 			<p>
-				<input type="checkbox" id="onlypostthumbs" name="onlypostthumbs" />
-				<label><?php _e('Only rebuild post thumbnails', 'ajax-thumbnail-rebuild'); ?></label>
+				<input type="checkbox" id="onlyfeatured" name="onlyfeatured" />
+				<label><?php _e('Only rebuild featured images', 'ajax-thumbnail-rebuild'); ?></label>
 			</p>
 
 			<p><?php _e("Note: If you've changed the dimensions of your thumbnails, existing thumbnail images will not be deleted.",
@@ -162,28 +162,18 @@ function ajax_thumbnail_rebuild_ajax() {
 
 	$action = $_POST["do"];
 	$thumbnails = isset( $_POST['thumbnails'] )? $_POST['thumbnails'] : NULL;
-	$onlypostthumbs = isset( $_POST['onlypostthumbs'] ) ? $_POST['onlypostthumbs'] : 0;
+	$onlyfeatured = isset( $_POST['onlyfeatured'] ) ? $_POST['onlyfeatured'] : 0;
 
 	if ($action == "getlist") {
 
-		if ($onlypostthumbs) {
+		if ($onlyfeatured) {
 			/* Get all featured images */
-			$featured_images = $wpdb->get_results( "SELECT meta_value FROM {$wpdb->postmeta}
-		                                        WHERE meta_key = '_thumbnail_id'" );
+			$featured_images = $wpdb->get_results( "SELECT meta_value,{$wpdb->posts}.post_title AS title FROM {$wpdb->postmeta}, {$wpdb->posts}
+		                                        WHERE meta_key = '_thumbnail_id' AND {$wpdb->postmeta}.post_id={$wpdb->posts}.ID");
 
-			$thumbs = array();
 			foreach($featured_images as $image) {
-				array_push($thumbs, $image->meta_value);
+			    $res[] = array('id' => $image->meta_value, 'title' => $image->title);
 			}
-			$attachments =& get_children( array(
-				'post_type' => 'attachment',
-				'post_mime_type' => 'image',
-				'numberposts' => -1,
-				'post_status' => null,
-				'post_in' => $thumbs,
-				'output' => 'object',
-			) );
-
 		} else {
 			$attachments =& get_children( array(
 				'post_type' => 'attachment',
@@ -193,11 +183,11 @@ function ajax_thumbnail_rebuild_ajax() {
 				'post_parent' => null, // any parent
 				'output' => 'object',
 			) );
+			foreach ( $attachments as $attachment ) {
+			    $res[] = array('id' => $attachment->ID, 'title' => $attachment->post_title);
+			}
 		}
 
-		foreach ( $attachments as $attachment ) {
-			$res[] = array('id' => $attachment->ID, 'title' => $attachment->post_title);
-		}
 		die( json_encode($res) );
 	} else if ($action == "regen") {
 		$id = $_POST["id"];
