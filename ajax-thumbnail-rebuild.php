@@ -264,11 +264,9 @@ function wp_generate_attachment_metadata_custom( $attachment_id, $file, $thumbna
 
 		foreach ($sizes as $size => $size_data ) {
 			if( isset( $thumbnails ) && !in_array( $size, $thumbnails ))
-				$resized = image_get_intermediate_size( $attachment_id, $size_data['name'] );
+				$metadata['sizes'][$size] = image_get_intermediate_size( $attachment_id, $size_data['name'] );
 			else
-				$resized = image_make_intermediate_size( $file, $size_data['width'], $size_data['height'], $size_data['crop'] );
-
-			$metadata['sizes'][$size] = $resized;
+				$metadata['sizes'][$size] = image_make_intermediate_size( $file, $size_data['width'], $size_data['height'], $size_data['crop'] );
 		}
 
 		// fetch additional metadata from exif/iptc
