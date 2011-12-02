@@ -60,7 +60,7 @@ class AjaxThumbnailRebuild {
 			var onlyfeatured = jQuery("#onlyfeatured").attr('checked') ? 1 : 0;
 
 			jQuery.ajax({
-				url: "<?php bloginfo('wpurl'); ?>/wp-admin/admin-ajax.php", 
+				url: "<?php echo admin_url('admin-ajax.php'); ?>",
 				type: "POST",
 				data: "action=ajax_thumbnail_rebuild&do=getlist&onlyfeatured="+onlyfeatured,
 				success: function(result) {
@@ -82,7 +82,7 @@ class AjaxThumbnailRebuild {
 						setMessage(<?php printf( __('"Rebuilding " + %s + " of " + %s + " (" + %s + ")..."', 'ajax-thumbnail-rebuild'), "(curr+1)", "list.length", "list[curr].title"); ?>);
 
 						jQuery.ajax({
-							url: "<?php bloginfo('wpurl'); ?>/wp-admin/admin-ajax.php",
+							url: "<?php echo admin_url('admin-ajax.php'); ?>",
 							type: "POST",
 							data: "action=ajax_thumbnail_rebuild&do=regen&id=" + list[curr].id + thumbnails,
 							success: function(result) {
