@@ -46,7 +46,7 @@ class AjaxThumbnailRebuild {
 		}
 
 		function regenerate() {
-			jQuery("#ajax_thumbnail_rebuild").attr("disabled", true);
+			jQuery("#ajax_thumbnail_rebuild").prop("disabled", true);
 			setMessage("<p><?php _e('Reading attachments...', 'ajax-thumbnail-rebuild') ?></p>");
 
 			inputs = jQuery( 'input:checked' );
@@ -57,7 +57,7 @@ class AjaxThumbnailRebuild {
 				} );
 			}
 
-			var onlyfeatured = jQuery("#onlyfeatured").attr('checked') ? 1 : 0;
+			var onlyfeatured = jQuery("#onlyfeatured").prop('checked') ? 1 : 0;
 
 			jQuery.ajax({
 				url: "<?php echo admin_url('admin-ajax.php'); ?>",
@@ -69,13 +69,13 @@ class AjaxThumbnailRebuild {
 
 					if (!list) {
 						setMessage("<?php _e('No attachments found.', 'ajax-thumbnail-rebuild')?>");
-						jQuery("#ajax_thumbnail_rebuild").removeAttr("disabled");
+						jQuery("#ajax_thumbnail_rebuild").prop("disabled", false);
 						return;
 					}
 
 					function regenItem() {
 						if (curr >= list.length) {
-							jQuery("#ajax_thumbnail_rebuild").removeAttr("disabled");
+							jQuery("#ajax_thumbnail_rebuild").prop("disabled", false);
 							setMessage("<?php _e('Done.', 'ajax-thumbnail-rebuild') ?>");
 							return;
 						}
@@ -106,7 +106,7 @@ class AjaxThumbnailRebuild {
 		jQuery(document).ready(function() {
 			jQuery('#size-toggle').click(function() {
 				jQuery("#sizeselect").find("input[type=checkbox]").each(function() {
-					jQuery(this).attr("checked", !jQuery(this).attr("checked"));
+					jQuery(this).prop("checked", !jQuery(this).prop("checked"));
 				});
 			});
 		});
