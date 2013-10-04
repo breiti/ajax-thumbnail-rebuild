@@ -1,0 +1,18 @@
+#message {
+	display: none;
+}
+
+#thumbnails-form {
+	display: inline;
+	float: left;
+	padding-right: 30px;
+}
+
+#thumb {
+	display: none;
+}
+
+.author-comments {
+	clear: both;
+	padding-top: 2em;
+}
