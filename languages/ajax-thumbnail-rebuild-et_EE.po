@@ -3,97 +3,104 @@ msgstr ""
 "Project-Id-Version: AJAX Thumbnail Rebuild v1.08\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-10-03 08:02:03+0000\n"
+"PO-Revision-Date: 2013-10-04 09:30+0200\n"
 "Last-Translator: admin <info@127.0.0.1>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: CSL v1.x\n"
-"X-Poedit-Language: Estonian\n"
-"X-Poedit-Country: ESTONIA\n"
+"X-Generator: Poedit 1.5.7\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
+"_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2\n"
 "X-Poedit-Basepath: ../\n"
-"X-Poedit-Bookmarks: \n"
+"X-Textdomain-Support: yes\n"
+"Language: et_EE\n"
 "X-Poedit-SearchPath-0: .\n"
-"X-Textdomain-Support: yes"
 
+# @ ajax-thumbnail-rebuild
 #: ajax-thumbnail-rebuild.php:33
-#@ ajax-thumbnail-rebuild
 msgid "Rebuild all Thumbnails"
 msgstr "Uuenda valitud pisipildid"
 
+# @ ajax-thumbnail-rebuild
 #: ajax-thumbnail-rebuild.php:33
-#@ ajax-thumbnail-rebuild
 msgid "Rebuild Thumbnails"
 msgstr "Pisipiltide uuendamine"
 
+# @ ajax-thumbnail-rebuild
 #: ajax-thumbnail-rebuild.php:50
-#@ ajax-thumbnail-rebuild
 msgid "Reading attachments..."
 msgstr "Laeme sisse pilte..."
 
+# @ ajax-thumbnail-rebuild
 #: ajax-thumbnail-rebuild.php:71
-#@ ajax-thumbnail-rebuild
 msgid "No attachments found."
 msgstr "Pilte ei leitud."
 
+# @ ajax-thumbnail-rebuild
 #: ajax-thumbnail-rebuild.php:79
-#@ ajax-thumbnail-rebuild
 msgid "Done."
 msgstr "Uuendatud!"
 
+# @ ajax-thumbnail-rebuild
 #: ajax-thumbnail-rebuild.php:82
 #, php-format
-#@ ajax-thumbnail-rebuild
-msgid "\"Rebuilding \" + %s + \" of \" + %s + \" (\" + %s + \")...\""
-msgstr "\"Uuendame pilti \" + %s + \"/\" + %s + \" (\" + %s + \")...\""
+msgid "Rebuilding %s of %s (%s)..."
+msgstr "Uuendame pilti %s/%s (%s)..."
 
+# @ ajax-thumbnail-rebuild
 #: ajax-thumbnail-rebuild.php:101
-#@ ajax-thumbnail-rebuild
 msgid "Error"
 msgstr "Viga"
 
+# @ ajax-thumbnail-rebuild
 #: ajax-thumbnail-rebuild.php:118
-#@ ajax-thumbnail-rebuild
 msgid "Select which thumbnails you want to rebuild"
 msgstr "Vali pisipiltide suurused, mida soovid uuendada"
 
+# @ ajax-thumbnail-rebuild
 #: ajax-thumbnail-rebuild.php:119
-#@ ajax-thumbnail-rebuild
 msgid "Toggle all"
 msgstr "Vali kõik"
 
+# @ ajax-thumbnail-rebuild
 #: ajax-thumbnail-rebuild.php:129
-#@ ajax-thumbnail-rebuild
 msgid "cropped"
 msgstr "lõigatud"
 
+# @ ajax-thumbnail-rebuild
 #: ajax-thumbnail-rebuild.php:136
-#@ ajax-thumbnail-rebuild
 msgid "Only rebuild featured images"
 msgstr "Uuenda ainult tunnuspilte"
 
+# @ ajax-thumbnail-rebuild
 #: ajax-thumbnail-rebuild.php:139
-#@ ajax-thumbnail-rebuild
-msgid "Note: If you've changed the dimensions of your thumbnails, existing thumbnail images will not be deleted."
-msgstr "Märkus: kui sa oled muutnud pisipiltide suuruseid, siis olemasolevaid pisipilte ei kustutata."
+msgid ""
+"Note: If you've changed the dimensions of your thumbnails, existing "
+"thumbnail images will not be deleted."
+msgstr ""
+"Märkus: kui sa oled muutnud pisipiltide suuruseid, siis olemasolevaid "
+"pisipilte ei kustutata."
 
+# @ ajax-thumbnail-rebuild
 #: ajax-thumbnail-rebuild.php:143
-#@ ajax-thumbnail-rebuild
 msgid "Rebuild All Thumbnails"
 msgstr "Uuenda valitud pisipildid"
 
+# @ ajax-thumbnail-rebuild
 #: ajax-thumbnail-rebuild.php:147
-#@ ajax-thumbnail-rebuild
 msgid "Last image"
 msgstr "Eelmine pilt"
 
+# @ ajax-thumbnail-rebuild
 #: ajax-thumbnail-rebuild.php:150
 #, php-format
-#@ ajax-thumbnail-rebuild
-msgid "If you find this plugin useful, I'd be happy to read your comments on the %splugin homepage%s. If you experience any problems, feel free to leave a comment too."
-msgstr "Kui see plugin on sulle kasulik, anna sellest teada %smeie kodulehel%s. Probleemide korral anna ka nendest teada."
-
+msgid ""
+"If you find this plugin useful, I'd be happy to read your comments on the "
+"%splugin homepage%s. If you experience any problems, feel free to leave a "
+"comment too."
+msgstr ""
+"Kui see plugin on sulle kasulik, anna sellest teada %smeie kodulehel%s. "
+"Probleemide korral anna ka nendest teada."
