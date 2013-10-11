@@ -122,8 +122,8 @@ class AjaxThumbnailRebuild {
 			foreach ( ajax_thumbnail_rebuild_get_sizes() as $s ):
 			?>
 
-				<input type="checkbox" name="thumbnails[]" id="sizeselect" checked="checked" value="<?php echo $s['name'] ?>" />
 				<label>
+					<input type="checkbox" name="thumbnails[]" id="sizeselect" checked="checked" value="<?php echo $s['name'] ?>" />
 					<em><?php echo $s['name'] ?></em>
 					&nbsp;(<?php echo $s['width'] ?>x<?php echo $s['height'] ?>
 					<?php if ($s['crop']) _e('cropped', 'ajax-thumbnail-rebuild'); ?>)
@@ -132,8 +132,10 @@ class AjaxThumbnailRebuild {
 			<?php endforeach;?>
 			</div>
 			<p>
-				<input type="checkbox" id="onlyfeatured" name="onlyfeatured" />
-				<label><?php _e('Only rebuild featured images', 'ajax-thumbnail-rebuild'); ?></label>
+				<label>
+					<input type="checkbox" id="onlyfeatured" name="onlyfeatured" />
+					<?php _e('Only rebuild featured images', 'ajax-thumbnail-rebuild'); ?>
+				</label>
 			</p>
 
 			<p><?php _e("Note: If you've changed the dimensions of your thumbnails, existing thumbnail images will not be deleted.",
