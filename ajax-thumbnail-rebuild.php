@@ -235,7 +235,7 @@ function ajax_thumbnail_rebuild_ajax() {
 			    $res[] = array('id' => $image->meta_value, 'title' => $image->title);
 			}
 		} else {
-			$attachments =& get_children( array(
+			$attachments = get_children( array(
 				'post_type' => 'attachment',
 				'post_mime_type' => 'image',
 				'numberposts' => -1,
