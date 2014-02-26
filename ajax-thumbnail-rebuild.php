@@ -27,11 +27,67 @@ class AjaxThumbnailRebuild {
 
 	function AjaxThumbnailRebuild() {
 		add_action( 'admin_menu', array(&$this, 'addAdminMenu') );
+		add_filter( 'attachment_fields_to_edit', array(&$this, 'addRebuildSingle') );
 	}
 
 	function addAdminMenu() {
 		add_management_page( __( 'Rebuild all Thumbnails', 'ajax-thumbnail-rebuild' ), __( 'Rebuild Thumbnails', 'ajax-thumbnail-rebuild'
  ), 'manage_options', 'ajax-thumbnail-rebuild', array(&$this, 'ManagementPage') );
+	}
+
+	/**
+	 * Add rebuild thumbnails button to the media page
+	 * 
+	 * @param array $fields
+	 * @param object $post
+	 * @return array
+	 */
+	function addRebuildSingle($fields, $post) {
+		global $post;
+		$thumbnails = array();
+		foreach ( ajax_thumbnail_rebuild_get_sizes() as $s )
+			$thumbnails[] = 'thumbnails[]='.$s['name'];
+		$thumbnails = '&'.implode('&', $thumbnails);
+	    ob_start();
+	    ?>
+	    <script>
+		    function setMessage(msg) {
+				jQuery("#atr-message").html(msg);
+				jQuery("#atr-message").show();
+			}
+
+			function regenerate() {
+				jQuery("#ajax_thumbnail_rebuild").prop("disabled", true);
+				setMessage("<?php _e('Reading attachments...', 'ajax-thumbnail-rebuild') ?>");
+				thumbnails = '<?php echo $thumbnails ?>';
+				jQuery.ajax({
+					url: "<?php echo admin_url('admin-ajax.php'); ?>",
+					type: "POST",
+					data: "action=ajax_thumbnail_rebuild&do=regen&id=<?php echo $post->ID ?>" + thumbnails,
+					success: function(result) {
+						if (result != '-1') {
+							setMessage("<?php _e('Done.', 'ajax-thumbnail-rebuild') ?>");
+						}
+					},
+					error: function(request, status, error) {
+						setMessage("<?php _e('Error', 'ajax-thumbnail-rebuild') ?>" + request.status);
+					},
+					complete: function() {
+						jQuery("#ajax_thumbnail_rebuild").prop("disabled", false);
+					}
+				});
+			}
+		</script>
+		<input type='button' onclick='javascript:regenerate();' class='button' name='ajax_thumbnail_rebuild' id='ajax_thumbnail_rebuild' value='Rebuild Thumbnails'>
+	    <span id="atr-message" class="updated fade" style="clear:both;display:none;line-height:28px;padding-left:10px;"></span>
+	    <?php
+	    $html = ob_get_clean();
+	    $fields["ajax-thumbnail-rebuild"] = array(
+	        "label"	=> __('Ajax Thumbnail Rebuild', 'ajax-thumbnail-rebuild'),
+	        "input"	=> "html",
+	        "html"	=> $html
+	    );
+	    return $fields;
 	}
 
 	function ManagementPage() {
