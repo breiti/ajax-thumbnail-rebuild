@@ -86,10 +86,11 @@ class AjaxThumbnailRebuild {
 							type: "POST",
 							data: "action=ajax_thumbnail_rebuild&do=regen&id=" + list[curr].id + thumbnails,
 							success: function(result) {
-								jQuery("#thumb").show();
-								jQuery("#thumb-img").attr("src",result);
-
 								curr = curr + 1;
+								if (result != '-1') {
+									jQuery("#thumb").show();
+									jQuery("#thumb-img").attr("src",result);
+								}
 								regenItem();
 							}
 						});
@@ -200,9 +201,10 @@ function ajax_thumbnail_rebuild_ajax() {
 		if ( FALSE !== $fullsizepath && @file_exists($fullsizepath) ) {
 			set_time_limit( 30 );
 			wp_update_attachment_metadata( $id, wp_generate_attachment_metadata_custom( $id, $fullsizepath, $thumbnails ) );
+			die( wp_get_attachment_thumb_url( $id ));
 		}
 
-		die( wp_get_attachment_thumb_url( $id ));
+		die('-1');
 	}
 }
 add_action('wp_ajax_ajax_thumbnail_rebuild', 'ajax_thumbnail_rebuild_ajax');
