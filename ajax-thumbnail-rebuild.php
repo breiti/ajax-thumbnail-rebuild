@@ -3,7 +3,7 @@
    Plugin URI: http://breiti.cc/wordpress/ajax-thumbnail-rebuild
    Author: junkcoder
    Author URI: http://breiti.cc
-   Version: 1.09
+   Version: 1.10
    Description: Rebuild all thumbnails
    Max WP Version: 3.6.1
    Text Domain: ajax-thumbnail-rebuild
