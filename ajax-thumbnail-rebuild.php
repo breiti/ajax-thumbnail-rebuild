@@ -43,7 +43,6 @@ class AjaxThumbnailRebuild {
 	 * @return array
 	 */
 	function addRebuildSingle($fields, $post) {
-		global $post;
 		$thumbnails = array();
 		foreach ( ajax_thumbnail_rebuild_get_sizes() as $s )
 			$thumbnails[] = 'thumbnails[]='.$s['name'];
