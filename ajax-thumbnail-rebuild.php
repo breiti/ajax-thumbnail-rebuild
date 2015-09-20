@@ -291,7 +291,8 @@ function ajax_thumbnail_rebuild_get_sizes() {
 		else
 			$sizes[$s]['crop'] = get_option( "{$s}_crop" );
 	}
-
+	
+	$sizes = apply_filters( 'intermediate_image_sizes_advanced', $sizes );
 	return $sizes;
 }
 
@@ -319,7 +320,6 @@ function wp_generate_attachment_metadata_custom( $attachment_id, $file, $thumbna
 		$metadata['file'] = _wp_relative_upload_path($file);
 
 		$sizes = ajax_thumbnail_rebuild_get_sizes();
-		$sizes = apply_filters( 'intermediate_image_sizes_advanced', $sizes );
 
 		foreach ($sizes as $size => $size_data ) {
 			if( isset( $thumbnails ) && !in_array( $size, $thumbnails ))
