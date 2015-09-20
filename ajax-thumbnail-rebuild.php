@@ -228,7 +228,7 @@ function ajax_thumbnail_rebuild_ajax() {
 		if ($onlyfeatured) {
 			/* Get all featured images */
 			$featured_images = $wpdb->get_results( "SELECT meta_value,{$wpdb->posts}.post_title AS title FROM {$wpdb->postmeta}, {$wpdb->posts}
-		                                        WHERE meta_key = '_thumbnail_id' AND {$wpdb->postmeta}.post_id={$wpdb->posts}.ID");
+		                                        WHERE meta_key = '_thumbnail_id' AND {$wpdb->postmeta}.post_id={$wpdb->posts}.ID ORDER BY post_date DESC");
 
 			foreach($featured_images as $image) {
 			    $res[] = array('id' => $image->meta_value, 'title' => $image->title);
@@ -241,6 +241,8 @@ function ajax_thumbnail_rebuild_ajax() {
 				'post_status' => null,
 				'post_parent' => null, // any parent
 				'output' => 'object',
+				'orderby' => 'post_date',
+				'order' => 'desc'
 			) );
 			foreach ( $attachments as $attachment ) {
 			    $res[] = array('id' => $attachment->ID, 'title' => $attachment->post_title);
