@@ -237,7 +237,7 @@ function ajax_thumbnail_rebuild_ajax() {
 		if ($onlyfeatured) {
 			/* Get all featured images */
 			$featured_images = $wpdb->get_results( "SELECT meta_value,{$wpdb->posts}.post_title AS title FROM {$wpdb->postmeta}, {$wpdb->posts}
-		                                        WHERE meta_key = '_thumbnail_id' AND {$wpdb->postmeta}.post_id={$wpdb->posts}.ID");
+		                                        WHERE meta_key = '_thumbnail_id' AND {$wpdb->postmeta}.post_id={$wpdb->posts}.ID ORDER BY post_date DESC");
 
 			foreach($featured_images as $image) {
 			    $res[] = array('id' => $image->meta_value, 'title' => $image->title);
@@ -250,6 +250,8 @@ function ajax_thumbnail_rebuild_ajax() {
 				'post_status' => null,
 				'post_parent' => null, // any parent
 				'output' => 'object',
+				'orderby' => 'post_date',
+				'order' => 'desc'
 			) );
 			foreach ( $attachments as $attachment ) {
 			    $res[] = array('id' => $attachment->ID, 'title' => $attachment->post_title);
@@ -307,7 +309,8 @@ function ajax_thumbnail_rebuild_get_sizes() {
 			$sizes[$s]['crop'] = get_option( "{$s}_crop" );
 		}
 	}
-
+	
+	$sizes = apply_filters( 'intermediate_image_sizes_advanced', $sizes );
 	return $sizes;
 }
 
@@ -335,7 +338,6 @@ function wp_generate_attachment_metadata_custom( $attachment_id, $file, $thumbna
 		$metadata['file'] = _wp_relative_upload_path($file);
 
 		$sizes = ajax_thumbnail_rebuild_get_sizes();
-		$sizes = apply_filters( 'intermediate_image_sizes_advanced', $sizes );
 
 		foreach ($sizes as $size => $size_data ) {
 			if( isset( $thumbnails ) && !in_array( $size, $thumbnails ))
