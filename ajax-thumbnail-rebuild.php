@@ -224,6 +224,7 @@ function ajax_thumbnail_rebuild_ajax() {
 	$onlyfeatured = isset( $_POST['onlyfeatured'] ) ? $_POST['onlyfeatured'] : 0;
 
 	if ($action == "getlist") {
+		$res = array();
 
 		if ($onlyfeatured) {
 			/* Get all featured images */
@@ -345,4 +346,3 @@ function wp_generate_attachment_metadata_custom( $attachment_id, $file, $thumbna
 
 load_plugin_textdomain('ajax-thumbnail-rebuild', false, basename( dirname( __FILE__ ) ) . '/languages' );
 
-?>
