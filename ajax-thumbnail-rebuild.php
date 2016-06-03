@@ -182,7 +182,17 @@ class AjaxThumbnailRebuild {
 					<input type="checkbox" name="thumbnails[]" id="sizeselect" checked="checked" value="<?php echo $s['name'] ?>" />
 					<em><?php echo $s['name'] ?></em>
 					&nbsp;(<?php echo $s['width'] ?>x<?php echo $s['height'] ?>
-					<?php if ($s['crop']) _e('cropped', 'ajax-thumbnail-rebuild'); ?>)
+					<?php
+ 						if ($s['crop']){
+ 							if (!is_array($s['crop'])){
+ 								_e('cropped', 'ajax-thumbnail-rebuild');
+ 							}
+ 							else{
+ 								echo $s['crop'][0] . ', ' . $s['crop'][1];
+ 							}
+ 						}
+ 					?>)
+ 					
 				</label>
 				<br/>
 			<?php endforeach;?>
@@ -288,10 +298,18 @@ function ajax_thumbnail_rebuild_get_sizes() {
 		else
 			$sizes[$s]['height'] = get_option( "{$s}_size_h" );
 
-		if ( isset( $_wp_additional_image_sizes[$s]['crop'] ) )
-			$sizes[$s]['crop'] = intval( $_wp_additional_image_sizes[$s]['crop'] );
-		else
-			$sizes[$s]['crop'] = get_option( "{$s}_crop" );
+		if ( isset( $_wp_additional_image_sizes[$s]['crop'] ) ){
+			if( !is_array( $_wp_additional_image_sizes[$s]['crop']) ){
+				$sizes[$s]['crop'] = intval( $_wp_additional_image_sizes[$s]['crop'] );
+			}
+			else{
+				$sizes[$s]['crop'] = $_wp_additional_image_sizes[$s]['crop'];
+			}
+		}
+		else{
+			$sizes[$s]['crop'] = get_option( "{$s}_crop" );		  			$sizes[$s]['crop'] = get_option( "{$s}_crop" );
+		}
+						
 	}
 	
 	$sizes = apply_filters( 'intermediate_image_sizes_advanced', $sizes );
