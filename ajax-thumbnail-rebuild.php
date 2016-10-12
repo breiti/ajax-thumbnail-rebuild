@@ -3,9 +3,9 @@
    Plugin URI: http://breiti.cc/wordpress/ajax-thumbnail-rebuild
    Author: junkcoder
    Author URI: http://breiti.cc
-   Version: 1.12
+   Version: 1.13
    Description: Rebuild all thumbnails
-   Max WP Version: 3.9
+   Max WP Version: 4.6.1
    Text Domain: ajax-thumbnail-rebuild
 
     This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 
 class AjaxThumbnailRebuild {
 
-	function AjaxThumbnailRebuild() {
+	function __construct() {
 		add_action( 'admin_menu', array(&$this, 'addAdminMenu') );
 		add_filter( 'attachment_fields_to_edit', array(&$this, 'addRebuildSingle'), 10, 2 );
 	}
