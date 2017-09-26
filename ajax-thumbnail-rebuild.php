@@ -8,31 +8,30 @@
    Max WP Version: 3.9
    Text Domain: ajax-thumbnail-rebuild
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 class AjaxThumbnailRebuild {
 
 	function __construct() {
-		add_action( 'admin_menu', array(&$this, 'addAdminMenu') );
-		add_filter( 'attachment_fields_to_edit', array(&$this, 'addRebuildSingle'), 10, 2 );
+		add_action( 'admin_menu',                array( $this, 'addAdminMenu' ) );
+		add_filter( 'attachment_fields_to_edit', array( $this, 'addRebuildSingle' ), 10, 2 );
 	}
 
 	function addAdminMenu() {
-		add_management_page( __( 'Rebuild all Thumbnails', 'ajax-thumbnail-rebuild' ), __( 'Rebuild Thumbnails', 'ajax-thumbnail-rebuild'
- ), 'manage_options', 'ajax-thumbnail-rebuild', array(&$this, 'ManagementPage') );
+		add_management_page( __( 'Rebuild all Thumbnails', 'ajax-thumbnail-rebuild' ), __( 'Rebuild Thumbnails', 'ajax-thumbnail-rebuild' ), 'manage_options', 'ajax-thumbnail-rebuild', array( $this, 'ManagementPage' ) );
 	}
 
 	/**
@@ -42,15 +41,19 @@ class AjaxThumbnailRebuild {
 	 * @param object $post
 	 * @return array
 	 */
-	function addRebuildSingle($fields, $post) {
+	function addRebuildSingle( $fields, $post ) {
 		$thumbnails = array();
-		foreach ( ajax_thumbnail_rebuild_get_sizes() as $s )
-			$thumbnails[] = 'thumbnails[]='.$s['name'];
-		$thumbnails = '&'.implode('&', $thumbnails);
-	    ob_start();
-	    ?>
-	    <script>
-		    function setMessage(msg) {
+
+		foreach ( ajax_thumbnail_rebuild_get_sizes() as $s ) {
+			$thumbnails[] = 'thumbnails[]=' . $s['name'];
+		}
+
+		$thumbnails = '&' . implode( '&', $thumbnails );
+
+		ob_start();
+		?>
+		<script>
+			function setMessage(msg) {
 				jQuery("#atr-message").html(msg);
 				jQuery("#atr-message").show();
 			}
@@ -78,15 +81,17 @@ class AjaxThumbnailRebuild {
 			}
 		</script>
 		<input type='button' onclick='javascript:regenerate();' class='button' name='ajax_thumbnail_rebuild' id='ajax_thumbnail_rebuild' value='Rebuild Thumbnails'>
-	    <span id="atr-message" class="updated fade" style="clear:both;display:none;line-height:28px;padding-left:10px;"></span>
-	    <?php
-	    $html = ob_get_clean();
-	    $fields["ajax-thumbnail-rebuild"] = array(
-	        "label"	=> __('Ajax Thumbnail Rebuild', 'ajax-thumbnail-rebuild'),
-	        "input"	=> "html",
-	        "html"	=> $html
-	    );
-	    return $fields;
+		<span id="atr-message" class="updated fade" style="clear:both;display:none;line-height:28px;padding-left:10px;"></span>
+		<?php
+		$html = ob_get_clean();
+
+		$fields['ajax-thumbnail-rebuild'] = array(
+			'label' => __( 'Ajax Thumbnail Rebuild', 'ajax-thumbnail-rebuild' ),
+			'input' => 'html',
+			'html'  => $html
+		);
+
+		return $fields;
 	}
 
 	function ManagementPage() {
@@ -94,7 +99,6 @@ class AjaxThumbnailRebuild {
 		<div id="message" class="updated fade" style="display:none"></div>
 		<script type="text/javascript">
 		// <![CDATA[
-
 		function setMessage(msg) {
 			jQuery("#message").html(msg);
 			jQuery("#message").show();
@@ -115,15 +119,15 @@ class AjaxThumbnailRebuild {
 			var onlyfeatured = jQuery("#onlyfeatured").prop('checked') ? 1 : 0;
 
 			jQuery.ajax({
-				url: "<?php echo admin_url('admin-ajax.php'); ?>",
+				url: "<?php echo admin_url( 'admin-ajax.php' ); ?>",
 				type: "POST",
-				data: "action=ajax_thumbnail_rebuild&do=getlist&onlyfeatured="+onlyfeatured,
+				data: "action=ajax_thumbnail_rebuild&do=getlist&onlyfeatured=" + onlyfeatured,
 				success: function(result) {
 					var list = eval(result);
 					var curr = 0;
 
 					if (!list) {
-						setMessage("<?php _e('No attachments found.', 'ajax-thumbnail-rebuild')?>");
+						setMessage("<?php _e( 'No attachments found.', 'ajax-thumbnail-rebuild' ) ?>");
 						jQuery("#ajax_thumbnail_rebuild").prop("disabled", false);
 						return;
 					}
@@ -134,7 +138,8 @@ class AjaxThumbnailRebuild {
 							setMessage("<?php _e('Done.', 'ajax-thumbnail-rebuild') ?>");
 							return;
 						}
-						setMessage(<?php printf( __('"Rebuilding " + %s + " of " + %s + " (" + %s + ")..."', 'ajax-thumbnail-rebuild'), "(curr+1)", "list.length", "list[curr].title"); ?>);
+
+						setMessage( '<?php printf( __( 'Rebuilding %s of %s (%s)...', 'ajax-thumbnail-rebuild' ), "' + (curr + 1) + '", "' + list.length + '", "' + list[curr].title + '" ); ?>' );
 
 						jQuery.ajax({
 							url: "<?php echo admin_url('admin-ajax.php'); ?>",
@@ -154,7 +159,7 @@ class AjaxThumbnailRebuild {
 					regenItem();
 				},
 				error: function(request, status, error) {
-					setMessage("<?php _e('Error', 'ajax-thumbnail-rebuild') ?>" + request.status);
+					setMessage("<?php _e( 'Error', 'ajax-thumbnail-rebuild' ) ?>" + request.status);
 				}
 			});
 		}
@@ -171,46 +176,44 @@ class AjaxThumbnailRebuild {
 		</script>
 
 		<form method="post" action="" style="display:inline; float:left; padding-right:30px;">
-		    <h4><?php _e('Select which thumbnails you want to rebuild', 'ajax-thumbnail-rebuild'); ?>:</h4>
-			<a href="javascript:void(0);" id="size-toggle"><?php _e('Toggle all', 'ajax-thumbnail-rebuild'); ?></a>
-			<div id="sizeselect">
-			<?php
-			foreach ( ajax_thumbnail_rebuild_get_sizes() as $s ):
-			?>
+			<h4><?php _e( 'Select which thumbnails you want to rebuild', 'ajax-thumbnail-rebuild' ); ?>:</h4>
+			<a href="javascript:void(0);" id="size-toggle"><?php _e( 'Toggle all', 'ajax-thumbnail-rebuild' ); ?></a>
 
-				<label>
-					<input type="checkbox" name="thumbnails[]" id="sizeselect" checked="checked" value="<?php echo $s['name'] ?>" />
-					<em><?php echo $s['name'] ?></em>
-					&nbsp;(<?php echo $s['width'] ?>x<?php echo $s['height'] ?>
-					<?php if ($s['crop']) _e('cropped', 'ajax-thumbnail-rebuild'); ?>)
-				</label>
-				<br/>
-			<?php endforeach;?>
+			<div id="sizeselect">
+
+				<?php foreach ( ajax_thumbnail_rebuild_get_sizes() as $s ) : ?>
+
+					<label>
+						<input type="checkbox" name="thumbnails[]" id="sizeselect" checked="checked" value="<?php echo $s['name'] ?>" />
+						<em><?php echo $s['name'] ?></em>
+						&nbsp;(<?php echo $s['width'] ?>x<?php echo $s['height'] ?>
+						<?php if ($s['crop']) _e( 'cropped', 'ajax-thumbnail-rebuild' ); ?>)
+					</label>
+					<br/>
+
+				<?php endforeach; ?>
+
 			</div>
+
 			<p>
 				<label>
 					<input type="checkbox" id="onlyfeatured" name="onlyfeatured" />
-					<?php _e('Only rebuild featured images', 'ajax-thumbnail-rebuild'); ?>
+					<?php _e( 'Only rebuild featured images', 'ajax-thumbnail-rebuild' ); ?>
 				</label>
 			</p>
 
-			<p><?php _e("Note: If you've changed the dimensions of your thumbnails, existing thumbnail images will not be deleted.",
-			'ajax-thumbnail-rebuild'); ?></p>
-			<input type="button" onClick="javascript:regenerate();" class="button"
-			       name="ajax_thumbnail_rebuild" id="ajax_thumbnail_rebuild"
-			       value="<?php _e( 'Rebuild All Thumbnails', 'ajax-thumbnail-rebuild' ) ?>" />
+			<p><?php _e( 'Note: If you\'ve changed the dimensions of your thumbnails, existing thumbnail images will not be deleted.',
+			'ajax-thumbnail-rebuild' ); ?></p>
+
+			<input type="button" onClick="javascript:regenerate();" class="button" name="ajax_thumbnail_rebuild" id="ajax_thumbnail_rebuild" value="<?php _e( 'Rebuild All Thumbnails', 'ajax-thumbnail-rebuild' ) ?>" />
 			<br />
 		</form>
 
-		<div id="thumb" style="display:none;"><h4><?php _e('Last image', 'ajax-thumbnail-rebuild'); ?>:</h4><img id="thumb-img" /></div>
+		<div id="thumb" style="display:none;"><h4><?php _e( 'Last image', 'ajax-thumbnail-rebuild' ); ?>:</h4><img id="thumb-img" /></div>
 
 		<p style="clear:both; padding-top:2em;">
-		<?php printf( __("If you find this plugin useful, I'd be happy to read your comments on the %splugin homepage%s. If you experience any problems, feel free to leave a comment too.",
-				 'ajax-thumbnail-rebuild'),
-			         '<a href="http://breiti.cc/wordpress/ajax-thumbnail-rebuild" target="_blank">', '</a>');
-		?>
+			<?php printf( __( 'If you find this plugin useful, I\'d be happy to read your comments on the %splugin homepage%s. If you experience any problems, feel free to leave a comment too.', 'ajax-thumbnail-rebuild' ), '<a href="http://breiti.cc/wordpress/ajax-thumbnail-rebuild" target="_blank">', '</a>'); ?>
 		</p>
-
 		<?php
 	}
 
@@ -226,46 +229,55 @@ function ajax_thumbnail_rebuild_ajax() {
 	if ($action == "getlist") {
 		$res = array();
 
-		if ($onlyfeatured) {
+		if ( $onlyfeatured ) {
 			/* Get all featured images */
-			$featured_images = $wpdb->get_results( "SELECT meta_value,{$wpdb->posts}.post_title AS title FROM {$wpdb->postmeta}, {$wpdb->posts}
-		                                        WHERE meta_key = '_thumbnail_id' AND {$wpdb->postmeta}.post_id={$wpdb->posts}.ID ORDER BY post_date DESC");
+			$featured_images = $wpdb->get_results( "SELECT meta_value, {$wpdb->posts}.post_title AS title FROM {$wpdb->postmeta}, {$wpdb->posts} WHERE meta_key = '_thumbnail_id' AND {$wpdb->postmeta}.post_id={$wpdb->posts}.ID ORDER BY post_date DESC");
 
-			foreach($featured_images as $image) {
-			    $res[] = array('id' => $image->meta_value, 'title' => $image->title);
+			foreach( $featured_images as $image ) {
+				$res[] = array(
+					'id'    => $image->meta_value,
+					'title' => $image->title
+				);
 			}
-		} else {
+		}
+		else {
 			$attachments = get_children( array(
-				'post_type' => 'attachment',
+				'post_type'      => 'attachment',
 				'post_mime_type' => 'image',
-				'numberposts' => -1,
-				'post_status' => null,
-				'post_parent' => null, // any parent
-				'output' => 'object',
-				'orderby' => 'post_date',
-				'order' => 'desc'
+				'numberposts'    => -1,
+				'post_status'    => null,
+				'post_parent'    => null, // any parent
+				'output'         => 'object',
+				'orderby'        => 'post_date',
+				'order'          => 'desc'
 			) );
+
 			foreach ( $attachments as $attachment ) {
-			    $res[] = array('id' => $attachment->ID, 'title' => $attachment->post_title);
+				$res[] = array(
+					'id'    => $attachment->ID,
+					'title' => $attachment->post_title
+				);
 			}
 		}
 
-		die( json_encode($res) );
-	} else if ($action == "regen") {
+		die( json_encode( $res ) );
+	}
+	else if ($action == "regen") {
 		$id = $_POST["id"];
 
 		$fullsizepath = get_attached_file( $id );
 
-		if ( FALSE !== $fullsizepath && @file_exists($fullsizepath) ) {
+		if ( FALSE !== $fullsizepath && @file_exists( $fullsizepath ) ) {
 			set_time_limit( 30 );
 			wp_update_attachment_metadata( $id, wp_generate_attachment_metadata_custom( $id, $fullsizepath, $thumbnails ) );
+
 			die( wp_get_attachment_thumb_url( $id ));
 		}
 
-		die('-1');
+		die( '-1' );
 	}
 }
-add_action('wp_ajax_ajax_thumbnail_rebuild', 'ajax_thumbnail_rebuild_ajax');
+add_action( 'wp_ajax_ajax_thumbnail_rebuild', 'ajax_thumbnail_rebuild_ajax' );
 
 add_action( 'plugins_loaded', create_function( '', 'global $AjaxThumbnailRebuild; $AjaxThumbnailRebuild = new AjaxThumbnailRebuild();' ) );
 
@@ -279,23 +291,30 @@ function ajax_thumbnail_rebuild_get_sizes() {
 
 		$sizes[$s]['name'] = $s;
 
-		if ( isset( $_wp_additional_image_sizes[$s]['width'] ) )
+		if ( isset( $_wp_additional_image_sizes[$s]['width'] ) ) {
 			$sizes[$s]['width'] = intval( $_wp_additional_image_sizes[$s]['width'] );
-		else
+		}
+		else {
 			$sizes[$s]['width'] = get_option( "{$s}_size_w" );
+		}
 
-		if ( isset( $_wp_additional_image_sizes[$s]['height'] ) )
+		if ( isset( $_wp_additional_image_sizes[$s]['height'] ) ) {
 			$sizes[$s]['height'] = intval( $_wp_additional_image_sizes[$s]['height'] );
-		else
+		}
+		else {
 			$sizes[$s]['height'] = get_option( "{$s}_size_h" );
+		}
 
-		if ( isset( $_wp_additional_image_sizes[$s]['crop'] ) )
+		if ( isset( $_wp_additional_image_sizes[$s]['crop'] ) ) {
 			$sizes[$s]['crop'] = intval( $_wp_additional_image_sizes[$s]['crop'] );
-		else
+		}
+		else {
 			$sizes[$s]['crop'] = get_option( "{$s}_crop" );
+		}
 	}
 
 	$sizes = apply_filters( 'intermediate_image_sizes_advanced', $sizes );
+
 	return $sizes;
 }
 
@@ -312,37 +331,41 @@ function wp_generate_attachment_metadata_custom( $attachment_id, $file, $thumbna
 	$attachment = get_post( $attachment_id );
 
 	$metadata = array();
-	if ( preg_match('!^image/!', get_post_mime_type( $attachment )) && file_is_displayable_image($file) ) {
+	if ( preg_match( '!^image/!', get_post_mime_type( $attachment ) ) && file_is_displayable_image( $file ) ) {
 		$imagesize = getimagesize( $file );
 		$metadata['width'] = $imagesize[0];
 		$metadata['height'] = $imagesize[1];
 		list($uwidth, $uheight) = wp_constrain_dimensions($metadata['width'], $metadata['height'], 128, 96);
-		$metadata['hwstring_small'] = "height='$uheight' width='$uwidth'";
+		$metadata['hwstring_small'] = sprintf( "height='%s' width='%s'", $uheight, $uwidth );
 
 		// Make the file path relative to the upload dir
-		$metadata['file'] = _wp_relative_upload_path($file);
+		$metadata['file'] = _wp_relative_upload_path( $file );
 
 		$sizes = ajax_thumbnail_rebuild_get_sizes();
 
-		foreach ($sizes as $size => $size_data ) {
-			if( isset( $thumbnails ) && !in_array( $size, $thumbnails ))
+		foreach ( $sizes as $size => $size_data ) {
+			if( isset( $thumbnails ) && ! in_array( $size, $thumbnails ) ) {
 				$intermediate_size = image_get_intermediate_size( $attachment_id, $size_data['name'] );
-			else
+			}
+			else {
 				$intermediate_size = image_make_intermediate_size( $file, $size_data['width'], $size_data['height'], $size_data['crop'] );
+			}
 
-			if ($intermediate_size)
+			if ( $intermediate_size ) {
 				$metadata['sizes'][$size] = $intermediate_size;
+			}
 		}
 
 		// fetch additional metadata from exif/iptc
 		$image_meta = wp_read_image_metadata( $file );
-		if ( $image_meta )
-			$metadata['image_meta'] = $image_meta;
 
+		if ( $image_meta ) {
+			$metadata['image_meta'] = $image_meta;
+		}
 	}
 
 	return apply_filters( 'wp_generate_attachment_metadata', $metadata, $attachment_id );
 }
 
-load_plugin_textdomain('ajax-thumbnail-rebuild', false, basename( dirname( __FILE__ ) ) . '/languages' );
+load_plugin_textdomain( 'ajax-thumbnail-rebuild', false, basename( dirname( __FILE__ ) ) . '/languages' );
 
