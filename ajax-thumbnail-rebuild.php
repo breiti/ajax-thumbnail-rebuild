@@ -3,9 +3,9 @@
    Plugin URI: http://breiti.cc/wordpress/ajax-thumbnail-rebuild
    Author: junkcoder
    Author URI: http://breiti.cc
-   Version: 1.12
+   Version: 1.13
    Description: Rebuild all thumbnails
-   Max WP Version: 3.9
+   Max WP Version: 4.2.2
    Text Domain: ajax-thumbnail-rebuild
 
     This program is free software; you can redistribute it and/or modify
@@ -182,7 +182,16 @@ class AjaxThumbnailRebuild {
 					<input type="checkbox" name="thumbnails[]" id="sizeselect" checked="checked" value="<?php echo $s['name'] ?>" />
 					<em><?php echo $s['name'] ?></em>
 					&nbsp;(<?php echo $s['width'] ?>x<?php echo $s['height'] ?>
-					<?php if ($s['crop']) _e('cropped', 'ajax-thumbnail-rebuild'); ?>)
+					<?php
+						if ($s['crop']){
+							if (!is_array($s['crop'])){
+								_e('cropped', 'ajax-thumbnail-rebuild');
+							}
+							else{
+								echo $s['crop'][0] . ', ' . $s['crop'][1];
+							}
+						}
+					?>)
 				</label>
 				<br/>
 			<?php endforeach;?>
@@ -289,10 +298,17 @@ function ajax_thumbnail_rebuild_get_sizes() {
 		else
 			$sizes[$s]['height'] = get_option( "{$s}_size_h" );
 
-		if ( isset( $_wp_additional_image_sizes[$s]['crop'] ) )
-			$sizes[$s]['crop'] = intval( $_wp_additional_image_sizes[$s]['crop'] );
-		else
+		if ( isset( $_wp_additional_image_sizes[$s]['crop'] ) ){
+			if( !is_array( $_wp_additional_image_sizes[$s]['crop']) ){
+				$sizes[$s]['crop'] = intval( $_wp_additional_image_sizes[$s]['crop'] );
+			}
+			else{
+				$sizes[$s]['crop'] = $_wp_additional_image_sizes[$s]['crop'];
+			}
+		}
+		else{
 			$sizes[$s]['crop'] = get_option( "{$s}_crop" );
+		}
 	}
 
 	$sizes = apply_filters( 'intermediate_image_sizes_advanced', $sizes );
