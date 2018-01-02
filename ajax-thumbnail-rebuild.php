@@ -133,7 +133,8 @@ class AjaxThumbnailRebuild {
 						return;
 					}
 
-					function regenItem() {
+					function regenItem(throttling) {
+
 						if (curr >= list.length) {
 							jQuery("#ajax_thumbnail_rebuild").prop("disabled", false);
 							setMessage("<?php _e('Done.', 'ajax-thumbnail-rebuild') ?>");
@@ -152,12 +153,28 @@ class AjaxThumbnailRebuild {
 									jQuery("#thumb").show();
 									jQuery("#thumb-img").attr("src",result);
 								}
-								regenItem();
+								setTimeout(function() {
+									regenItem(throttling);
+								}, throttling * 1000);
+							},
+							error: function(request, status, error) {
+								if ((request.status == 503 && 60 <= throttling) ||
+								    (20 <= throttling)) {
+									console.log('ajax-thumbnail-rebuild gave up on "' + curr + '" after too many errors!');
+									// skip this image (most likely malformed or oom_reaper)
+									curr = curr + 1;
+									throttling = Math.round(throttling / 2);
+								} else {
+									throttling = throttling + 1;
+								}
+								setTimeout(function() {
+									regenItem(throttling);
+								}, throttling * 1000);
 							}
 						});
 					}
 
-					regenItem();
+					regenItem(0);
 				},
 				error: function(request, status, error) {
 					setMessage("<?php _e( 'Error', 'ajax-thumbnail-rebuild' ) ?>" + request.status);
