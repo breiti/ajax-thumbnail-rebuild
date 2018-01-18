@@ -294,7 +294,7 @@ function ajax_thumbnail_rebuild_ajax() {
 }
 add_action( 'wp_ajax_ajax_thumbnail_rebuild', 'ajax_thumbnail_rebuild_ajax' );
 
-add_action( 'plugins_loaded', create_function( '', 'global $AjaxThumbnailRebuild; $AjaxThumbnailRebuild = new AjaxThumbnailRebuild();' ) );
+add_action( 'plugins_loaded', function(){ global $AjaxThumbnailRebuild; $AjaxThumbnailRebuild = new AjaxThumbnailRebuild(); return $AjaxThumbnailRebuild; } );
 
 function ajax_thumbnail_rebuild_get_sizes() {
 	global $_wp_additional_image_sizes;
@@ -393,4 +393,3 @@ function wp_generate_attachment_metadata_custom( $attachment_id, $file, $thumbna
 }
 
 load_plugin_textdomain( 'ajax-thumbnail-rebuild', false, basename( dirname( __FILE__ ) ) . '/languages' );
-
