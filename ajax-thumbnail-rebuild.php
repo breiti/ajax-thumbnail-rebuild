@@ -44,7 +44,8 @@ class Ajax_Thumbnail_Rebuild {
 		add_action( 'admin_menu',                     array( $this, 'add_admin_menu' ) );
 		add_action( 'attachment_fields_to_edit',      array( $this, 'add_single_attachment_regenerate_button' ), 10, 2 );
 
-		add_action( 'wp_ajax_ajax_thumbnail_rebuild', array( $this, 'ajax_generate_attachment_thumbnails' ) );
+		add_action( 'wp_ajax_ajax_thumbnail_rebuild__generate_thumbnail',         array( $this, 'ajax_generate_attachment_thumbnails' ) );
+		add_action( 'wp_ajax_ajax_thumbnail_rebuild__get_attachments_list_count', array( $this, 'ajax_get_attachments_list_count' ) );
 	}
 
 	public function admin_init() {
@@ -76,14 +77,14 @@ class Ajax_Thumbnail_Rebuild {
 		$form_fields[] = [
 			'label' => esc_html__( 'Thumbnails', 'ajax-thumbnail-rebuild' ),
 			'input' => 'html',
-			'html'  => sprintf( '<button class="button thumbnail-rebuild__generate-button thumbnail-rebuild__generate-button--single" data-attachment-id="%d" data-nonce="%s">%s</button>', esc_attr( $post->ID ), esc_attr( wp_create_nonce( 'ajax-thumbnail-rebuild-generate' ) ), esc_html__( 'Regenerate thumbnails', 'ajax-thumbnail-rebuild' ) )
+			'html'  => sprintf( '<button class="button thumbnail-rebuild__generate-button thumbnail-rebuild__generate-button--single" data-attachment-id="%d" data-nonce="%s">%s</button>', esc_attr( $post->ID ), esc_attr( wp_create_nonce( 'ajax-thumbnail-rebuild' ) ), esc_html__( 'Regenerate thumbnails', 'ajax-thumbnail-rebuild' ) )
 		];
 
 		return $form_fields;
 	}
 
 	public function ajax_generate_attachment_thumbnails() {
-		check_ajax_referer( 'ajax-thumbnail-rebuild-generate' );
+		check_ajax_referer( 'ajax-thumbnail-rebuild' );
 
 		// Get attachment ID
 		$attachment_id = isset( $_POST['attachment_id'] ) ? intval( $_POST['attachment_id'] ) : null;
@@ -97,6 +98,42 @@ class Ajax_Thumbnail_Rebuild {
 		}
 
 		wp_send_json_error( [ 'error' => 'invalid_attachment_id' ] );
+	}
+
+	public function ajax_get_attachments_list_count() {
+		global $wpdb;
+
+		check_ajax_referer( 'ajax-thumbnail-rebuild' );
+
+		// Only featured images
+		$only_featured     = isset( $_GET['only_featured'] ) && $_GET['only_featured'] === '1';
+		$count_attachments = null;
+
+		if ( true === $only_featured ) {
+			$count_attachments = $wpdb->get_var( "SELECT COUNT( {$wpdb->posts}.ID ) FROM {$wpdb->postmeta}, {$wpdb->posts} WHERE meta_key = '_thumbnail_id' AND {$wpdb->postmeta}.post_id = {$wpdb->posts}.ID ORDER BY post_date DESC" );
+		}
+		else {
+			$count_attachments = $wpdb->get_var( "SELECT COUNT( {$wpdb->posts}.ID ) FROM {$wpdb->posts} WHERE post_type = 'attachment' AND post_mime_type LIKE 'image/%' ORDER BY post_date DESC" );
+		}
+
+		if ( null !== $count_attachments ) {
+			wp_send_json_success( [
+				'attachments_count' => $count_attachments
+			] );
+		}
+		else {
+			wp_send_json_error( [
+				'error' => 'attachments_count_wpdb_error',
+				'type'  => 'all'
+			] );
+		}
+	}
+
+	public function ajax_get_attachments_list() {
+		global $wpdb;
+
+		check_ajax_referer( 'ajax-thumbnail-rebuild' );
+		
 	}
 
 	public function generate_attachment_thumbnails( $attachment_id ) {
@@ -120,9 +157,9 @@ class Ajax_Thumbnail_Rebuild {
  * Returns the main instance of Ajax_Thumbnail_Rebuild to prevent the need to use globals.
  * @return Ajax_Thumbnail_Rebuild
  */
-function ajax_thumbnail_build() {
+function ajax_thumbnail_rebuild() {
 	return Ajax_Thumbnail_Rebuild::instance();
 }
 
 // Global for backwards compatibility.
-$GLOBALS['ajax_thumbnail_rebuild'] = ajax_thumbnail_build();
+$GLOBALS['ajax_thumbnail_rebuild'] = ajax_thumbnail_rebuild();

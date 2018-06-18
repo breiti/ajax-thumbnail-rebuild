@@ -1,14 +1,15 @@
 (function($) {
     var Ajax_Thumbnail_Rebuild = {
         regenerate_attachment_thumbnails: function(attachment_id, nonce, callback) {
-            $.post(
-                ajaxurl,
-                {
+            $.ajax({
+                url: window.ajaxurl,
+                data: {
                     attachment_id: attachment_id,
                     _ajax_nonce: nonce,
-                    action: 'ajax_thumbnail_rebuild'
+                    action: 'ajax_thumbnail_rebuild__generate_thumbnail'
                 },
-                function(response) {
+                dataType: 'JSON',
+                success: function(response) {
                     // Check for response
                     if (response.success === true) {
                         if (typeof callback === 'function') {
@@ -16,8 +17,10 @@
                         }
                     }
                 },
-                'JSON'
-            );
+                error: function() {
+                    // Error
+                }
+            });
         },
     };
 
@@ -37,5 +40,15 @@
             Ajax_Thumbnail_Rebuild.regenerate_attachment_thumbnails(attachment_id, nonce, function(data) {
                 $button.prop('disabled', false);
             });
-        })
+        });
+
+    if (window.adminpage == 'tools_page_ajax-thumbnail-rebuild') {
+        $.get(
+            window.ajaxurl,
+            {
+                only_featured: '1',
+                action: 'ajax_thumbnail_rebuild__get_attachments_list_count'
+            }
+        );
+    }
 })(jQuery);
