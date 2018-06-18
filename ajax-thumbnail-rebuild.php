@@ -153,6 +153,10 @@ class AjaxThumbnailRebuild {
 									jQuery("#thumb-img").attr("src",result);
 								}
 								regenItem();
+							},
+							error: function(){
+								curr = curr + 1;
+								regenItem();
 							}
 						});
 					}
