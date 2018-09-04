@@ -1,28 +1,16 @@
 <?php
-/*
-	Plugin name: AJAX Thumbnail Rebuild
-	Plugin URI: http://breiti.cc/wordpress/ajax-thumbnail-rebuild
-	Author: junkcoder
-	Author URI: http://breiti.cc
-	Version: 1.2.1
-	Description: Rebuild all thumbnails
-	Tested up to: 4.8.2
-	Text Domain: ajax-thumbnail-rebuild
-
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-*/
+/**
+ * Plugin name: AJAX Thumbnail Rebuild
+ * Plugin URI: https://wordpress.org/plugins/ajax-thumbnail-rebuild/
+ * Author: junkcoder, ristoniinemets
+ * Version: 1.2.2
+ * Description: AJAX Thumbnail Rebuild allows you to rebuild all thumbnails on your site.
+ * Tested up to: 4.9.8
+ * Text Domain: ajax-thumbnail-rebuild
+ * License: GPL2
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * Domain Path: /languages
+ */
 
 class AjaxThumbnailRebuild {
 
@@ -158,8 +146,7 @@ class AjaxThumbnailRebuild {
 								}, throttling * 1000);
 							},
 							error: function(request, status, error) {
-								if ((request.status == 503 && 60 <= throttling) ||
-								    (20 <= throttling)) {
+								if ((request.status == 503 && 60 <= throttling) || (20 <= throttling)) {
 									console.log('ajax-thumbnail-rebuild gave up on "' + curr + '" after too many errors!');
 									// skip this image (most likely malformed or oom_reaper)
 									curr = curr + 1;
