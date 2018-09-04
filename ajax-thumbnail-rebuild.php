@@ -96,17 +96,31 @@ class AjaxThumbnailRebuild {
 	}
 
 	function ManagementPage() {
+		$start_button_text = __( 'Rebuild All Thumbnails', 'ajax-thumbnail-rebuild' );
+		$cancel_button_text = __( 'Cancel', 'ajax-thumbnail-rebuild' );
 		?>
 		<div id="message" class="updated fade" style="display:none"></div>
 		<script type="text/javascript">
 		// <![CDATA[
+		var ajax_thumbnail_rebuild_ajax_call = undefined;
 		function setMessage(msg) {
 			jQuery("#message").html(msg);
 			jQuery("#message").show();
 		}
 
+		function cancel_regeneration() {
+			setMessage("<p><?php _e('Cancelling', 'ajax-thumbnail-rebuild') ?></p>");
+			ajax_thumbnail_rebuild_ajax_call.abort();
+			jQuery("#ajax_thumbnail_rebuild").prop('value', "<?php echo esc_html( $start_button_text ) ?>");
+		}
+
 		function regenerate() {
-			jQuery("#ajax_thumbnail_rebuild").prop("disabled", true);
+			// If we clicked a button which says Cancel, then cancel the process.
+			if ( jQuery("#ajax_thumbnail_rebuild").prop('value') == "<?php echo esc_html( $cancel_button_text ) ?>" ) {
+				cancel_regeneration();
+				return;
+			}
+			jQuery("#ajax_thumbnail_rebuild").prop('value', "<?php echo esc_html( $cancel_button_text ) ?>");
 			setMessage("<p><?php _e('Reading attachments...', 'ajax-thumbnail-rebuild') ?></p>");
 
 			inputs = jQuery( 'input:checked' );
@@ -119,28 +133,35 @@ class AjaxThumbnailRebuild {
 
 			var onlyfeatured = jQuery("#onlyfeatured").prop('checked') ? 1 : 0;
 
-			jQuery.ajax({
+			ajax_thumbnail_rebuild_ajax_call = jQuery.ajax({
 				url: "<?php echo admin_url( 'admin-ajax.php' ); ?>",
 				type: "POST",
 				data: "action=ajax_thumbnail_rebuild&do=getlist&onlyfeatured=" + onlyfeatured,
 				success: function(result) {
 					var list = eval(result);
-					var curr = 0;
+					// * 1 to ensure it's an Integer, not a string, -1 because we visible
+					// start from 1 not 0.
+					var curr = (jQuery('#ajax_thumbnail_rebuild_start_index').val() * 1) - 1;
 
 					if (!list) {
-						setMessage("<?php _e( 'No attachments found.', 'ajax-thumbnail-rebuild' ) ?>");
-						jQuery("#ajax_thumbnail_rebuild").prop("disabled", false);
+						setMessage("<?php _e('No attachments found.', 'ajax-thumbnail-rebuild')?>");
+						jQuery("#ajax_thumbnail_rebuild").prop('value', "<?php echo esc_html( $start_button_text ) ?>");
 						return;
 					}
 
 					function regenItem(throttling) {
 
 						if (curr >= list.length) {
-							jQuery("#ajax_thumbnail_rebuild").prop("disabled", false);
+							jQuery("#ajax_thumbnail_rebuild").prop('value', "<?php echo esc_html( $start_button_text ) ?>");
 							setMessage("<?php _e('Done.', 'ajax-thumbnail-rebuild') ?>");
 							return;
 						}
-
+						// If the button doesn't say Cancel, then stop. This mean the Cancel button has been clicked
+						// and we want to abort.
+						if ( jQuery("#ajax_thumbnail_rebuild").prop('value') !== "<?php echo esc_html( $cancel_button_text ) ?>" ) {
+							setMessage("<p><?php _e('Cancelled.', 'ajax-thumbnail-rebuild') ?></p>");
+							return;
+						}
 						setMessage( '<?php printf( __( 'Rebuilding %s of %s (%s)...', 'ajax-thumbnail-rebuild' ), "' + (curr + 1) + '", "' + list.length + '", "' + list[curr].title + '" ); ?>' );
 
 						jQuery.ajax({
@@ -149,6 +170,7 @@ class AjaxThumbnailRebuild {
 							data: "action=ajax_thumbnail_rebuild&do=regen&id=" + list[curr].id + thumbnails,
 							success: function(result) {
 								curr = curr + 1;
+								jQuery('#ajax_thumbnail_rebuild_start_index').val(curr);
 								if (result != '-1') {
 									jQuery("#thumb").show();
 									jQuery("#thumb-img").attr("src",result);
@@ -236,6 +258,12 @@ class AjaxThumbnailRebuild {
 
 			<p><?php _e( 'Note: If you\'ve changed the dimensions of your thumbnails, existing thumbnail images will not be deleted.',
 			'ajax-thumbnail-rebuild' ); ?></p>
+
+			Start at: <input type="number"
+				name="ajax_thumbnail_rebuild_start_index" id="ajax_thumbnail_rebuild_start_index"
+				value="1"
+			/>
+
 
 			<input type="button" onClick="javascript:regenerate();" class="button" name="ajax_thumbnail_rebuild" id="ajax_thumbnail_rebuild" value="<?php _e( 'Rebuild All Thumbnails', 'ajax-thumbnail-rebuild' ) ?>" />
 			<br />
