@@ -231,7 +231,7 @@ class AjaxThumbnailRebuild {
 		<div id="thumb" style="display:none;"><h4><?php _e( 'Last image', 'ajax-thumbnail-rebuild' ); ?>:</h4><img id="thumb-img" /></div>
 
 		<p style="clear:both; padding-top:2em;">
-			<?php printf( __( 'If you find this plugin useful, I\'d be happy to read your comments on the %splugin homepage%s. If you experience any problems, feel free to leave a comment too.', 'ajax-thumbnail-rebuild' ), '<a href="http://breiti.cc/wordpress/ajax-thumbnail-rebuild" target="_blank">', '</a>'); ?>
+			<?php printf( __( 'If you find this plugin useful, I\'d be happy to read your comments on the %splugin homepage%s. If you experience any problems, feel free to leave a comment too.', 'ajax-thumbnail-rebuild' ), '<a href="https://wordpress.org/plugins/ajax-thumbnail-rebuild/" target="_blank">', '</a>'); ?>
 		</p>
 		<?php
 	}
@@ -298,7 +298,11 @@ function ajax_thumbnail_rebuild_ajax() {
 }
 add_action( 'wp_ajax_ajax_thumbnail_rebuild', 'ajax_thumbnail_rebuild_ajax' );
 
-add_action( 'plugins_loaded', function(){ global $AjaxThumbnailRebuild; $AjaxThumbnailRebuild = new AjaxThumbnailRebuild(); return $AjaxThumbnailRebuild; } );
+add_action( 'plugins_loaded', function() {
+	global $ajax_thumbnail_rebuild;
+
+	$ajax_thumbnail_rebuild = new AjaxThumbnailRebuild();
+});
 
 function ajax_thumbnail_rebuild_get_sizes() {
 	global $_wp_additional_image_sizes;
