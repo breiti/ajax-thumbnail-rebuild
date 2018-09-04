@@ -3,7 +3,7 @@
  * Plugin name: AJAX Thumbnail Rebuild
  * Plugin URI: https://wordpress.org/plugins/ajax-thumbnail-rebuild/
  * Author: junkcoder, ristoniinemets
- * Version: 1.2.2
+ * Version: 1.13
  * Description: AJAX Thumbnail Rebuild allows you to rebuild all thumbnails on your site.
  * Tested up to: 4.9.8
  * Text Domain: ajax-thumbnail-rebuild
