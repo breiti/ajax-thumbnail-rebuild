@@ -19,7 +19,7 @@ You can also select the thumbnail sizes you want to rebuild, so that you don't n
 This plugin requires JavaScript to be enabled.
 
 
-Contributions are welcome at [Github](https://wordpress.org/plugins/ajax-thumbnail-rebuild/)
+Contributions are welcome at [Github](https://github.com/breiti/ajax-thumbnail-rebuild/)
 
 == Installation ==
 
