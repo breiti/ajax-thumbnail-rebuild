@@ -6,7 +6,7 @@ Requires at least: 2.8
 Tested up to: 4.8.2
 Stable tag: 1.2.2
 
-AJAX Thumbnail Rebuild allows you to rebuild all thumbnails at once without script timeouts on your server.
+[AJAX Thumbnail Rebuild](https://wordpress.org/plugins/ajax-thumbnail-rebuild/) allows you to rebuild all thumbnails at once without script timeouts on your server.
 
 == Description ==
 
@@ -19,7 +19,7 @@ You can also select the thumbnail sizes you want to rebuild, so that you don't n
 This plugin requires JavaScript to be enabled.
 
 
-Contributions are welcome at [Github](https://wordpress.org/plugins/ajax-thumbnail-rebuild/)
+Contributions are welcome at [Github](https://github.com/breiti/ajax-thumbnail-rebuild)
 
 == Installation ==
 
