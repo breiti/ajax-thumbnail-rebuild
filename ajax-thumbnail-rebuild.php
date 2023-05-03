@@ -5,7 +5,7 @@
  * Author: junkcoder, ristoniinemets
  * Version: 1.2.2
  * Description: AJAX Thumbnail Rebuild allows you to rebuild all thumbnails on your site.
- * Tested up to: 4.9.8
+ * Tested up to: 6.2
  * Text Domain: ajax-thumbnail-rebuild
  * License: GPL2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -52,7 +52,7 @@ class AjaxThumbnailRebuild {
 				setMessage("<?php _e('Reading attachments...', 'ajax-thumbnail-rebuild') ?>");
 				thumbnails = '<?php echo $thumbnails ?>';
 				jQuery.ajax({
-					url: "<?php echo admin_url('admin-ajax.php'); ?>",
+					url: ajaxurl,
 					type: "POST",
 					data: "action=ajax_thumbnail_rebuild&do=regen&id=<?php echo $post->ID ?>" + thumbnails,
 					success: function(result) {
@@ -98,19 +98,27 @@ class AjaxThumbnailRebuild {
 			setMessage("<p><?php _e('Reading attachments...', 'ajax-thumbnail-rebuild') ?></p>");
 
 			inputs = jQuery( 'input:checked' );
-			var thumbnails= '';
-			if( inputs.length != jQuery( 'input[type=checkbox]' ).length ){
+			var thumbnails = [];
+
+			if ( inputs.length != jQuery( 'input[type=checkbox]' ).length ) {
 				inputs.each( function(){
-					thumbnails += '&thumbnails[]='+jQuery(this).val();
+					thumbnails.push( jQuery( this ).val() );
 				} );
 			}
 
 			var onlyfeatured = jQuery("#onlyfeatured").prop('checked') ? 1 : 0;
 
+			var nonce = '<?php echo wp_create_nonce( 'ajax-thumbnail-rebuild' ); ?>';
+
 			jQuery.ajax({
 				url: "<?php echo admin_url( 'admin-ajax.php' ); ?>",
 				type: "POST",
-				data: "action=ajax_thumbnail_rebuild&do=getlist&onlyfeatured=" + onlyfeatured,
+				data: {
+					'security': nonce,
+					'action': 'ajax_thumbnail_rebuild',
+					'do': 'getlist',
+					'onlyfeatured': onlyfeatured,
+				},
 				success: function(result) {
 					var list = eval(result);
 					var curr = 0;
@@ -132,9 +140,15 @@ class AjaxThumbnailRebuild {
 						setMessage( '<?php printf( __( 'Rebuilding %s of %s (%s)...', 'ajax-thumbnail-rebuild' ), "' + (curr + 1) + '", "' + list.length + '", "' + list[curr].title + '" ); ?>' );
 
 						jQuery.ajax({
-							url: "<?php echo admin_url('admin-ajax.php'); ?>",
+							url: ajaxurl,
 							type: "POST",
-							data: "action=ajax_thumbnail_rebuild&do=regen&id=" + list[curr].id + thumbnails,
+							data: {
+								'security': nonce,
+								'action': 'ajax_thumbnail_rebuild',
+								'do': 'regen',
+								'id': list[curr].id,
+								'thumbnails': thumbnails,
+							},
 							success: function(result) {
 								curr = curr + 1;
 								if (result != '-1') {
@@ -241,6 +255,12 @@ class AjaxThumbnailRebuild {
 function ajax_thumbnail_rebuild_ajax() {
 	global $wpdb;
 
+	check_ajax_referer( 'ajax-thumbnail-rebuild', 'security' );
+
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_send_json_error();
+	}
+
 	$action = $_POST["do"];
 	$thumbnails = isset( $_POST['thumbnails'] )? $_POST['thumbnails'] : NULL;
 	$onlyfeatured = isset( $_POST['onlyfeatured'] ) ? $_POST['onlyfeatured'] : 0;
@@ -253,6 +273,10 @@ function ajax_thumbnail_rebuild_ajax() {
 			$featured_images = $wpdb->get_results( "SELECT meta_value, {$wpdb->posts}.post_title AS title FROM {$wpdb->postmeta}, {$wpdb->posts} WHERE meta_key = '_thumbnail_id' AND {$wpdb->postmeta}.post_id={$wpdb->posts}.ID ORDER BY post_date DESC");
 
 			foreach( $featured_images as $image ) {
+				if ( empty( $image->meta_value ) ) {
+					continue;
+				}
+
 				$res[] = array(
 					'id'    => $image->meta_value,
 					'title' => $image->title
