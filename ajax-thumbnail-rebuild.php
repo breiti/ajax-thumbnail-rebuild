@@ -3,7 +3,7 @@
  * Plugin name: AJAX Thumbnail Rebuild
  * Plugin URI: https://wordpress.org/plugins/ajax-thumbnail-rebuild/
  * Author: junkcoder, ristoniinemets
- * Version: 1.2.2
+ * Version: 1.14
  * Description: AJAX Thumbnail Rebuild allows you to rebuild all thumbnails on your site.
  * Tested up to: 6.2
  * Text Domain: ajax-thumbnail-rebuild
@@ -31,14 +31,6 @@ class AjaxThumbnailRebuild {
 	 * @return array
 	 */
 	function addRebuildSingle( $fields, $post ) {
-		$thumbnails = array();
-
-		foreach ( ajax_thumbnail_rebuild_get_sizes() as $s ) {
-			$thumbnails[] = 'thumbnails[]=' . $s['name'];
-		}
-
-		$thumbnails = '&' . implode( '&', $thumbnails );
-
 		ob_start();
 		?>
 		<script>
@@ -50,11 +42,19 @@ class AjaxThumbnailRebuild {
 			function regenerate() {
 				jQuery("#ajax_thumbnail_rebuild").prop("disabled", true);
 				setMessage("<?php _e('Reading attachments...', 'ajax-thumbnail-rebuild') ?>");
-				thumbnails = '<?php echo $thumbnails ?>';
+
+				var nonce = '<?php echo wp_create_nonce( 'ajax-thumbnail-rebuild' ); ?>';
+
 				jQuery.ajax({
 					url: ajaxurl,
 					type: "POST",
-					data: "action=ajax_thumbnail_rebuild&do=regen&id=<?php echo $post->ID ?>" + thumbnails,
+					data: {
+						'security': nonce,
+						'action': 'ajax_thumbnail_rebuild',
+						'do': 'regen',
+						'id': '<?php echo esc_attr( $post->ID ); ?>',
+						'thumbnails': true,
+					},
 					success: function(result) {
 						if (result != '-1') {
 							setMessage("<?php _e('Done.', 'ajax-thumbnail-rebuild') ?>");
@@ -111,7 +111,7 @@ class AjaxThumbnailRebuild {
 			var nonce = '<?php echo wp_create_nonce( 'ajax-thumbnail-rebuild' ); ?>';
 
 			jQuery.ajax({
-				url: "<?php echo admin_url( 'admin-ajax.php' ); ?>",
+				url: ajaxurl,
 				type: "POST",
 				data: {
 					'security': nonce,
@@ -120,7 +120,7 @@ class AjaxThumbnailRebuild {
 					'onlyfeatured': onlyfeatured,
 				},
 				success: function(result) {
-					var list = eval(result);
+					var list = JSON.parse(result);
 					var curr = 0;
 
 					if (!list) {
@@ -261,9 +261,13 @@ function ajax_thumbnail_rebuild_ajax() {
 		wp_send_json_error();
 	}
 
-	$action = $_POST["do"];
-	$thumbnails = isset( $_POST['thumbnails'] )? $_POST['thumbnails'] : NULL;
-	$onlyfeatured = isset( $_POST['onlyfeatured'] ) ? $_POST['onlyfeatured'] : 0;
+	$action       = sanitize_text_field( $_POST["do"] );
+	$thumbnails   = isset( $_POST['thumbnails'] )? $_POST['thumbnails'] : null;
+	$onlyfeatured = isset( $_POST['onlyfeatured'] ) && '1' == $_POST['onlyfeatured'] ? 1 : 0;
+
+	if ( true == $thumbnails ) {
+		$thumbnails = array_values( wp_list_pluck( ajax_thumbnail_rebuild_get_sizes(), 'name' ) );
+	}
 
 	if ($action == "getlist") {
 		$res = array();
@@ -303,18 +307,17 @@ function ajax_thumbnail_rebuild_ajax() {
 			}
 		}
 
-		die( json_encode( $res ) );
+		die( wp_json_encode( $res ) );
 	}
 	else if ($action == "regen") {
-		$id = $_POST["id"];
-
+		$id           = sanitize_text_field( wp_unslash( $_POST['id'] ) );
 		$fullsizepath = get_attached_file( $id );
 
-		if ( FALSE !== $fullsizepath && @file_exists( $fullsizepath ) ) {
+		if ( false !== $fullsizepath && @file_exists( $fullsizepath ) ) {
 			set_time_limit( 30 );
 			wp_update_attachment_metadata( $id, wp_generate_attachment_metadata_custom( $id, $fullsizepath, $thumbnails ) );
 
-			die( wp_get_attachment_thumb_url( $id ));
+			die( wp_get_attachment_thumb_url( $id ) );
 		}
 
 		die( '-1' );
@@ -384,7 +387,7 @@ function ajax_thumbnail_rebuild_get_sizes() {
  * @param string $file Filepath of the Attached image.
  * @return mixed Metadata for attachment.
  */
-function wp_generate_attachment_metadata_custom( $attachment_id, $file, $thumbnails = NULL ) {
+function wp_generate_attachment_metadata_custom( $attachment_id, $file, $thumbnails = null ) {
 	$attachment = get_post( $attachment_id );
 
 	$metadata = array();
