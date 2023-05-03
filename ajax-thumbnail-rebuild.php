@@ -358,7 +358,7 @@ function ajax_thumbnail_rebuild_get_sizes() {
 		}
 
 		if ( isset( $_wp_additional_image_sizes[$s]['crop'] ) ) {
-			if( ! is_array( $sizes[$s]['crop'] ) ) {
+			if( ! is_array( $_wp_additional_image_sizes[$s]['crop'] ) ) {
 				$sizes[$s]['crop'] = intval( $_wp_additional_image_sizes[$s]['crop'] );
 			}
 			else {
