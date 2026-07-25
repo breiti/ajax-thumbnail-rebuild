@@ -390,26 +390,55 @@ function ajax_thumbnail_rebuild_get_sizes() {
 function wp_generate_attachment_metadata_custom( $attachment_id, $file, $thumbnails = null ) {
 	$attachment = get_post( $attachment_id );
 
-	$metadata = array();
+	/* The caller hands this straight to wp_update_attachment_metadata(), which replaces the
+	   whole record, so start from what is stored and only overwrite what we rebuild. Starting
+	   from an empty array drops 'original_image', the pointer WordPress needs to find and
+	   delete the untouched upload, and 'filesize'. Non images keep their metadata as it is. */
+	$metadata = wp_get_attachment_metadata( $attachment_id, true );
+
+	if ( ! is_array( $metadata ) ) {
+		$metadata = array();
+	}
+
 	if ( preg_match( '!^image/!', get_post_mime_type( $attachment ) ) && file_is_displayable_image( $file ) ) {
 		$imagesize = getimagesize( $file );
 		$metadata['width'] = $imagesize[0];
 		$metadata['height'] = $imagesize[1];
-		list($uwidth, $uheight) = wp_constrain_dimensions($metadata['width'], $metadata['height'], 128, 96);
-		$metadata['hwstring_small'] = sprintf( "height='%s' width='%s'", $uheight, $uwidth );
 
 		// Make the file path relative to the upload dir
 		$metadata['file'] = _wp_relative_upload_path( $file );
+
+		if ( function_exists( 'wp_filesize' ) ) {
+			$metadata['filesize'] = wp_filesize( $file );
+		}
+
+		/* Sub sizes are built from the untouched original, which is what core does in
+		   wp_create_image_subsizes(). On an upload core scaled down, $file is the "-scaled"
+		   copy, and resizing that writes a second set of files named after it instead of
+		   replacing the ones the site is using. */
+		$source = $file;
+
+		if ( function_exists( 'wp_get_original_image_path' ) ) {
+			$original = wp_get_original_image_path( $attachment_id );
+
+			if ( $original && file_exists( $original ) ) {
+				$source = $original;
+			}
+		}
+
+		if ( ! isset( $metadata['sizes'] ) || ! is_array( $metadata['sizes'] ) ) {
+			$metadata['sizes'] = array();
+		}
 
 		$sizes = ajax_thumbnail_rebuild_get_sizes();
 
 		foreach ( $sizes as $size => $size_data ) {
 			if( isset( $thumbnails ) && ! in_array( $size, $thumbnails ) ) {
-				$intermediate_size = image_get_intermediate_size( $attachment_id, $size_data['name'] );
+				// Not selected, so keep the size already stored in $metadata.
+				continue;
 			}
-			else {
-				$intermediate_size = image_make_intermediate_size( $file, $size_data['width'], $size_data['height'], $size_data['crop'] );
-			}
+
+			$intermediate_size = image_make_intermediate_size( $source, $size_data['width'], $size_data['height'], $size_data['crop'] );
 
 			if ( $intermediate_size ) {
 				$metadata['sizes'][$size] = $intermediate_size;
