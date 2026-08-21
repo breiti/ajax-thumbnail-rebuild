@@ -155,6 +155,12 @@
 				filename: document.getElementById( 'atr-filename' ).value.trim()
 			};
 
+			/* A selection handed over from the media library replaces the search:
+			   those are the images, whatever the filters on this screen say. */
+			if ( settings.include && settings.include.length ) {
+				query = { include: settings.include };
+			}
+
 			apiFetch( {
 				path: addQueryArgs( '/ajax-thumbnail-rebuild/v1/attachments', query )
 			} ).then( function( response ) {
@@ -287,9 +293,12 @@
 				return args[ key ] !== '' && args[ key ] !== false;
 			} )
 			.map( function( key ) {
-				return encodeURIComponent( key ) + '=' + encodeURIComponent( args[ key ] );
+				// The REST API reads a comma separated list as an array argument.
+				var value = Array.isArray( args[ key ] ) ? args[ key ].join( ',' ) : args[ key ];
+
+				return encodeURIComponent( key ) + '=' + encodeURIComponent( value );
 			} );
 
 		return query.length ? path + '?' + query.join( '&' ) : path;
 	}
-} )( wp.apiFetch, wp.i18n, window.ATRSettings || { editLink: '' } );
+} )( wp.apiFetch, wp.i18n, window.ATRSettings || { editLink: '', include: [] } );

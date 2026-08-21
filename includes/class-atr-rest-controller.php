@@ -37,6 +37,12 @@ class ATR_Rest_Controller {
 						'default'           => '',
 						'sanitize_callback' => 'sanitize_text_field',
 					),
+					'include'       => array(
+						'type'        => 'array',
+						'default'     => array(),
+						'items'       => array( 'type' => 'integer' ),
+						'description' => 'Attachment ids to limit the list to.',
+					),
 				),
 			),
 		) );
@@ -100,6 +106,7 @@ class ATR_Rest_Controller {
 		$items = ATR_Attachments::query( array(
 			'only_featured' => (bool) $request['only_featured'],
 			'filename'      => (string) $request['filename'],
+			'include'       => (array) $request['include'],
 		) );
 
 		return rest_ensure_response( array(

@@ -10,9 +10,9 @@
 	var __ = i18n.__;
 
 	document.addEventListener( 'click', function( event ) {
-		var button = event.target.closest ? event.target.closest( '.atr-rebuild' ) : null;
+		var button = event.target.closest ? event.target.closest( '.atr-rebuild-button' ) : null;
 
-		if ( ! button ) {
+		if ( ! button || ! button.dataset.id ) {
 			return;
 		}
 

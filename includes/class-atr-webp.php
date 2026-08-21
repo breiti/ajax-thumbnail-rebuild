@@ -48,11 +48,13 @@ class ATR_Webp {
 	/**
 	 * Whether the front end should serve them.
 	 *
-	 * The proxy already delivers WebP from its own CDN, so the two never both
-	 * rewrite the same tag.
+	 * Independent of the proxy: both features can be on at once. A URL the proxy
+	 * has already rewritten is not one of this site's files any more, so it finds
+	 * no copy to offer and leaves the tag alone - the proxy is serving WebP from
+	 * its CDN for that image anyway.
 	 */
 	public static function is_serving(): bool {
-		return self::is_enabled() && ! ATR_Image_Proxy::is_enabled();
+		return self::is_enabled();
 	}
 
 	/**

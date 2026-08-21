@@ -148,6 +148,22 @@ class ATR_Admin_Page {
 					<div class="postbox">
 						<h2 class="hndle"><span><?php esc_html_e( 'Which images', 'ajax-thumbnail-rebuild' ); ?></span></h2>
 						<div class="inside">
+							<?php $selected = ATR_Media_Library::requested_ids(); ?>
+							<?php if ( $selected ) : ?>
+								<div class="notice notice-info inline">
+									<p>
+										<?php
+										printf(
+											/* translators: %s: number of images selected in the media library. */
+											esc_html( _n( 'Working on the %s image you picked in the media library.', 'Working on the %s images you picked in the media library.', count( $selected ), 'ajax-thumbnail-rebuild' ) ),
+											'<strong>' . esc_html( number_format_i18n( count( $selected ) ) ) . '</strong>'
+										);
+										?>
+										<a href="<?php echo esc_url( self::url( 'rebuild' ) ); ?>"><?php esc_html_e( 'Work on the whole library instead', 'ajax-thumbnail-rebuild' ); ?></a>
+									</p>
+								</div>
+							<?php endif; ?>
+
 							<table class="form-table" role="presentation">
 								<tbody>
 									<tr>

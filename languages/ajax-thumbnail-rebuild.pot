@@ -2,14 +2,14 @@
 # This file is distributed under the GPL2.
 msgid ""
 msgstr ""
-"Project-Id-Version: AJAX Thumbnail Rebuild 2.3.0\n"
+"Project-Id-Version: AJAX Thumbnail Rebuild 2.4.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ajax-thumbnail-rebuild\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-21T14:15:12+00:00\n"
+"POT-Creation-Date: 2026-08-21T14:21:05+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: ajax-thumbnail-rebuild\n"
@@ -41,7 +41,7 @@ msgid "Rebuild Thumbnails"
 msgstr ""
 
 #: includes/class-atr-admin-page.php:56
-#: includes/class-atr-rest-controller.php:78
+#: includes/class-atr-rest-controller.php:84
 msgid "You are not allowed to rebuild thumbnails."
 msgstr ""
 
@@ -54,7 +54,7 @@ msgid "Secondary menu"
 msgstr ""
 
 #: includes/class-atr-admin-page.php:71
-#: includes/class-atr-plugin.php:143
+#: includes/class-atr-plugin.php:150
 msgid "Rebuild"
 msgstr ""
 
@@ -79,7 +79,7 @@ msgid "Select all sizes"
 msgstr ""
 
 #: includes/class-atr-admin-page.php:117
-#: includes/class-atr-admin-page.php:269
+#: includes/class-atr-admin-page.php:285
 msgid "Size"
 msgstr ""
 
@@ -88,7 +88,7 @@ msgid "Dimensions"
 msgstr ""
 
 #: includes/class-atr-admin-page.php:119
-#: includes/class-atr-admin-page.php:272
+#: includes/class-atr-admin-page.php:288
 msgid "Crop"
 msgstr ""
 
@@ -102,76 +102,90 @@ msgstr ""
 msgid "Which images"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:154
+#. translators: %s: number of images selected in the media library.
+#: includes/class-atr-admin-page.php:158
+#, php-format
+msgid "Working on the %s image you picked in the media library."
+msgid_plural "Working on the %s images you picked in the media library."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-atr-admin-page.php:162
+msgid "Work on the whole library instead"
+msgstr ""
+
+#: includes/class-atr-admin-page.php:170
 msgid "Featured images"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:158
+#: includes/class-atr-admin-page.php:174
 msgid "Only rebuild images used as a featured image"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:164
+#: includes/class-atr-admin-page.php:180
 msgid "File name"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:169
+#: includes/class-atr-admin-page.php:185
 msgid "Leave empty to rebuild every image. Use * for any characters and ? for a single one."
 msgstr ""
 
-#: includes/class-atr-admin-page.php:181
+#: includes/class-atr-admin-page.php:197
 msgid "Run"
 msgstr ""
 
 #. translators: %s: number of images in the media library.
-#: includes/class-atr-admin-page.php:188
+#: includes/class-atr-admin-page.php:204
 #, php-format
 msgid "%s image in the media library."
 msgid_plural "%s images in the media library."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-atr-admin-page.php:210
-#: includes/class-atr-plugin.php:161
+#: includes/class-atr-admin-page.php:226
+#: includes/class-atr-media-library.php:45
+#: includes/class-atr-media-library.php:60
+#: includes/class-atr-plugin.php:168
 msgid "Rebuild thumbnails"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:213
+#: includes/class-atr-admin-page.php:229
 msgid "Stop"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:220
+#: includes/class-atr-admin-page.php:236
 msgid "Skipped images"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:222
+#: includes/class-atr-admin-page.php:238
 msgid "These images were left as they were. Their file is missing or is not readable as an image."
 msgstr ""
 
 #. translators: %s: this site's host name.
-#: includes/class-atr-admin-page.php:243
+#: includes/class-atr-admin-page.php:259
 #, php-format
 msgid "%s does not look like a host the proxy can reach from the internet. The settings save either way, but the images will not load while you are on this address."
 msgstr ""
 
-#: includes/class-atr-admin-page.php:270
+#: includes/class-atr-admin-page.php:286
 msgid "Width"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:271
+#: includes/class-atr-admin-page.php:287
 msgid "Height"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:278
+#: includes/class-atr-admin-page.php:294
 msgid "No image sizes are registered on this site."
 msgstr ""
 
-#: includes/class-atr-admin-page.php:284
-#: includes/class-atr-admin-page.php:285
+#: includes/class-atr-admin-page.php:300
+#: includes/class-atr-admin-page.php:301
 #: includes/class-atr-image-sizes.php:127
 msgid "any"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:293
+#: includes/class-atr-admin-page.php:309
 msgid "Sizes come from WordPress, your theme and your plugins. Change them where they are registered, then rebuild."
 msgstr ""
 
@@ -179,7 +193,7 @@ msgstr ""
 msgid "cropped"
 msgstr ""
 
-#: includes/class-atr-plugin.php:138
+#: includes/class-atr-plugin.php:145
 msgid "Thumbnails"
 msgstr ""
 
@@ -191,7 +205,7 @@ msgstr ""
 msgid "The file could not be read as an image."
 msgstr ""
 
-#: includes/class-atr-rest-controller.php:120
+#: includes/class-atr-rest-controller.php:127
 msgid "That attachment does not exist."
 msgstr ""
 
@@ -281,7 +295,7 @@ msgid "The image library on this server cannot write WebP, so no copies will be 
 msgstr ""
 
 #: includes/class-atr-settings.php:280
-msgid "The proxy is on and already serves WebP from its CDN, so copies made here will not be used on the front end until you turn it off."
+msgid "This works on its own, but the proxy above is on and already delivers WebP from its CDN for the images it rewrites. The copies made here are what gets served whenever the proxy is off or does not handle an image."
 msgstr ""
 
 #: includes/class-atr-settings.php:291
@@ -306,37 +320,37 @@ msgstr ""
 msgid "Reading the media library…"
 msgstr ""
 
-#: assets/js/admin.js:165
+#: assets/js/admin.js:171
 msgid "No images match those settings."
 msgstr ""
 
-#: assets/js/admin.js:172
+#: assets/js/admin.js:178
 msgid "The media library could not be read."
 msgstr ""
 
-#: assets/js/admin.js:178
+#: assets/js/admin.js:184
 msgid "Finishing the current image…"
 msgstr ""
 
 #. translators: %1$s: number of images rebuilt, %2$s: number of images skipped.
-#: assets/js/admin.js:193
+#: assets/js/admin.js:199
 #, js-format
 msgid "%1$s image rebuilt, %2$s skipped."
 msgid_plural "%1$s images rebuilt, %2$s skipped."
 msgstr[0] ""
 msgstr[1] ""
 
-#: assets/js/admin.js:199
+#: assets/js/admin.js:205
 msgid "Stopped."
 msgstr ""
 
 #. translators: 1: current image number, 2: total images, 3: image title.
-#: assets/js/admin.js:221
+#: assets/js/admin.js:227
 #, js-format
 msgid "Rebuilding %1$s of %2$s — %3$s"
 msgstr ""
 
-#: assets/js/admin.js:258
+#: assets/js/admin.js:264
 msgid "The server could not rebuild this image."
 msgstr ""
 

@@ -30,7 +30,10 @@ class ATR_Attachments {
 		$args = wp_parse_args( $args, array(
 			'only_featured' => false,
 			'filename'      => '',
+			'include'       => array(),
 		) );
+
+		$include = array_values( array_filter( array_map( 'absint', (array) $args['include'] ) ) );
 
 		$filename = trim( (string) $args['filename'] );
 
@@ -41,6 +44,11 @@ class ATR_Attachments {
 		$join   = '';
 		$where  = " WHERE p.post_type = 'attachment' AND p.post_mime_type LIKE 'image/%'";
 		$params = array();
+
+		if ( $include ) {
+			// A selection made in the media library: work on exactly these.
+			$where .= ' AND p.ID IN (' . implode( ',', $include ) . ')';
+		}
 
 		if ( $args['only_featured'] ) {
 			/* One featured image can be shared by many posts, hence the DISTINCT:

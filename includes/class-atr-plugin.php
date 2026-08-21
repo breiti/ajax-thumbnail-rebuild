@@ -30,12 +30,16 @@ class ATR_Plugin {
 
 	private ATR_On_Demand $on_demand;
 
+	private ATR_Media_Library $media_library;
+
 	public function __construct() {
 		$this->admin_page = new ATR_Admin_Page();
 		$this->rest       = new ATR_Rest_Controller();
 		$this->proxy      = new ATR_Image_Proxy();
 		$this->webp       = new ATR_Webp();
 		$this->on_demand  = new ATR_On_Demand();
+
+		$this->media_library = new ATR_Media_Library();
 	}
 
 	public function boot(): void {
@@ -46,6 +50,7 @@ class ATR_Plugin {
 		add_action( 'admin_init', array( ATR_Settings::class, 'register' ) );
 		add_action( 'rest_api_init', array( $this->rest, 'register_routes' ) );
 		add_action( 'admin_menu', array( $this->admin_page, 'register' ) );
+		add_action( 'admin_init', array( $this->media_library, 'register' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin' ) );
 		add_action( 'wp_enqueue_media', array( $this, 'enqueue_attachment_button' ) );
 		add_filter( 'attachment_fields_to_edit', array( $this, 'add_attachment_button' ), 10, 2 );
@@ -94,6 +99,8 @@ class ATR_Plugin {
 
 		wp_localize_script( 'ajax-thumbnail-rebuild', 'ATRSettings', array(
 			'editLink' => admin_url( 'post.php?post=%d&action=edit' ),
+			// Set when the media library sent a selection over; empty means the whole library.
+			'include'  => ATR_Media_Library::requested_ids(),
 		) );
 
 		wp_set_script_translations( 'ajax-thumbnail-rebuild', 'ajax-thumbnail-rebuild', ATR_PATH . 'languages' );
@@ -138,7 +145,7 @@ class ATR_Plugin {
 			'label' => __( 'Thumbnails', 'ajax-thumbnail-rebuild' ),
 			'input' => 'html',
 			'html'  => sprintf(
-				'<button type="button" class="button atr-rebuild" data-id="%1$d">%2$s</button> <span class="atr-rebuild-message" aria-live="polite"></span>',
+				'<button type="button" class="button atr-rebuild-button" data-id="%1$d">%2$s</button> <span class="atr-rebuild-message" aria-live="polite"></span>',
 				(int) $post->ID,
 				esc_html__( 'Rebuild', 'ajax-thumbnail-rebuild' )
 			),

@@ -277,7 +277,7 @@ class ATR_Settings {
 		<?php endif; ?>
 		<?php if ( ATR_Image_Proxy::is_enabled() ) : ?>
 			<div class="notice notice-info inline">
-				<p><?php esc_html_e( 'The proxy is on and already serves WebP from its CDN, so copies made here will not be used on the front end until you turn it off.', 'ajax-thumbnail-rebuild' ); ?></p>
+				<p><?php esc_html_e( 'This works on its own, but the proxy above is on and already delivers WebP from its CDN for the images it rewrites. The copies made here are what gets served whenever the proxy is off or does not handle an image.', 'ajax-thumbnail-rebuild' ); ?></p>
 			</div>
 		<?php endif; ?>
 		<?php
