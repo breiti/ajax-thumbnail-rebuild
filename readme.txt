@@ -2,9 +2,10 @@
 Contributors: junkcoder, RistoNiinemets
 Donate link: http://breiti.cc/wordpress/ajax-thumbnail-rebuild/#donate
 Tags: ajax, thumbnail, rebuild, regenerate, admin, image, photo
-Requires at least: 2.8
-Tested up to: 6.2
-Stable tag: 1.14
+Requires at least: 5.6
+Requires PHP: 7.4
+Tested up to: 7.0
+Stable tag: 2.0.0
 
 [AJAX Thumbnail Rebuild](https://wordpress.org/plugins/ajax-thumbnail-rebuild/) allows you to rebuild all thumbnails at once without script timeouts on your server.
 
@@ -26,6 +27,21 @@ Contributions are welcome at [Github](https://github.com/breiti/ajax-thumbnail-r
 Upload the plugin to your blog, activate it, done. You can then rebuild all thumbnails in the tools section (Tools -> Rebuild Thumbnails).
 
 == Changelog ==
+
+= 2.0.0 =
+
+* NEW: The screen has been rebuilt out of the components WordPress itself uses - tabs, list tables, postboxes and notices - with a progress bar, a running preview and a Stop button.
+* NEW: A "Registered sizes" tab listing every image size on the site with its dimensions and crop setting.
+* NEW: Rebuild only the images whose file name matches a pattern, e.g. `banner-*.jpg`.
+* NEW: The browser now talks to the REST API instead of admin-ajax.
+* FIX: Rebuilding no longer throws away the rest of the attachment metadata. `original_image` and `filesize` survive, so WordPress can still find and delete the untouched upload (props @toolshedlabs-hash).
+* FIX: Sub sizes are cut from the original image rather than from the "-scaled" copy, which used to leave a duplicate set of files behind.
+* FIX: Selecting a subset of sizes rebuilt every size anyway.
+* FIX: Sizes registered through the `intermediate_image_sizes_advanced` filter are picked up; the filter now receives the metadata and attachment id core passes it.
+* FIX: "Toggle all" checks or clears every size instead of inverting each one.
+* FIX: The button on a single attachment works when several attachments are on screen; it no longer prints a copy of the whole script per image.
+* FIX: An image whose file is missing or unreadable is skipped and listed, instead of stalling the run.
+* PHP 8.4 compatible; undefined variables, unchecked `getimagesize()` results and unescaped output cleaned up throughout.
 
 = 1.14 =
 * Fix security issues (props @patchstack)

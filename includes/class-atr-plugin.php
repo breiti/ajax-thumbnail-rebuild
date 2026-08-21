@@ -1,0 +1,154 @@
+<?php
+/**
+ * Wiring: hooks, assets, and the pieces they belong to.
+ *
+ * @package ajax-thumbnail-rebuild
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+class ATR_Plugin {
+
+	/**
+	 * Capability required to rebuild thumbnails, for every part of the plugin.
+	 *
+	 * Filterable so a site can hand the screen to another role.
+	 */
+	public static function capability(): string {
+		return (string) apply_filters( 'ajax_thumbnail_rebuild_capability', 'manage_options' );
+	}
+
+	private ATR_Admin_Page $admin_page;
+
+	private ATR_Rest_Controller $rest;
+
+	public function __construct() {
+		$this->admin_page = new ATR_Admin_Page();
+		$this->rest       = new ATR_Rest_Controller();
+	}
+
+	public function boot(): void {
+		add_action( 'init', array( $this, 'load_textdomain' ) );
+		add_action( 'rest_api_init', array( $this->rest, 'register_routes' ) );
+		add_action( 'admin_menu', array( $this->admin_page, 'register' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin' ) );
+		add_action( 'wp_enqueue_media', array( $this, 'enqueue_attachment_button' ) );
+		add_filter( 'attachment_fields_to_edit', array( $this, 'add_attachment_button' ), 10, 2 );
+		add_filter( 'plugin_action_links_' . plugin_basename( ATR_FILE ), array( $this, 'add_action_link' ) );
+	}
+
+	public function load_textdomain(): void {
+		load_plugin_textdomain( 'ajax-thumbnail-rebuild', false, dirname( plugin_basename( ATR_FILE ) ) . '/languages' );
+	}
+
+	public function admin_page(): ATR_Admin_Page {
+		return $this->admin_page;
+	}
+
+	/**
+	 * Assets for the tools screen, and for wherever an attachment can be edited.
+	 *
+	 * @param string $hook_suffix Current admin screen.
+	 */
+	public function enqueue_admin( string $hook_suffix ): void {
+		if ( $hook_suffix === $this->admin_page->hook_suffix() ) {
+			$this->enqueue_page();
+			return;
+		}
+
+		if ( in_array( $hook_suffix, array( 'upload.php', 'post.php', 'post-new.php' ), true ) ) {
+			$this->enqueue_attachment_button();
+		}
+	}
+
+	private function enqueue_page(): void {
+		wp_enqueue_style(
+			'ajax-thumbnail-rebuild',
+			ATR_URL . 'assets/css/admin.css',
+			array( 'common' ),
+			ATR_VERSION
+		);
+
+		wp_enqueue_script(
+			'ajax-thumbnail-rebuild',
+			ATR_URL . 'assets/js/admin.js',
+			array( 'wp-api-fetch', 'wp-i18n' ),
+			ATR_VERSION,
+			true
+		);
+
+		wp_localize_script( 'ajax-thumbnail-rebuild', 'ATRSettings', array(
+			'editLink' => admin_url( 'post.php?post=%d&action=edit' ),
+		) );
+
+		wp_set_script_translations( 'ajax-thumbnail-rebuild', 'ajax-thumbnail-rebuild', ATR_PATH . 'languages' );
+	}
+
+	/**
+	 * The rebuild button shown on a single attachment, in the list and in the modal.
+	 */
+	public function enqueue_attachment_button(): void {
+		if ( ! current_user_can( self::capability() ) || wp_script_is( 'ajax-thumbnail-rebuild-attachment', 'enqueued' ) ) {
+			return;
+		}
+
+		wp_enqueue_script(
+			'ajax-thumbnail-rebuild-attachment',
+			ATR_URL . 'assets/js/attachment.js',
+			array( 'wp-api-fetch', 'wp-i18n' ),
+			ATR_VERSION,
+			true
+		);
+
+		wp_set_script_translations( 'ajax-thumbnail-rebuild-attachment', 'ajax-thumbnail-rebuild', ATR_PATH . 'languages' );
+	}
+
+	/**
+	 * Add the rebuild button to the attachment details.
+	 *
+	 * @param array   $fields Attachment fields.
+	 * @param WP_Post $post   Attachment.
+	 * @return array
+	 */
+	public function add_attachment_button( $fields, $post ) {
+		if ( ! is_array( $fields ) || ! current_user_can( self::capability() ) || ! wp_attachment_is_image( $post ) ) {
+			return $fields;
+		}
+
+		$this->enqueue_attachment_button();
+
+		/* The id lives in a data attribute and the message next to the button, so several
+		   attachments on one screen no longer share one element id between them. */
+		$fields['ajax-thumbnail-rebuild'] = array(
+			'label' => __( 'Thumbnails', 'ajax-thumbnail-rebuild' ),
+			'input' => 'html',
+			'html'  => sprintf(
+				'<button type="button" class="button atr-rebuild" data-id="%1$d">%2$s</button> <span class="atr-rebuild-message" aria-live="polite"></span>',
+				(int) $post->ID,
+				esc_html__( 'Rebuild', 'ajax-thumbnail-rebuild' )
+			),
+		);
+
+		return $fields;
+	}
+
+	/**
+	 * Link straight to the screen from the plugins list.
+	 *
+	 * @param array $links Action links.
+	 * @return array
+	 */
+	public function add_action_link( $links ) {
+		if ( is_array( $links ) && current_user_can( self::capability() ) ) {
+			array_unshift( $links, sprintf(
+				'<a href="%s">%s</a>',
+				esc_url( ATR_Admin_Page::url() ),
+				esc_html__( 'Rebuild thumbnails', 'ajax-thumbnail-rebuild' )
+			) );
+		}
+
+		return $links;
+	}
+}

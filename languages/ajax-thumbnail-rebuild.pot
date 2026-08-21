@@ -1,113 +1,242 @@
-#, fuzzy
+# Copyright (C) 2026 junkcoder, ristoniinemets
+# This file is distributed under the GPL2.
 msgid ""
 msgstr ""
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
-"Project-Id-Version: AJAX Thumbnail Rebuild\n"
-"POT-Creation-Date: 2017-09-26 09:37+0300\n"
-"PO-Revision-Date: 2017-09-26 09:37+0300\n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"Project-Id-Version: AJAX Thumbnail Rebuild 2.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ajax-thumbnail-rebuild\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.3\n"
-"X-Poedit-Basepath: ..\n"
-"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
-"X-Poedit-WPHeader: ajax-thumbnail-rebuild.php\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
-"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
-"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
-"X-Poedit-SearchPath-0: .\n"
-"X-Poedit-SearchPathExcluded-0: *.js\n"
+"POT-Creation-Date: 2026-08-21T13:56:39+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: ajax-thumbnail-rebuild\n"
 
-#: ajax-thumbnail-rebuild.php:35
-msgid "Rebuild all Thumbnails"
-msgstr ""
-
-#: ajax-thumbnail-rebuild.php:35
-msgid "Rebuild Thumbnails"
-msgstr ""
-
-#: ajax-thumbnail-rebuild.php:64 ajax-thumbnail-rebuild.php:110
-msgid "Reading attachments..."
-msgstr ""
-
-#: ajax-thumbnail-rebuild.php:72 ajax-thumbnail-rebuild.php:139
-msgid "Done."
-msgstr ""
-
-#: ajax-thumbnail-rebuild.php:76 ajax-thumbnail-rebuild.php:163
-msgid "Error"
-msgstr ""
-
-#: ajax-thumbnail-rebuild.php:90
-msgid "Ajax Thumbnail Rebuild"
-msgstr ""
-
-#: ajax-thumbnail-rebuild.php:131
-msgid "No attachments found."
-msgstr ""
-
-#: ajax-thumbnail-rebuild.php:143
-#, php-format
-msgid "Rebuilding %s of %s (%s)..."
-msgstr ""
-
-#: ajax-thumbnail-rebuild.php:180
-msgid "Select which thumbnails you want to rebuild"
-msgstr ""
-
-#: ajax-thumbnail-rebuild.php:181
-msgid "Toggle all"
-msgstr ""
-
-#: ajax-thumbnail-rebuild.php:191
-msgid "cropped"
-msgstr ""
-
-#: ajax-thumbnail-rebuild.php:202
-msgid "Only rebuild featured images"
-msgstr ""
-
-#: ajax-thumbnail-rebuild.php:206
-msgid ""
-"Note: If you've changed the dimensions of your thumbnails, existing "
-"thumbnail images will not be deleted."
-msgstr ""
-
-#: ajax-thumbnail-rebuild.php:209
-msgid "Rebuild All Thumbnails"
-msgstr ""
-
-#: ajax-thumbnail-rebuild.php:213
-msgid "Last image"
-msgstr ""
-
-#: ajax-thumbnail-rebuild.php:216
-#, php-format
-msgid ""
-"If you find this plugin useful, I'd be happy to read your comments on the "
-"%splugin homepage%s. If you experience any problems, feel free to leave a "
-"comment too."
-msgstr ""
-
-#. Plugin Name of the plugin/theme
+#. Plugin Name of the plugin
+#: ajax-thumbnail-rebuild.php
 msgid "AJAX Thumbnail Rebuild"
 msgstr ""
 
-#. Plugin URI of the plugin/theme
-msgid "http://breiti.cc/wordpress/ajax-thumbnail-rebuild"
+#. Plugin URI of the plugin
+#: ajax-thumbnail-rebuild.php
+msgid "https://wordpress.org/plugins/ajax-thumbnail-rebuild/"
 msgstr ""
 
-#. Description of the plugin/theme
-msgid "Rebuild all thumbnails"
+#. Description of the plugin
+#: ajax-thumbnail-rebuild.php
+msgid "Rebuild the thumbnails of your media library one image at a time, without running into script timeouts."
 msgstr ""
 
-#. Author of the plugin/theme
-msgid "junkcoder"
+#. Author of the plugin
+#: ajax-thumbnail-rebuild.php
+msgid "junkcoder, ristoniinemets"
 msgstr ""
 
-#. Author URI of the plugin/theme
-msgid "http://breiti.cc"
+#: includes/class-atr-admin-page.php:28
+#: includes/class-atr-admin-page.php:29
+#: includes/class-atr-admin-page.php:66
+msgid "Rebuild Thumbnails"
+msgstr ""
+
+#: includes/class-atr-admin-page.php:59
+#: includes/class-atr-rest-controller.php:81
+msgid "You are not allowed to rebuild thumbnails."
+msgstr ""
+
+#: includes/class-atr-admin-page.php:69
+msgid "Recreate the resized copies WordPress makes of every image. Images are rebuilt one at a time, so a large library will not run into a script timeout."
+msgstr ""
+
+#: includes/class-atr-admin-page.php:72
+msgid "Secondary menu"
+msgstr ""
+
+#: includes/class-atr-admin-page.php:74
+#: includes/class-atr-plugin.php:124
+msgid "Rebuild"
+msgstr ""
+
+#: includes/class-atr-admin-page.php:77
+msgid "Registered sizes"
+msgstr ""
+
+#: includes/class-atr-admin-page.php:101
+msgid "Sizes to rebuild"
+msgstr ""
+
+#: includes/class-atr-admin-page.php:105
+msgid "This site has no image sizes registered, so there is nothing to rebuild."
+msgstr ""
+
+#: includes/class-atr-admin-page.php:112
+msgid "Select all sizes"
+msgstr ""
+
+#: includes/class-atr-admin-page.php:115
+#: includes/class-atr-admin-page.php:239
+msgid "Size"
+msgstr ""
+
+#: includes/class-atr-admin-page.php:116
+msgid "Dimensions"
+msgstr ""
+
+#: includes/class-atr-admin-page.php:117
+#: includes/class-atr-admin-page.php:242
+msgid "Crop"
+msgstr ""
+
+#. translators: %s: image size name.
+#: includes/class-atr-admin-page.php:128
+#, php-format
+msgid "Rebuild the %s size"
+msgstr ""
+
+#: includes/class-atr-admin-page.php:147
+msgid "Which images"
+msgstr ""
+
+#: includes/class-atr-admin-page.php:152
+msgid "Featured images"
+msgstr ""
+
+#: includes/class-atr-admin-page.php:156
+msgid "Only rebuild images used as a featured image"
+msgstr ""
+
+#: includes/class-atr-admin-page.php:162
+msgid "File name"
+msgstr ""
+
+#: includes/class-atr-admin-page.php:167
+msgid "Leave empty to rebuild every image. Use * for any characters and ? for a single one."
+msgstr ""
+
+#: includes/class-atr-admin-page.php:179
+msgid "Run"
+msgstr ""
+
+#. translators: %s: number of images in the media library.
+#: includes/class-atr-admin-page.php:186
+#, php-format
+msgid "%s image in the media library."
+msgid_plural "%s images in the media library."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-atr-admin-page.php:208
+#: includes/class-atr-plugin.php:142
+msgid "Rebuild thumbnails"
+msgstr ""
+
+#: includes/class-atr-admin-page.php:211
+msgid "Stop"
+msgstr ""
+
+#: includes/class-atr-admin-page.php:218
+msgid "Skipped images"
+msgstr ""
+
+#: includes/class-atr-admin-page.php:220
+msgid "These images were left as they were. Their file is missing or is not readable as an image."
+msgstr ""
+
+#: includes/class-atr-admin-page.php:240
+msgid "Width"
+msgstr ""
+
+#: includes/class-atr-admin-page.php:241
+msgid "Height"
+msgstr ""
+
+#: includes/class-atr-admin-page.php:248
+msgid "No image sizes are registered on this site."
+msgstr ""
+
+#: includes/class-atr-admin-page.php:254
+#: includes/class-atr-admin-page.php:255
+#: includes/class-atr-image-sizes.php:101
+msgid "any"
+msgstr ""
+
+#: includes/class-atr-admin-page.php:263
+msgid "Sizes come from WordPress, your theme and your plugins. Change them where they are registered, then rebuild."
+msgstr ""
+
+#: includes/class-atr-image-sizes.php:91
+msgid "cropped"
+msgstr ""
+
+#: includes/class-atr-plugin.php:119
+msgid "Thumbnails"
+msgstr ""
+
+#: includes/class-atr-regenerator.php:31
+msgid "The file is missing from the uploads folder."
+msgstr ""
+
+#: includes/class-atr-regenerator.php:40
+msgid "The file could not be read as an image."
+msgstr ""
+
+#: includes/class-atr-rest-controller.php:123
+msgid "That attachment does not exist."
+msgstr ""
+
+#. translators: %d: attachment id, shown when the image has no title.
+#: assets/js/admin.js:126
+#, js-format
+msgid "Attachment %d"
+msgstr ""
+
+#: assets/js/admin.js:150
+msgid "Reading the media library…"
+msgstr ""
+
+#: assets/js/admin.js:165
+msgid "No images match those settings."
+msgstr ""
+
+#: assets/js/admin.js:172
+msgid "The media library could not be read."
+msgstr ""
+
+#: assets/js/admin.js:178
+msgid "Finishing the current image…"
+msgstr ""
+
+#. translators: %1$s: number of images rebuilt, %2$s: number of images skipped.
+#: assets/js/admin.js:193
+#, js-format
+msgid "%1$s image rebuilt, %2$s skipped."
+msgid_plural "%1$s images rebuilt, %2$s skipped."
+msgstr[0] ""
+msgstr[1] ""
+
+#: assets/js/admin.js:199
+msgid "Stopped."
+msgstr ""
+
+#. translators: 1: current image number, 2: total images, 3: image title.
+#: assets/js/admin.js:221
+#, js-format
+msgid "Rebuilding %1$s of %2$s — %3$s"
+msgstr ""
+
+#: assets/js/admin.js:258
+msgid "The server could not rebuild this image."
+msgstr ""
+
+#: assets/js/attachment.js:30
+msgid "Rebuilding…"
+msgstr ""
+
+#: assets/js/attachment.js:37
+msgid "Done."
+msgstr ""
+
+#: assets/js/attachment.js:39
+msgid "The thumbnails could not be rebuilt."
 msgstr ""

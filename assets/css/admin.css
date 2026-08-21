@@ -1,0 +1,102 @@
+/**
+ * Only what WordPress does not already style: the progress readout, the preview
+ * and the skipped list. Everything else on the screen is a core component.
+ */
+
+/* The admin stylesheet gives .button and .postbox a display of their own, which
+   outranks the hidden attribute. */
+#atr-progress[hidden],
+#atr-preview[hidden],
+#atr-skipped-box[hidden],
+.wrap .button[hidden] {
+	display: none;
+}
+
+.atr-count {
+	display: inline-block;
+	min-width: 1.4em;
+	margin-left: 6px;
+	padding: 0 6px;
+	border-radius: 9px;
+	background: #dcdcde;
+	color: #2c3338;
+	font-size: 11px;
+	line-height: 1.7;
+	text-align: center;
+}
+
+.nav-tab-active .atr-count {
+	background: #2271b1;
+	color: #fff;
+}
+
+.atr-progress__track {
+	height: 8px;
+	margin: 4px 0 0;
+	border-radius: 4px;
+	background: #dcdcde;
+	overflow: hidden;
+}
+
+.atr-progress__bar {
+	width: 0;
+	height: 100%;
+	background: #2271b1;
+	transition: width 150ms linear;
+}
+
+.atr-progress__bar.is-done {
+	background: #00a32a;
+}
+
+.atr-progress__status {
+	margin: 8px 0 0;
+	color: #50575e;
+	font-variant-numeric: tabular-nums;
+}
+
+.atr-progress__preview {
+	margin: 10px 0 0;
+}
+
+#atr-preview {
+	display: block;
+	max-width: 100%;
+	height: auto;
+	border: 1px solid #dcdcde;
+	border-radius: 2px;
+}
+
+.atr-skipped {
+	margin: 0;
+	max-height: 240px;
+	overflow-y: auto;
+}
+
+.atr-skipped li {
+	margin: 0 0 6px;
+	padding-bottom: 6px;
+	border-bottom: 1px solid #f0f0f1;
+}
+
+.atr-skipped li:last-child {
+	margin-bottom: 0;
+	border-bottom: 0;
+}
+
+.atr-skipped .atr-skipped__reason {
+	display: block;
+	color: #646970;
+	font-size: 12px;
+}
+
+#major-publishing-actions .spinner {
+	float: none;
+	margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.atr-progress__bar {
+		transition: none;
+	}
+}
