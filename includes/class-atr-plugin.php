@@ -111,7 +111,16 @@ class ATR_Plugin {
 			'include'  => ATR_Media_Library::requested_ids(),
 		) );
 
+		wp_enqueue_script(
+			'ajax-thumbnail-rebuild-cleanup',
+			ATR_URL . 'assets/js/cleanup.js',
+			array( 'wp-api-fetch', 'wp-i18n' ),
+			ATR_VERSION,
+			true
+		);
+
 		wp_set_script_translations( 'ajax-thumbnail-rebuild', 'ajax-thumbnail-rebuild', ATR_PATH . 'languages' );
+		wp_set_script_translations( 'ajax-thumbnail-rebuild-cleanup', 'ajax-thumbnail-rebuild', ATR_PATH . 'languages' );
 	}
 
 	/**

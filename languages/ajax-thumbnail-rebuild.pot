@@ -2,14 +2,14 @@
 # This file is distributed under the GPL2.
 msgid ""
 msgstr ""
-"Project-Id-Version: AJAX Thumbnail Rebuild 2.7.0\n"
+"Project-Id-Version: AJAX Thumbnail Rebuild 2.8.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ajax-thumbnail-rebuild\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-21T14:34:33+00:00\n"
+"POT-Creation-Date: 2026-08-21T14:39:39+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: ajax-thumbnail-rebuild\n"
@@ -41,7 +41,7 @@ msgid "Rebuild Thumbnails"
 msgstr ""
 
 #: includes/class-atr-admin-page.php:56
-#: includes/class-atr-rest-controller.php:99
+#: includes/class-atr-rest-controller.php:134
 msgid "You are not allowed to rebuild thumbnails."
 msgstr ""
 
@@ -54,7 +54,7 @@ msgid "Secondary menu"
 msgstr ""
 
 #: includes/class-atr-admin-page.php:71
-#: includes/class-atr-plugin.php:158
+#: includes/class-atr-plugin.php:167
 msgid "Rebuild"
 msgstr ""
 
@@ -63,156 +63,207 @@ msgid "Registered sizes"
 msgstr ""
 
 #: includes/class-atr-admin-page.php:78
+msgid "Cleanup"
+msgstr ""
+
+#: includes/class-atr-admin-page.php:81
 msgid "Settings"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:103
+#: includes/class-atr-admin-page.php:108
 msgid "Sizes to rebuild"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:107
+#: includes/class-atr-admin-page.php:112
 msgid "This site has no image sizes registered, so there is nothing to rebuild."
 msgstr ""
 
-#: includes/class-atr-admin-page.php:114
+#: includes/class-atr-admin-page.php:119
 msgid "Select all sizes"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:117
-#: includes/class-atr-admin-page.php:312
+#: includes/class-atr-admin-page.php:122
+#: includes/class-atr-admin-page.php:304
+#: includes/class-atr-admin-page.php:406
 msgid "Size"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:118
+#: includes/class-atr-admin-page.php:123
 msgid "Dimensions"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:119
-#: includes/class-atr-admin-page.php:315
+#: includes/class-atr-admin-page.php:124
+#: includes/class-atr-admin-page.php:409
 msgid "Crop"
 msgstr ""
 
 #. translators: %s: image size name.
-#: includes/class-atr-admin-page.php:134
+#: includes/class-atr-admin-page.php:139
 #, php-format
 msgid "Rebuild the %s size"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:142
+#: includes/class-atr-admin-page.php:147
 msgid "on demand"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:156
+#: includes/class-atr-admin-page.php:161
 msgid "Which images"
 msgstr ""
 
 #. translators: %s: number of images selected in the media library.
-#: includes/class-atr-admin-page.php:165
+#: includes/class-atr-admin-page.php:170
 #, php-format
 msgid "Working on the %s image you picked in the media library."
 msgid_plural "Working on the %s images you picked in the media library."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-atr-admin-page.php:169
+#: includes/class-atr-admin-page.php:174
 msgid "Work on the whole library instead"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:177
+#: includes/class-atr-admin-page.php:182
 msgid "Featured images"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:181
+#: includes/class-atr-admin-page.php:186
 msgid "Only rebuild images used as a featured image"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:185
+#: includes/class-atr-admin-page.php:190
 msgid "A WooCommerce product image is its featured image, so product images are included, and so are the images in a product gallery."
 msgstr ""
 
-#: includes/class-atr-admin-page.php:192
+#: includes/class-atr-admin-page.php:197
 msgid "File name"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:197
+#: includes/class-atr-admin-page.php:202
 msgid "Leave empty to rebuild every image. Use * for any characters and ? for a single one."
 msgstr ""
 
-#: includes/class-atr-admin-page.php:209
+#: includes/class-atr-admin-page.php:214
 msgid "Run"
 msgstr ""
 
 #. translators: %s: number of images in the media library.
-#: includes/class-atr-admin-page.php:216
+#: includes/class-atr-admin-page.php:221
+#: includes/class-atr-admin-page.php:322
 #, php-format
 msgid "%s image in the media library."
 msgid_plural "%s images in the media library."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-atr-admin-page.php:224
+#: includes/class-atr-admin-page.php:229
 msgid "What to do"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:227
+#: includes/class-atr-admin-page.php:232
 msgid "Rebuild the selected sizes"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:231
+#: includes/class-atr-admin-page.php:236
 msgid "Optimise only, without resizing"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:251
-#: includes/class-atr-admin-page.php:253
+#: includes/class-atr-admin-page.php:256
+#: includes/class-atr-admin-page.php:258
 #: includes/class-atr-media-library.php:47
 #: includes/class-atr-media-library.php:68
-#: includes/class-atr-plugin.php:176
+#: includes/class-atr-plugin.php:185
 msgid "Rebuild thumbnails"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:252
-#: includes/class-atr-admin-page.php:253
+#: includes/class-atr-admin-page.php:257
+#: includes/class-atr-admin-page.php:258
 #: includes/class-atr-media-library.php:69
 msgid "Optimise images"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:256
+#: includes/class-atr-admin-page.php:261
+#: includes/class-atr-admin-page.php:342
 msgid "Stop"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:263
+#: includes/class-atr-admin-page.php:268
 msgid "Skipped images"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:265
+#: includes/class-atr-admin-page.php:270
 msgid "These images were left as they were. Their file is missing or is not readable as an image."
 msgstr ""
 
+#: includes/class-atr-admin-page.php:288
+msgid "Files nothing points at"
+msgstr ""
+
+#: includes/class-atr-admin-page.php:291
+msgid "Change a size from 300x300 to 400x400 and WordPress writes the new file and forgets the old one, which stays on disk for good. This looks for those leftovers: files named after an image that the image itself no longer refers to."
+msgstr ""
+
+#: includes/class-atr-admin-page.php:294
+msgid "The scan only reads. Nothing is deleted until you look at the list and say so, and a file that is an attachment in its own right, or that a WebP copy belongs to, is never listed. Sizes that are still in an image's metadata are left alone even when nothing on the site uses them any more - deleting those is not something a scan can decide for you."
+msgstr ""
+
+#: includes/class-atr-admin-page.php:302
+msgid "File"
+msgstr ""
+
+#: includes/class-atr-admin-page.php:303
+msgid "Image"
+msgstr ""
+
+#: includes/class-atr-admin-page.php:315
+msgid "Scan"
+msgstr ""
+
+#: includes/class-atr-admin-page.php:339
+msgid "Scan for leftovers"
+msgstr ""
+
+#: includes/class-atr-admin-page.php:349
+msgid "Delete"
+msgstr ""
+
+#: includes/class-atr-admin-page.php:352
+msgid "Deleting cannot be undone. Take a backup of the uploads folder if you are not sure."
+msgstr ""
+
+#: includes/class-atr-admin-page.php:357
+msgid "Delete these files? This cannot be undone."
+msgstr ""
+
+#: includes/class-atr-admin-page.php:358
+msgid "Delete the listed files"
+msgstr ""
+
 #. translators: %s: this site's host name.
-#: includes/class-atr-admin-page.php:286
+#: includes/class-atr-admin-page.php:380
 #, php-format
 msgid "%s does not look like a host the proxy can reach from the internet. The settings save either way, but the images will not load while you are on this address."
 msgstr ""
 
-#: includes/class-atr-admin-page.php:313
+#: includes/class-atr-admin-page.php:407
 msgid "Width"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:314
+#: includes/class-atr-admin-page.php:408
 msgid "Height"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:321
+#: includes/class-atr-admin-page.php:415
 msgid "No image sizes are registered on this site."
 msgstr ""
 
-#: includes/class-atr-admin-page.php:327
-#: includes/class-atr-admin-page.php:328
+#: includes/class-atr-admin-page.php:421
+#: includes/class-atr-admin-page.php:422
 #: includes/class-atr-image-sizes.php:127
 msgid "any"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:336
+#: includes/class-atr-admin-page.php:430
 msgid "Sizes come from WordPress, your theme and your plugins. Change them where they are registered, then rebuild."
 msgstr ""
 
@@ -229,7 +280,7 @@ msgstr ""
 msgid "The file is missing from the uploads folder."
 msgstr ""
 
-#: includes/class-atr-plugin.php:153
+#: includes/class-atr-plugin.php:162
 msgid "Thumbnails"
 msgstr ""
 
@@ -237,8 +288,10 @@ msgstr ""
 msgid "The file could not be read as an image."
 msgstr ""
 
-#: includes/class-atr-rest-controller.php:144
-#: includes/class-atr-rest-controller.php:173
+#: includes/class-atr-rest-controller.php:179
+#: includes/class-atr-rest-controller.php:204
+#: includes/class-atr-rest-controller.php:229
+#: includes/class-atr-rest-controller.php:258
 msgid "That attachment does not exist."
 msgstr ""
 
@@ -428,6 +481,7 @@ msgid "Attachment %d"
 msgstr ""
 
 #: assets/js/admin.js:187
+#: assets/js/cleanup.js:117
 msgid "Reading the media library…"
 msgstr ""
 
@@ -436,6 +490,7 @@ msgid "No images match those settings."
 msgstr ""
 
 #: assets/js/admin.js:215
+#: assets/js/cleanup.js:130
 msgid "The media library could not be read."
 msgstr ""
 
@@ -460,6 +515,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: assets/js/admin.js:252
+#: assets/js/cleanup.js:160
 msgid "Stopped."
 msgstr ""
 
@@ -500,4 +556,40 @@ msgstr ""
 
 #: assets/js/attachment.js:67
 msgid "The thumbnails could not be rebuilt."
+msgstr ""
+
+#: assets/js/cleanup.js:123
+msgid "There are no images to scan."
+msgstr ""
+
+#: assets/js/cleanup.js:149
+msgid "Nothing to clean up: every file belongs to the image it is named after."
+msgstr ""
+
+#. translators: 1: number of files, 2: how much disk space they take.
+#: assets/js/cleanup.js:155
+#, js-format
+msgid "%1$s leftover file, %2$s."
+msgid_plural "%1$s leftover files, %2$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: 1: current image number, 2: total images.
+#: assets/js/cleanup.js:176
+#, js-format
+msgid "Scanning %1$s of %2$s"
+msgstr ""
+
+#. translators: 1: number of files deleted, 2: how much disk space was freed.
+#: assets/js/cleanup.js:239
+#, js-format
+msgid "%1$s file deleted, %2$s freed."
+msgid_plural "%1$s files deleted, %2$s freed."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: 1: current image number, 2: total images.
+#: assets/js/cleanup.js:250
+#, js-format
+msgid "Deleting %1$s of %2$s"
 msgstr ""

@@ -68,6 +68,41 @@ class ATR_Rest_Controller {
 			),
 		) );
 
+		register_rest_route( self::REST_NAMESPACE, '/cleanup/scan', array(
+			array(
+				'methods'             => WP_REST_Server::CREATABLE,
+				'callback'            => array( $this, 'cleanup_scan' ),
+				'permission_callback' => array( $this, 'check_permission' ),
+				'args'                => array(
+					'id' => array(
+						'type'     => 'integer',
+						'required' => true,
+						'minimum'  => 1,
+					),
+				),
+			),
+		) );
+
+		register_rest_route( self::REST_NAMESPACE, '/cleanup/delete', array(
+			array(
+				'methods'             => WP_REST_Server::CREATABLE,
+				'callback'            => array( $this, 'cleanup_delete' ),
+				'permission_callback' => array( $this, 'check_permission' ),
+				'args'                => array(
+					'id'    => array(
+						'type'     => 'integer',
+						'required' => true,
+						'minimum'  => 1,
+					),
+					'files' => array(
+						'type'     => 'array',
+						'required' => true,
+						'items'    => array( 'type' => 'string' ),
+					),
+				),
+			),
+		) );
+
 		register_rest_route( self::REST_NAMESPACE, '/optimize', array(
 			array(
 				'methods'             => WP_REST_Server::CREATABLE,
@@ -127,6 +162,56 @@ class ATR_Rest_Controller {
 		return rest_ensure_response( array(
 			'total' => count( $items ),
 			'items' => $items,
+		) );
+	}
+
+	/**
+	 * List the files an attachment no longer has any use for.
+	 *
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function cleanup_scan( WP_REST_Request $request ) {
+		$id = (int) $request['id'];
+
+		if ( 'attachment' !== get_post_type( $id ) ) {
+			return new WP_Error(
+				'atr_not_found',
+				__( 'That attachment does not exist.', 'ajax-thumbnail-rebuild' ),
+				array( 'status' => 404 )
+			);
+		}
+
+		$orphans = ATR_Cleanup::orphans( $id );
+
+		return rest_ensure_response( array(
+			'id'    => $id,
+			'files' => $orphans['files'],
+			'bytes' => $orphans['bytes'],
+		) );
+	}
+
+	/**
+	 * Delete files an attachment no longer has any use for.
+	 *
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function cleanup_delete( WP_REST_Request $request ) {
+		$id = (int) $request['id'];
+
+		if ( 'attachment' !== get_post_type( $id ) ) {
+			return new WP_Error(
+				'atr_not_found',
+				__( 'That attachment does not exist.', 'ajax-thumbnail-rebuild' ),
+				array( 'status' => 404 )
+			);
+		}
+
+		$result = ATR_Cleanup::delete( $id, (array) $request['files'] );
+
+		return rest_ensure_response( array(
+			'id'      => $id,
+			'deleted' => (int) $result['deleted'],
+			'bytes'   => (int) $result['bytes'],
 		) );
 	}
 

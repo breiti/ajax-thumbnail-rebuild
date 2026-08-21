@@ -48,7 +48,7 @@ class ATR_Admin_Page {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only navigation.
 		$tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'rebuild';
 
-		return in_array( $tab, array( 'rebuild', 'sizes', 'settings' ), true ) ? $tab : 'rebuild';
+		return in_array( $tab, array( 'rebuild', 'sizes', 'cleanup', 'settings' ), true ) ? $tab : 'rebuild';
 	}
 
 	public function render(): void {
@@ -74,6 +74,9 @@ class ATR_Admin_Page {
 					<?php esc_html_e( 'Registered sizes', 'ajax-thumbnail-rebuild' ); ?>
 					<span class="atr-count"><?php echo esc_html( number_format_i18n( count( $sizes ) ) ); ?></span>
 				</a>
+				<a href="<?php echo esc_url( self::url( 'cleanup' ) ); ?>" class="nav-tab <?php echo 'cleanup' === $tab ? 'nav-tab-active' : ''; ?>">
+					<?php esc_html_e( 'Cleanup', 'ajax-thumbnail-rebuild' ); ?>
+				</a>
 				<a href="<?php echo esc_url( self::url( 'settings' ) ); ?>" class="nav-tab <?php echo 'settings' === $tab ? 'nav-tab-active' : ''; ?>">
 					<?php esc_html_e( 'Settings', 'ajax-thumbnail-rebuild' ); ?>
 				</a>
@@ -81,6 +84,8 @@ class ATR_Admin_Page {
 
 			<?php if ( 'sizes' === $tab ) : ?>
 				<?php $this->render_sizes_tab( $sizes ); ?>
+			<?php elseif ( 'cleanup' === $tab ) : ?>
+				<?php $this->render_cleanup_tab(); ?>
 			<?php elseif ( 'settings' === $tab ) : ?>
 				<?php $this->render_settings_tab(); ?>
 			<?php else : ?>
@@ -264,6 +269,95 @@ class ATR_Admin_Page {
 						<div class="inside">
 							<p class="description"><?php esc_html_e( 'These images were left as they were. Their file is missing or is not readable as an image.', 'ajax-thumbnail-rebuild' ); ?></p>
 							<ul class="atr-skipped" id="atr-skipped"></ul>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<?php
+	}
+
+	private function render_cleanup_tab(): void {
+		?>
+		<div id="poststuff">
+			<div id="post-body" class="metabox-holder columns-2">
+
+				<div id="post-body-content">
+					<div class="postbox">
+						<h2 class="hndle"><span><?php esc_html_e( 'Files nothing points at', 'ajax-thumbnail-rebuild' ); ?></span></h2>
+						<div class="inside">
+							<p>
+								<?php esc_html_e( 'Change a size from 300x300 to 400x400 and WordPress writes the new file and forgets the old one, which stays on disk for good. This looks for those leftovers: files named after an image that the image itself no longer refers to.', 'ajax-thumbnail-rebuild' ); ?>
+							</p>
+							<p class="description">
+								<?php esc_html_e( 'The scan only reads. Nothing is deleted until you look at the list and say so, and a file that is an attachment in its own right, or that a WebP copy belongs to, is never listed. Sizes that are still in an image\'s metadata are left alone even when nothing on the site uses them any more - deleting those is not something a scan can decide for you.', 'ajax-thumbnail-rebuild' ); ?>
+							</p>
+
+							<div id="atr-cleanup-result"></div>
+
+							<table class="wp-list-table widefat fixed striped table-view-list" id="atr-cleanup-table" hidden>
+								<thead>
+									<tr>
+										<th scope="col" class="manage-column column-primary"><?php esc_html_e( 'File', 'ajax-thumbnail-rebuild' ); ?></th>
+										<th scope="col" class="manage-column"><?php esc_html_e( 'Image', 'ajax-thumbnail-rebuild' ); ?></th>
+										<th scope="col" class="manage-column"><?php esc_html_e( 'Size', 'ajax-thumbnail-rebuild' ); ?></th>
+									</tr>
+								</thead>
+								<tbody id="atr-cleanup-rows"></tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<div id="postbox-container-1" class="postbox-container">
+					<div class="postbox">
+						<h2 class="hndle"><span><?php esc_html_e( 'Scan', 'ajax-thumbnail-rebuild' ); ?></span></h2>
+						<div class="inside">
+							<p class="atr-library-count">
+								<?php
+								$total = ATR_Attachments::count();
+								printf(
+									/* translators: %s: number of images in the media library. */
+									esc_html( _n( '%s image in the media library.', '%s images in the media library.', $total, 'ajax-thumbnail-rebuild' ) ),
+									'<strong>' . esc_html( number_format_i18n( $total ) ) . '</strong>'
+								);
+								?>
+							</p>
+
+							<div id="atr-cleanup-progress" class="atr-progress" hidden>
+								<div class="atr-progress__track">
+									<div class="atr-progress__bar" id="atr-cleanup-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+								</div>
+								<p class="atr-progress__status" id="atr-cleanup-status" aria-live="polite"></p>
+							</div>
+						</div>
+						<div id="major-publishing-actions">
+							<span class="spinner" id="atr-cleanup-spinner"></span>
+							<div id="publishing-action">
+								<button type="button" class="button button-primary button-large" id="atr-cleanup-scan">
+									<?php esc_html_e( 'Scan for leftovers', 'ajax-thumbnail-rebuild' ); ?>
+								</button>
+								<button type="button" class="button button-large" id="atr-cleanup-stop" hidden>
+									<?php esc_html_e( 'Stop', 'ajax-thumbnail-rebuild' ); ?>
+								</button>
+							</div>
+						</div>
+					</div>
+
+					<div class="postbox" id="atr-cleanup-delete-box" hidden>
+						<h2 class="hndle"><span><?php esc_html_e( 'Delete', 'ajax-thumbnail-rebuild' ); ?></span></h2>
+						<div class="inside">
+							<p id="atr-cleanup-summary"></p>
+							<p class="description"><?php esc_html_e( 'Deleting cannot be undone. Take a backup of the uploads folder if you are not sure.', 'ajax-thumbnail-rebuild' ); ?></p>
+						</div>
+						<div id="major-publishing-actions">
+							<div id="publishing-action">
+								<button type="button" class="button button-large delete" id="atr-cleanup-delete"
+									data-confirm="<?php esc_attr_e( 'Delete these files? This cannot be undone.', 'ajax-thumbnail-rebuild' ); ?>">
+									<?php esc_html_e( 'Delete the listed files', 'ajax-thumbnail-rebuild' ); ?>
+								</button>
+							</div>
 						</div>
 					</div>
 				</div>
