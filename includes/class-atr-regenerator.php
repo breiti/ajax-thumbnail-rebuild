@@ -142,7 +142,7 @@ class ATR_Regenerator {
 	 * that writes a second set of files named after it instead of replacing the ones
 	 * the site is already using.
 	 */
-	private static function source_file( int $attachment_id, string $file ): string {
+	public static function source_file( int $attachment_id, string $file ): string {
 		if ( ! function_exists( 'wp_get_original_image_path' ) ) {
 			return $file;
 		}
@@ -155,7 +155,7 @@ class ATR_Regenerator {
 	/**
 	 * The resizing functions live in wp-admin, which a REST request does not load.
 	 */
-	private static function load_image_api(): void {
+	public static function load_image_api(): void {
 		if ( function_exists( 'file_is_displayable_image' ) && function_exists( 'image_make_intermediate_size' ) ) {
 			return;
 		}

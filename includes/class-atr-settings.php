@@ -28,6 +28,8 @@ class ATR_Settings {
 			'proxy_quality' => 82,
 			'webp_enabled'  => false,
 			'webp_quality'  => 82,
+
+			'on_demand_enabled' => false,
 		);
 	}
 
@@ -111,6 +113,21 @@ class ATR_Settings {
 		);
 
 		add_settings_section(
+			'atr_on_demand',
+			__( 'Sizes on demand', 'ajax-thumbnail-rebuild' ),
+			array( __CLASS__, 'render_on_demand_intro' ),
+			self::GROUP
+		);
+
+		add_settings_field(
+			'on_demand_enabled',
+			__( 'Generate on demand', 'ajax-thumbnail-rebuild' ),
+			array( __CLASS__, 'render_on_demand_enabled' ),
+			self::GROUP,
+			'atr_on_demand'
+		);
+
+		add_settings_section(
 			'atr_webp',
 			__( 'WebP copies', 'ajax-thumbnail-rebuild' ),
 			array( __CLASS__, 'render_webp_intro' ),
@@ -155,6 +172,8 @@ class ATR_Settings {
 			'proxy_quality' => self::quality( $input['proxy_quality'] ?? null, $defaults['proxy_quality'] ),
 			'webp_enabled'  => ! empty( $input['webp_enabled'] ),
 			'webp_quality'  => self::quality( $input['webp_quality'] ?? null, $defaults['webp_quality'] ),
+
+			'on_demand_enabled' => ! empty( $input['on_demand_enabled'] ),
 		);
 	}
 
@@ -211,6 +230,28 @@ class ATR_Settings {
 			<?php endforeach; ?>
 		</select>
 		<p class="description"><?php esc_html_e( 'WebP files are a good deal smaller than JPEG or PNG and every current browser reads them.', 'ajax-thumbnail-rebuild' ); ?></p>
+		<?php
+	}
+
+	public static function render_on_demand_intro(): void {
+		?>
+		<p class="description">
+			<?php esc_html_e( 'WordPress normally cuts every registered size the moment a file is uploaded, most of which no page ever asks for. With this on, an upload keeps only its own file and each size is cut the first time something requests it, then stays on disk like any other.', 'ajax-thumbnail-rebuild' ); ?>
+		</p>
+		<p class="description">
+			<?php esc_html_e( 'Uploads get quicker and the uploads folder stays smaller. The first visitor to need a size waits for it to be cut, and until then an image has no other size to offer in its srcset.', 'ajax-thumbnail-rebuild' ); ?>
+		</p>
+		<?php
+	}
+
+	public static function render_on_demand_enabled(): void {
+		$settings = self::all();
+		?>
+		<label>
+			<input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[on_demand_enabled]" value="1" <?php checked( $settings['on_demand_enabled'] ); ?> />
+			<?php esc_html_e( 'Cut each size when it is first requested, not on upload', 'ajax-thumbnail-rebuild' ); ?>
+		</label>
+		<p class="description"><?php esc_html_e( 'Rebuilding from the Rebuild tab still generates whatever you select there.', 'ajax-thumbnail-rebuild' ); ?></p>
 		<?php
 	}
 

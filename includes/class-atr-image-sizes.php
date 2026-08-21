@@ -41,9 +41,35 @@ class ATR_Image_Sizes {
 		/* Core passes the metadata and the attachment id along with the sizes. Plugins that
 		   register their sizes through this filter rather than through add_image_size() read
 		   those arguments, and used to be skipped because we called the filter with one. */
-		$sizes = apply_filters( 'intermediate_image_sizes_advanced', $sizes, $metadata, $attachment_id );
+		$sizes = self::apply_registered_filter( $sizes, $metadata, $attachment_id );
 
 		return self::normalise( $sizes );
+	}
+
+	/**
+	 * Run the sizes through the filter every other plugin registers on.
+	 *
+	 * On-demand generation answers that same filter with an empty list, to stop
+	 * WordPress cutting every size on upload. That answer is for core, not for us:
+	 * this class is what the plugin's own screens and its rebuild read, and they
+	 * are meant to see every registered size.
+	 *
+	 * @param array $sizes         Sizes to filter.
+	 * @param array $metadata      Attachment metadata.
+	 * @param int   $attachment_id Attachment id.
+	 * @return mixed
+	 */
+	private static function apply_registered_filter( array $sizes, array $metadata, int $attachment_id ) {
+		$callback = array( 'ATR_On_Demand', 'strip_sizes' );
+		$removed  = remove_filter( 'intermediate_image_sizes_advanced', $callback, ATR_On_Demand::STRIP_PRIORITY );
+
+		$sizes = apply_filters( 'intermediate_image_sizes_advanced', $sizes, $metadata, $attachment_id );
+
+		if ( $removed ) {
+			add_filter( 'intermediate_image_sizes_advanced', $callback, ATR_On_Demand::STRIP_PRIORITY, 3 );
+		}
+
+		return $sizes;
 	}
 
 	/**
