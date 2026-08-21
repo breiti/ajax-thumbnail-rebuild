@@ -5,7 +5,7 @@ Tags: ajax, thumbnail, rebuild, regenerate, admin, image, photo
 Requires at least: 5.6
 Requires PHP: 7.4
 Tested up to: 7.0
-Stable tag: 2.0.0
+Stable tag: 2.1.0
 
 [AJAX Thumbnail Rebuild](https://wordpress.org/plugins/ajax-thumbnail-rebuild/) allows you to rebuild all thumbnails at once without script timeouts on your server.
 
@@ -27,6 +27,11 @@ Contributions are welcome at [Github](https://github.com/breiti/ajax-thumbnail-r
 Upload the plugin to your blog, activate it, done. You can then rebuild all thumbnails in the tools section (Tools -> Rebuild Thumbnails).
 
 == Changelog ==
+
+= 2.1.0 =
+
+* NEW: Optional image proxy. Front end image URLs can be served through wsrv.nl, which resizes and re-encodes on the fly (WebP by default) and serves the result from a CDN. Off by default; your own files are never touched.
+* NEW: A "Settings" tab, built with the WordPress Settings API.
 
 = 2.0.0 =
 

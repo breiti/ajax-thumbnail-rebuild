@@ -48,7 +48,7 @@ class ATR_Admin_Page {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only navigation.
 		$tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'rebuild';
 
-		return in_array( $tab, array( 'rebuild', 'sizes' ), true ) ? $tab : 'rebuild';
+		return in_array( $tab, array( 'rebuild', 'sizes', 'settings' ), true ) ? $tab : 'rebuild';
 	}
 
 	public function render(): void {
@@ -74,10 +74,15 @@ class ATR_Admin_Page {
 					<?php esc_html_e( 'Registered sizes', 'ajax-thumbnail-rebuild' ); ?>
 					<span class="atr-count"><?php echo esc_html( number_format_i18n( count( $sizes ) ) ); ?></span>
 				</a>
+				<a href="<?php echo esc_url( self::url( 'settings' ) ); ?>" class="nav-tab <?php echo 'settings' === $tab ? 'nav-tab-active' : ''; ?>">
+					<?php esc_html_e( 'Settings', 'ajax-thumbnail-rebuild' ); ?>
+				</a>
 			</nav>
 
 			<?php if ( 'sizes' === $tab ) : ?>
 				<?php $this->render_sizes_tab( $sizes ); ?>
+			<?php elseif ( 'settings' === $tab ) : ?>
+				<?php $this->render_settings_tab(); ?>
 			<?php else : ?>
 				<?php $this->render_rebuild_tab( $sizes ); ?>
 			<?php endif; ?>
@@ -222,6 +227,34 @@ class ATR_Admin_Page {
 
 			</div>
 		</div>
+		<?php
+	}
+
+	private function render_settings_tab(): void {
+		// options.php saves and redirects back here; this prints what it has to say.
+		settings_errors();
+		?>
+		<?php if ( ATR_Image_Proxy::site_looks_local() ) : ?>
+			<div class="notice notice-warning inline">
+				<p>
+					<?php
+					printf(
+						/* translators: %s: this site's host name. */
+						esc_html__( '%s does not look like a host the proxy can reach from the internet. The settings save either way, but the images will not load while you are on this address.', 'ajax-thumbnail-rebuild' ),
+						'<code>' . esc_html( (string) wp_parse_url( home_url(), PHP_URL_HOST ) ) . '</code>'
+					);
+					?>
+				</p>
+			</div>
+		<?php endif; ?>
+
+		<form method="post" action="<?php echo esc_url( admin_url( 'options.php' ) ); ?>">
+			<?php
+			settings_fields( ATR_Settings::GROUP );
+			do_settings_sections( ATR_Settings::GROUP );
+			submit_button();
+			?>
+		</form>
 		<?php
 	}
 
