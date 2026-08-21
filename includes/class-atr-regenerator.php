@@ -128,6 +128,9 @@ class ATR_Regenerator {
 
 			if ( $intermediate ) {
 				$metadata['sizes'][ $name ] = $intermediate;
+
+				// Freshly written files: whatever optimising was done to the old ones is gone.
+				unset( $metadata[ ATR_Optimizer::DONE_KEY ] );
 			}
 		}
 

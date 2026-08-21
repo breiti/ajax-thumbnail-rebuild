@@ -219,6 +219,19 @@ class ATR_Admin_Page {
 								?>
 							</p>
 
+							<?php $mode = ATR_Media_Library::requested_mode(); ?>
+							<fieldset class="atr-mode">
+								<legend class="screen-reader-text"><?php esc_html_e( 'What to do', 'ajax-thumbnail-rebuild' ); ?></legend>
+								<label>
+									<input type="radio" name="atr-mode" value="rebuild" <?php checked( 'optimize' !== $mode ); ?> />
+									<?php esc_html_e( 'Rebuild the selected sizes', 'ajax-thumbnail-rebuild' ); ?>
+								</label>
+								<label>
+									<input type="radio" name="atr-mode" value="optimize" <?php checked( 'optimize' === $mode ); ?> />
+									<?php esc_html_e( 'Optimise only, without resizing', 'ajax-thumbnail-rebuild' ); ?>
+								</label>
+							</fieldset>
+
 							<div id="atr-progress" class="atr-progress" hidden>
 								<div class="atr-progress__track">
 									<div class="atr-progress__bar" id="atr-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
@@ -234,8 +247,10 @@ class ATR_Admin_Page {
 						<div id="major-publishing-actions">
 							<span class="spinner" id="atr-spinner"></span>
 							<div id="publishing-action">
-								<button type="button" class="button button-primary button-large" id="atr-start">
-									<?php esc_html_e( 'Rebuild thumbnails', 'ajax-thumbnail-rebuild' ); ?>
+								<button type="button" class="button button-primary button-large" id="atr-start"
+									data-label-rebuild="<?php esc_attr_e( 'Rebuild thumbnails', 'ajax-thumbnail-rebuild' ); ?>"
+									data-label-optimize="<?php esc_attr_e( 'Optimise images', 'ajax-thumbnail-rebuild' ); ?>">
+									<?php echo 'optimize' === $mode ? esc_html__( 'Optimise images', 'ajax-thumbnail-rebuild' ) : esc_html__( 'Rebuild thumbnails', 'ajax-thumbnail-rebuild' ); ?>
 								</button>
 								<button type="button" class="button button-large" id="atr-stop" hidden>
 									<?php esc_html_e( 'Stop', 'ajax-thumbnail-rebuild' ); ?>

@@ -33,6 +33,24 @@
 
 		var stopped = false;
 
+		function currentMode() {
+			var checked = document.querySelector( 'input[name="atr-mode"]:checked' );
+
+			return checked ? checked.value : 'rebuild';
+		}
+
+		function formatBytes( bytes ) {
+			if ( bytes >= 1048576 ) {
+				return ( bytes / 1048576 ).toFixed( 1 ) + ' MB';
+			}
+
+			if ( bytes >= 1024 ) {
+				return Math.round( bytes / 1024 ) + ' KB';
+			}
+
+			return bytes + ' B';
+		}
+
 		/* ---------------------------------------------------------------
 		 * Size selection, the way a list table behaves.
 		 * ------------------------------------------------------------ */
@@ -47,7 +65,8 @@
 				selectAll.indeterminate = checked > 0 && checked < sizeBoxes.length;
 			}
 
-			startButton.disabled = checked === 0;
+			// Optimising does not resize, so it does not care what is selected here.
+			startButton.disabled = checked === 0 && 'optimize' !== currentMode();
 		}
 
 		if ( selectAll ) {
@@ -61,6 +80,23 @@
 
 		sizeBoxes.forEach( function( box ) {
 			box.addEventListener( 'change', syncSelectAll );
+		} );
+
+		document.querySelectorAll( 'input[name="atr-mode"]' ).forEach( function( radio ) {
+			radio.addEventListener( 'change', function() {
+				var optimizing = 'optimize' === currentMode();
+				var table = document.getElementById( 'atr-sizes' );
+
+				if ( table ) {
+					table.style.opacity = optimizing ? '0.5' : '';
+				}
+
+				startButton.textContent = optimizing
+					? startButton.dataset.labelOptimize
+					: startButton.dataset.labelRebuild;
+
+				syncSelectAll();
+			} );
 		} );
 
 		syncSelectAll();
@@ -173,7 +209,7 @@
 					return;
 				}
 
-				run( response.items, sizes );
+				run( response.items, sizes, currentMode() );
 			} ).catch( function( error ) {
 				setBusy( false );
 				notice( 'error', error.message || __( 'The media library could not be read.', 'ajax-thumbnail-rebuild' ) );
@@ -185,22 +221,32 @@
 			status.textContent = __( 'Finishing the current image…', 'ajax-thumbnail-rebuild' );
 		} );
 
-		function run( items, sizes ) {
+		function run( items, sizes, mode ) {
+			var optimizing = 'optimize' === mode;
 			var index = 0;
 			var skipped = 0;
 			var rebuilt = 0;
+			var savedBytes = 0;
 
 			function finish( interrupted ) {
 				setBusy( false );
 				status.textContent = '';
 				bar.classList.add( 'is-done' );
 
-				var summary = sprintf(
-					/* translators: %1$s: number of images rebuilt, %2$s: number of images skipped. */
-					_n( '%1$s image rebuilt, %2$s skipped.', '%1$s images rebuilt, %2$s skipped.', rebuilt, 'ajax-thumbnail-rebuild' ),
-					rebuilt,
-					skipped
-				);
+				var summary = optimizing
+					? sprintf(
+						/* translators: 1: number of images optimised, 2: bytes saved, 3: number skipped. */
+						_n( '%1$s image optimised, %2$s saved, %3$s skipped.', '%1$s images optimised, %2$s saved, %3$s skipped.', rebuilt, 'ajax-thumbnail-rebuild' ),
+						rebuilt,
+						formatBytes( savedBytes ),
+						skipped
+					)
+					: sprintf(
+						/* translators: %1$s: number of images rebuilt, %2$s: number of images skipped. */
+						_n( '%1$s image rebuilt, %2$s skipped.', '%1$s images rebuilt, %2$s skipped.', rebuilt, 'ajax-thumbnail-rebuild' ),
+						rebuilt,
+						skipped
+					);
 
 				if ( interrupted ) {
 					notice( 'warning', __( 'Stopped.', 'ajax-thumbnail-rebuild' ) + ' ' + summary );
@@ -224,17 +270,20 @@
 
 				setProgress( index, items.length );
 				status.textContent = sprintf(
-					/* translators: 1: current image number, 2: total images, 3: image title. */
-					__( 'Rebuilding %1$s of %2$s — %3$s', 'ajax-thumbnail-rebuild' ),
+					optimizing
+						/* translators: 1: current image number, 2: total images, 3: image title. */
+						? __( 'Optimising %1$s of %2$s — %3$s', 'ajax-thumbnail-rebuild' )
+						/* translators: 1: current image number, 2: total images, 3: image title. */
+						: __( 'Rebuilding %1$s of %2$s — %3$s', 'ajax-thumbnail-rebuild' ),
 					index + 1,
 					items.length,
 					item.title || '#' + item.id
 				);
 
 				apiFetch( {
-					path: '/ajax-thumbnail-rebuild/v1/rebuild',
+					path: optimizing ? '/ajax-thumbnail-rebuild/v1/optimize' : '/ajax-thumbnail-rebuild/v1/rebuild',
 					method: 'POST',
-					data: { id: item.id, sizes: sizes }
+					data: optimizing ? { id: item.id } : { id: item.id, sizes: sizes }
 				} ).then( function( response ) {
 					index++;
 
@@ -243,6 +292,7 @@
 						addSkipped( item, response.message );
 					} else {
 						rebuilt++;
+						savedBytes += response.saved || 0;
 
 						if ( response.thumbnail ) {
 							preview.src = response.thumbnail;

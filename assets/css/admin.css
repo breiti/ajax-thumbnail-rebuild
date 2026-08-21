@@ -41,6 +41,11 @@
 	line-height: 1.8;
 }
 
+.atr-mode label {
+	display: block;
+	margin-bottom: 4px;
+}
+
 .atr-progress__track {
 	height: 8px;
 	margin: 4px 0 0;

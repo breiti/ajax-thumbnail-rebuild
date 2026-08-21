@@ -25,6 +25,8 @@ class ATR_Settings {
 		return array(
 			'upload_quality'       => ATR_Uploads::CORE_QUALITY,
 			'max_upload_dimension' => ATR_Uploads::CORE_THRESHOLD,
+			'optimize_enabled'     => false,
+			'optimize_quality'     => ATR_Uploads::CORE_QUALITY,
 
 			'proxy_enabled' => false,
 			'proxy_output'  => 'webp',
@@ -106,6 +108,30 @@ class ATR_Settings {
 			self::GROUP,
 			'atr_uploads',
 			array( 'label_for' => 'atr-max-upload-dimension' )
+		);
+
+		add_settings_section(
+			'atr_optimize',
+			__( 'Optimising', 'ajax-thumbnail-rebuild' ),
+			array( __CLASS__, 'render_optimize_intro' ),
+			self::GROUP
+		);
+
+		add_settings_field(
+			'optimize_enabled',
+			__( 'Optimise automatically', 'ajax-thumbnail-rebuild' ),
+			array( __CLASS__, 'render_optimize_enabled' ),
+			self::GROUP,
+			'atr_optimize'
+		);
+
+		add_settings_field(
+			'optimize_quality',
+			__( 'Quality', 'ajax-thumbnail-rebuild' ),
+			array( __CLASS__, 'render_optimize_quality' ),
+			self::GROUP,
+			'atr_optimize',
+			array( 'label_for' => 'atr-optimize-quality' )
 		);
 
 		add_settings_section(
@@ -206,6 +232,8 @@ class ATR_Settings {
 		return array(
 			'upload_quality'       => self::quality( $input['upload_quality'] ?? null, $defaults['upload_quality'] ),
 			'max_upload_dimension' => max( 0, (int) ( $input['max_upload_dimension'] ?? $defaults['max_upload_dimension'] ) ),
+			'optimize_enabled'     => ! empty( $input['optimize_enabled'] ),
+			'optimize_quality'     => self::quality( $input['optimize_quality'] ?? null, $defaults['optimize_quality'] ),
 
 			'proxy_enabled' => ! empty( $input['proxy_enabled'] ),
 			'proxy_output'  => $output,
@@ -282,6 +310,42 @@ class ATR_Settings {
 			);
 			?>
 		</p>
+		<?php
+	}
+
+	public static function render_optimize_intro(): void {
+		?>
+		<p class="description">
+			<?php esc_html_e( 'Optimising re-encodes a file that is already the right size, to get the same picture in fewer bytes. Nothing is resized and no file is renamed, the result is kept only when it is genuinely smaller, and the untouched original beside a scaled upload is never touched.', 'ajax-thumbnail-rebuild' ); ?>
+		</p>
+		<p class="description">
+			<?php
+			printf(
+				/* translators: 1: opening link tag to the Rebuild tab, 2: closing link tag. */
+				esc_html__( 'For the images already on the site, %1$srun it over the library%2$s, or optimise single images from the media library. Turning this on covers new uploads and anything you rebuild.', 'ajax-thumbnail-rebuild' ),
+				'<a href="' . esc_url( ATR_Admin_Page::url( 'rebuild' ) ) . '">',
+				'</a>'
+			);
+			?>
+		</p>
+		<?php
+	}
+
+	public static function render_optimize_enabled(): void {
+		$settings = self::all();
+		?>
+		<label>
+			<input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[optimize_enabled]" value="1" <?php checked( $settings['optimize_enabled'] ); ?> />
+			<?php esc_html_e( 'Optimise images as they are uploaded and after a rebuild', 'ajax-thumbnail-rebuild' ); ?>
+		</label>
+		<?php
+	}
+
+	public static function render_optimize_quality(): void {
+		$settings = self::all();
+		?>
+		<input type="number" name="<?php echo esc_attr( self::OPTION ); ?>[optimize_quality]" id="atr-optimize-quality" class="small-text" min="1" max="100" step="1" value="<?php echo esc_attr( (string) $settings['optimize_quality'] ); ?>" />
+		<p class="description"><?php esc_html_e( '1 to 100, used when re-encoding. Below the compression setting above there is something to gain; at or above it, most files will already be as small as they get.', 'ajax-thumbnail-rebuild' ); ?></p>
 		<?php
 	}
 

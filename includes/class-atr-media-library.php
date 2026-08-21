@@ -16,8 +16,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class ATR_Media_Library {
 
-	/** Bulk action name, and the query argument the selection travels in. */
+	/** Bulk action names, and the query arguments the selection travels in. */
 	const BULK_ACTION = 'atr_rebuild';
+
+	const BULK_ACTION_OPTIMIZE = 'atr_optimize';
 
 	public function register(): void {
 		add_filter( 'media_row_actions', array( $this, 'add_row_action' ), 10, 2 );
@@ -45,6 +47,12 @@ class ATR_Media_Library {
 			esc_html__( 'Rebuild thumbnails', 'ajax-thumbnail-rebuild' )
 		);
 
+		$actions['atr-optimize'] = sprintf(
+			'<button type="button" class="button-link atr-rebuild-button" data-id="%1$d" data-mode="optimize">%2$s</button> <span class="atr-rebuild-message" aria-live="polite"></span>',
+			(int) $post->ID,
+			esc_html__( 'Optimise', 'ajax-thumbnail-rebuild' )
+		);
+
 		return $actions;
 	}
 
@@ -57,7 +65,8 @@ class ATR_Media_Library {
 			return $actions;
 		}
 
-		$actions[ self::BULK_ACTION ] = __( 'Rebuild thumbnails', 'ajax-thumbnail-rebuild' );
+		$actions[ self::BULK_ACTION ]          = __( 'Rebuild thumbnails', 'ajax-thumbnail-rebuild' );
+		$actions[ self::BULK_ACTION_OPTIMIZE ] = __( 'Optimise images', 'ajax-thumbnail-rebuild' );
 
 		return $actions;
 	}
@@ -74,7 +83,7 @@ class ATR_Media_Library {
 	 * @return string
 	 */
 	public function handle_bulk_action( $redirect, $action, $ids ) {
-		if ( self::BULK_ACTION !== $action || ! current_user_can( ATR_Plugin::capability() ) ) {
+		if ( ! in_array( $action, array( self::BULK_ACTION, self::BULK_ACTION_OPTIMIZE ), true ) || ! current_user_can( ATR_Plugin::capability() ) ) {
 			return $redirect;
 		}
 
@@ -84,7 +93,13 @@ class ATR_Media_Library {
 			return $redirect;
 		}
 
-		return add_query_arg( 'ids', implode( ',', $ids ), ATR_Admin_Page::url( 'rebuild' ) );
+		return add_query_arg(
+			array(
+				'ids'  => implode( ',', $ids ),
+				'mode' => self::BULK_ACTION_OPTIMIZE === $action ? 'optimize' : 'rebuild',
+			),
+			ATR_Admin_Page::url( 'rebuild' )
+		);
 	}
 
 	/**
@@ -101,5 +116,15 @@ class ATR_Media_Library {
 		}
 
 		return array_values( array_unique( array_filter( array_map( 'absint', explode( ',', $raw ) ) ) ) );
+	}
+
+	/**
+	 * Which job the Rebuild tab was sent here to do.
+	 */
+	public static function requested_mode(): string {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- picks a radio button, nothing is changed.
+		$mode = isset( $_GET['mode'] ) ? sanitize_key( wp_unslash( $_GET['mode'] ) ) : '';
+
+		return 'optimize' === $mode ? 'optimize' : 'rebuild';
 	}
 }

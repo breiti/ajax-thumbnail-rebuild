@@ -67,6 +67,21 @@ class ATR_Rest_Controller {
 				),
 			),
 		) );
+
+		register_rest_route( self::REST_NAMESPACE, '/optimize', array(
+			array(
+				'methods'             => WP_REST_Server::CREATABLE,
+				'callback'            => array( $this, 'optimize' ),
+				'permission_callback' => array( $this, 'check_permission' ),
+				'args'                => array(
+					'id' => array(
+						'type'     => 'integer',
+						'required' => true,
+						'minimum'  => 1,
+					),
+				),
+			),
+		) );
 	}
 
 	/**
@@ -112,6 +127,37 @@ class ATR_Rest_Controller {
 		return rest_ensure_response( array(
 			'total' => count( $items ),
 			'items' => $items,
+		) );
+	}
+
+	/**
+	 * Re-encode an attachment's files without resizing anything.
+	 *
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function optimize( WP_REST_Request $request ) {
+		$id = (int) $request['id'];
+
+		if ( 'attachment' !== get_post_type( $id ) ) {
+			return new WP_Error(
+				'atr_not_found',
+				__( 'That attachment does not exist.', 'ajax-thumbnail-rebuild' ),
+				array( 'status' => 404 )
+			);
+		}
+
+		$result = ATR_Optimizer::optimize_attachment( $id );
+
+		if ( '' === $result['message'] ) {
+			wp_update_attachment_metadata( $id, $result['metadata'] );
+		}
+
+		return rest_ensure_response( array(
+			'id'      => $id,
+			'skipped' => '' !== $result['message'],
+			'message' => $result['message'],
+			'saved'   => (int) $result['saved'],
+			'files'   => (int) $result['files'],
 		) );
 	}
 
