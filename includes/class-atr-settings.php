@@ -30,6 +30,7 @@ class ATR_Settings {
 			'webp_quality'  => 82,
 
 			'on_demand_enabled' => false,
+			'on_demand_sizes'   => array(),
 		);
 	}
 
@@ -127,6 +128,14 @@ class ATR_Settings {
 			'atr_on_demand'
 		);
 
+		add_settings_field(
+			'on_demand_sizes',
+			__( 'Sizes made only on demand', 'ajax-thumbnail-rebuild' ),
+			array( __CLASS__, 'render_on_demand_sizes' ),
+			self::GROUP,
+			'atr_on_demand'
+		);
+
 		add_settings_section(
 			'atr_webp',
 			__( 'WebP copies', 'ajax-thumbnail-rebuild' ),
@@ -174,6 +183,9 @@ class ATR_Settings {
 			'webp_quality'  => self::quality( $input['webp_quality'] ?? null, $defaults['webp_quality'] ),
 
 			'on_demand_enabled' => ! empty( $input['on_demand_enabled'] ),
+			'on_demand_sizes'   => array_values( array_unique( array_filter(
+				array_map( 'sanitize_key', (array) ( $input['on_demand_sizes'] ?? array() ) )
+			) ) ),
 		);
 	}
 
@@ -252,6 +264,30 @@ class ATR_Settings {
 			<?php esc_html_e( 'Cut each size when it is first requested, not on upload', 'ajax-thumbnail-rebuild' ); ?>
 		</label>
 		<p class="description"><?php esc_html_e( 'Rebuilding from the Rebuild tab still generates whatever you select there.', 'ajax-thumbnail-rebuild' ); ?></p>
+		<?php
+	}
+
+	public static function render_on_demand_sizes(): void {
+		$settings = self::all();
+		$marked   = (array) $settings['on_demand_sizes'];
+		$sizes    = ATR_Image_Sizes::all();
+		?>
+		<fieldset>
+			<legend class="screen-reader-text"><?php esc_html_e( 'Sizes made only on demand', 'ajax-thumbnail-rebuild' ); ?></legend>
+			<?php if ( ! $sizes ) : ?>
+				<p class="description"><?php esc_html_e( 'This site has no image sizes registered.', 'ajax-thumbnail-rebuild' ); ?></p>
+			<?php endif; ?>
+			<?php foreach ( $sizes as $size ) : ?>
+				<label style="display:block; margin-bottom:4px;">
+					<input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[on_demand_sizes][]" value="<?php echo esc_attr( $size['name'] ); ?>" <?php checked( in_array( $size['name'], $marked, true ) ); ?> />
+					<code><?php echo esc_html( $size['name'] ); ?></code>
+					<span class="description"><?php echo esc_html( ATR_Image_Sizes::dimensions_label( $size ) ); ?></span>
+				</label>
+			<?php endforeach; ?>
+		</fieldset>
+		<p class="description">
+			<?php esc_html_e( 'A size ticked here is never written on upload and is skipped by a rebuild, whatever the Rebuild tab has selected. It is cut the first time a page asks for it. Useful for the big sizes only a handful of pages ever use.', 'ajax-thumbnail-rebuild' ); ?>
+		</p>
 		<?php
 	}
 

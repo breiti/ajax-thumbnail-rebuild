@@ -111,9 +111,16 @@ class ATR_Regenerator {
 
 		$source = self::source_file( $attachment_id, $file );
 
+		$on_demand = ATR_On_Demand::sizes();
+
 		foreach ( ATR_Image_Sizes::all( $metadata, $attachment_id ) as $name => $size ) {
 			if ( null !== $only_sizes && ! in_array( $name, $only_sizes, true ) ) {
 				// Not selected, so keep the size already stored in $metadata.
+				continue;
+			}
+
+			if ( in_array( $name, $on_demand, true ) ) {
+				// Marked as on demand: it is cut when a page asks for it, not here.
 				continue;
 			}
 

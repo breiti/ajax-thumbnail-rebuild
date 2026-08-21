@@ -23,7 +23,7 @@ class ATR_On_Demand {
 	private static array $generated = array();
 
 	public function register(): void {
-		if ( ! self::is_enabled() ) {
+		if ( ! self::is_enabled() && ! self::sizes() ) {
 			return;
 		}
 
@@ -31,12 +31,33 @@ class ATR_On_Demand {
 		add_filter( 'image_downsize', array( $this, 'maybe_generate' ), 10, 3 );
 	}
 
+	/**
+	 * Whether every size waits to be asked for.
+	 */
 	public static function is_enabled(): bool {
 		return (bool) apply_filters( 'ajax_thumbnail_rebuild_on_demand_enabled', (bool) ATR_Settings::get( 'on_demand_enabled' ) );
 	}
 
 	/**
-	 * Hand WordPress an empty list of sizes to generate on upload.
+	 * Sizes marked as on demand one by one, whatever the setting above says.
+	 *
+	 * @return string[]
+	 */
+	public static function sizes(): array {
+		$sizes = (array) apply_filters( 'ajax_thumbnail_rebuild_on_demand_sizes', (array) ATR_Settings::get( 'on_demand_sizes', array() ) );
+
+		return array_values( array_filter( array_map( 'strval', $sizes ) ) );
+	}
+
+	/**
+	 * Whether this one size is left for the first request that needs it.
+	 */
+	public static function covers( string $size ): bool {
+		return self::is_enabled() || in_array( $size, self::sizes(), true );
+	}
+
+	/**
+	 * Take the sizes that wait out of the list WordPress generates on upload.
 	 *
 	 * The plugin's own screens and its rebuild take this callback off the filter
 	 * while they read the size list, so they still see every registered size.
@@ -45,7 +66,11 @@ class ATR_On_Demand {
 	 * @return array
 	 */
 	public static function strip_sizes( $sizes ) {
-		return array();
+		if ( self::is_enabled() ) {
+			return array();
+		}
+
+		return array_diff_key( (array) $sizes, array_flip( self::sizes() ) );
 	}
 
 	/**
@@ -64,6 +89,12 @@ class ATR_On_Demand {
 		$id = (int) $id;
 
 		if ( isset( self::$generated[ $id . '|' . $size ] ) ) {
+			return $downsize;
+		}
+
+		if ( ! self::covers( $size ) ) {
+			/* Only some sizes wait, and this is not one of them: a missing file here
+			   is not this feature's business. */
 			return $downsize;
 		}
 

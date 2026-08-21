@@ -2,14 +2,14 @@
 # This file is distributed under the GPL2.
 msgid ""
 msgstr ""
-"Project-Id-Version: AJAX Thumbnail Rebuild 2.4.0\n"
+"Project-Id-Version: AJAX Thumbnail Rebuild 2.5.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ajax-thumbnail-rebuild\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-21T14:21:05+00:00\n"
+"POT-Creation-Date: 2026-08-21T14:25:35+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: ajax-thumbnail-rebuild\n"
@@ -79,7 +79,7 @@ msgid "Select all sizes"
 msgstr ""
 
 #: includes/class-atr-admin-page.php:117
-#: includes/class-atr-admin-page.php:285
+#: includes/class-atr-admin-page.php:297
 msgid "Size"
 msgstr ""
 
@@ -88,104 +88,112 @@ msgid "Dimensions"
 msgstr ""
 
 #: includes/class-atr-admin-page.php:119
-#: includes/class-atr-admin-page.php:288
+#: includes/class-atr-admin-page.php:300
 msgid "Crop"
 msgstr ""
 
 #. translators: %s: image size name.
-#: includes/class-atr-admin-page.php:130
+#: includes/class-atr-admin-page.php:134
 #, php-format
 msgid "Rebuild the %s size"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:149
+#: includes/class-atr-admin-page.php:142
+msgid "on demand"
+msgstr ""
+
+#: includes/class-atr-admin-page.php:156
 msgid "Which images"
 msgstr ""
 
 #. translators: %s: number of images selected in the media library.
-#: includes/class-atr-admin-page.php:158
+#: includes/class-atr-admin-page.php:165
 #, php-format
 msgid "Working on the %s image you picked in the media library."
 msgid_plural "Working on the %s images you picked in the media library."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-atr-admin-page.php:162
+#: includes/class-atr-admin-page.php:169
 msgid "Work on the whole library instead"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:170
+#: includes/class-atr-admin-page.php:177
 msgid "Featured images"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:174
+#: includes/class-atr-admin-page.php:181
 msgid "Only rebuild images used as a featured image"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:180
+#: includes/class-atr-admin-page.php:185
+msgid "A WooCommerce product image is its featured image, so product images are included, and so are the images in a product gallery."
+msgstr ""
+
+#: includes/class-atr-admin-page.php:192
 msgid "File name"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:185
+#: includes/class-atr-admin-page.php:197
 msgid "Leave empty to rebuild every image. Use * for any characters and ? for a single one."
 msgstr ""
 
-#: includes/class-atr-admin-page.php:197
+#: includes/class-atr-admin-page.php:209
 msgid "Run"
 msgstr ""
 
 #. translators: %s: number of images in the media library.
-#: includes/class-atr-admin-page.php:204
+#: includes/class-atr-admin-page.php:216
 #, php-format
 msgid "%s image in the media library."
 msgid_plural "%s images in the media library."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-atr-admin-page.php:226
+#: includes/class-atr-admin-page.php:238
 #: includes/class-atr-media-library.php:45
 #: includes/class-atr-media-library.php:60
 #: includes/class-atr-plugin.php:168
 msgid "Rebuild thumbnails"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:229
+#: includes/class-atr-admin-page.php:241
 msgid "Stop"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:236
+#: includes/class-atr-admin-page.php:248
 msgid "Skipped images"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:238
+#: includes/class-atr-admin-page.php:250
 msgid "These images were left as they were. Their file is missing or is not readable as an image."
 msgstr ""
 
 #. translators: %s: this site's host name.
-#: includes/class-atr-admin-page.php:259
+#: includes/class-atr-admin-page.php:271
 #, php-format
 msgid "%s does not look like a host the proxy can reach from the internet. The settings save either way, but the images will not load while you are on this address."
 msgstr ""
 
-#: includes/class-atr-admin-page.php:286
+#: includes/class-atr-admin-page.php:298
 msgid "Width"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:287
+#: includes/class-atr-admin-page.php:299
 msgid "Height"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:294
+#: includes/class-atr-admin-page.php:306
 msgid "No image sizes are registered on this site."
 msgstr ""
 
-#: includes/class-atr-admin-page.php:300
-#: includes/class-atr-admin-page.php:301
+#: includes/class-atr-admin-page.php:312
+#: includes/class-atr-admin-page.php:313
 #: includes/class-atr-image-sizes.php:127
 msgid "any"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:309
+#: includes/class-atr-admin-page.php:321
 msgid "Sizes come from WordPress, your theme and your plugins. Change them where they are registered, then rebuild."
 msgstr ""
 
@@ -209,148 +217,161 @@ msgstr ""
 msgid "That attachment does not exist."
 msgstr ""
 
-#: includes/class-atr-settings.php:70
+#: includes/class-atr-settings.php:71
 msgid "Same format as the file"
 msgstr ""
 
-#: includes/class-atr-settings.php:84
+#: includes/class-atr-settings.php:85
 msgid "Image proxy"
 msgstr ""
 
-#: includes/class-atr-settings.php:91
+#: includes/class-atr-settings.php:92
 msgid "Serve images through wsrv.nl"
 msgstr ""
 
-#: includes/class-atr-settings.php:99
+#: includes/class-atr-settings.php:100
 msgid "Format"
 msgstr ""
 
-#: includes/class-atr-settings.php:108
-#: includes/class-atr-settings.php:147
+#: includes/class-atr-settings.php:109
+#: includes/class-atr-settings.php:156
 msgid "Quality"
 msgstr ""
 
-#: includes/class-atr-settings.php:117
+#: includes/class-atr-settings.php:118
 msgid "Sizes on demand"
 msgstr ""
 
-#: includes/class-atr-settings.php:124
+#: includes/class-atr-settings.php:125
 msgid "Generate on demand"
 msgstr ""
 
-#: includes/class-atr-settings.php:132
+#: includes/class-atr-settings.php:133
+#: includes/class-atr-settings.php:276
+msgid "Sizes made only on demand"
+msgstr ""
+
+#: includes/class-atr-settings.php:141
 msgid "WebP copies"
 msgstr ""
 
-#: includes/class-atr-settings.php:139
+#: includes/class-atr-settings.php:148
 msgid "Make WebP copies"
 msgstr ""
 
 #. translators: 1: opening link tag, 2: closing link tag.
-#: includes/class-atr-settings.php:200
+#: includes/class-atr-settings.php:212
 #, php-format
 msgid "Image URLs on the front end are rewritten to %1$swsrv.nl%2$s, a free image proxy that resizes and re-encodes on the fly and serves the result from a CDN. Your own files are untouched, and turning this off puts every URL back."
 msgstr ""
 
-#: includes/class-atr-settings.php:207
+#: includes/class-atr-settings.php:219
 msgid "The proxy fetches each image from your site, so it only works on a site that is reachable from the internet. On a local or password protected site the images will not load."
 msgstr ""
 
-#: includes/class-atr-settings.php:217
+#: includes/class-atr-settings.php:229
 msgid "Rewrite front end image URLs to the proxy"
 msgstr ""
 
-#: includes/class-atr-settings.php:232
+#: includes/class-atr-settings.php:244
 msgid "WebP files are a good deal smaller than JPEG or PNG and every current browser reads them."
 msgstr ""
 
-#: includes/class-atr-settings.php:239
+#: includes/class-atr-settings.php:251
 msgid "WordPress normally cuts every registered size the moment a file is uploaded, most of which no page ever asks for. With this on, an upload keeps only its own file and each size is cut the first time something requests it, then stays on disk like any other."
 msgstr ""
 
-#: includes/class-atr-settings.php:242
+#: includes/class-atr-settings.php:254
 msgid "Uploads get quicker and the uploads folder stays smaller. The first visitor to need a size waits for it to be cut, and until then an image has no other size to offer in its srcset."
 msgstr ""
 
-#: includes/class-atr-settings.php:252
+#: includes/class-atr-settings.php:264
 msgid "Cut each size when it is first requested, not on upload"
 msgstr ""
 
-#: includes/class-atr-settings.php:254
+#: includes/class-atr-settings.php:266
 msgid "Rebuilding from the Rebuild tab still generates whatever you select there."
 msgstr ""
 
-#: includes/class-atr-settings.php:261
+#: includes/class-atr-settings.php:278
+msgid "This site has no image sizes registered."
+msgstr ""
+
+#: includes/class-atr-settings.php:289
+msgid "A size ticked here is never written on upload and is skipped by a rebuild, whatever the Rebuild tab has selected. It is cut the first time a page asks for it. Useful for the big sizes only a handful of pages ever use."
+msgstr ""
+
+#: includes/class-atr-settings.php:297
 msgid "A WebP copy is written next to every image WordPress generates, and the front end serves it through a picture element with the original as the fallback. Your JPEG and PNG files stay where they are, and a copy that would be larger than the original is thrown away."
 msgstr ""
 
 #. translators: 1: opening link tag to the Rebuild tab, 2: closing link tag.
-#: includes/class-atr-settings.php:267
+#: includes/class-atr-settings.php:303
 #, php-format
 msgid "New uploads are converted as they arrive. For the images already in the library, %1$srun a rebuild%2$s once after turning this on."
 msgstr ""
 
-#: includes/class-atr-settings.php:275
+#: includes/class-atr-settings.php:311
 msgid "The image library on this server cannot write WebP, so no copies will be made. Ask your host for GD or Imagick with WebP support."
 msgstr ""
 
-#: includes/class-atr-settings.php:280
+#: includes/class-atr-settings.php:316
 msgid "This works on its own, but the proxy above is on and already delivers WebP from its CDN for the images it rewrites. The copies made here are what gets served whenever the proxy is off or does not handle an image."
 msgstr ""
 
-#: includes/class-atr-settings.php:291
+#: includes/class-atr-settings.php:327
 msgid "Convert generated images to WebP and serve the copies"
 msgstr ""
 
-#: includes/class-atr-settings.php:300
+#: includes/class-atr-settings.php:336
 msgid "1 to 100, used when writing the WebP copies."
 msgstr ""
 
-#: includes/class-atr-settings.php:308
+#: includes/class-atr-settings.php:344
 msgid "1 to 100. Around 80 is the usual compromise between file size and artefacts."
 msgstr ""
 
 #. translators: %d: attachment id, shown when the image has no title.
-#: assets/js/admin.js:126
+#: assets/js/admin.js:127
 #, js-format
 msgid "Attachment %d"
 msgstr ""
 
-#: assets/js/admin.js:150
+#: assets/js/admin.js:151
 msgid "Reading the media library…"
 msgstr ""
 
-#: assets/js/admin.js:171
+#: assets/js/admin.js:172
 msgid "No images match those settings."
 msgstr ""
 
-#: assets/js/admin.js:178
+#: assets/js/admin.js:179
 msgid "The media library could not be read."
 msgstr ""
 
-#: assets/js/admin.js:184
+#: assets/js/admin.js:185
 msgid "Finishing the current image…"
 msgstr ""
 
 #. translators: %1$s: number of images rebuilt, %2$s: number of images skipped.
-#: assets/js/admin.js:199
+#: assets/js/admin.js:200
 #, js-format
 msgid "%1$s image rebuilt, %2$s skipped."
 msgid_plural "%1$s images rebuilt, %2$s skipped."
 msgstr[0] ""
 msgstr[1] ""
 
-#: assets/js/admin.js:205
+#: assets/js/admin.js:206
 msgid "Stopped."
 msgstr ""
 
 #. translators: 1: current image number, 2: total images, 3: image title.
-#: assets/js/admin.js:227
+#: assets/js/admin.js:228
 #, js-format
 msgid "Rebuilding %1$s of %2$s — %3$s"
 msgstr ""
 
-#: assets/js/admin.js:264
+#: assets/js/admin.js:265
 msgid "The server could not rebuild this image."
 msgstr ""
 

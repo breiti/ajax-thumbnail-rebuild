@@ -53,7 +53,19 @@ class ATR_Attachments {
 		if ( $args['only_featured'] ) {
 			/* One featured image can be shared by many posts, hence the DISTINCT:
 			   rebuilding the same file once per post is pure waste. */
-			$join .= " INNER JOIN {$wpdb->postmeta} AS tm ON tm.meta_value = p.ID AND tm.meta_key = '_thumbnail_id'";
+			$conditions = array( "( tm.meta_key = '_thumbnail_id' AND tm.meta_value = p.ID )" );
+
+			/* A WooCommerce product's main image is its featured image, so that is
+			   already covered; its gallery images are a comma separated list of ids
+			   in a meta field of their own. */
+			foreach ( self::gallery_meta_keys() as $meta_key ) {
+				$conditions[] = $wpdb->prepare(
+					'( tm.meta_key = %s AND FIND_IN_SET( p.ID, REPLACE( tm.meta_value, " ", "" ) ) )',
+					$meta_key
+				);
+			}
+
+			$join .= " INNER JOIN {$wpdb->postmeta} AS tm ON ( " . implode( ' OR ', $conditions ) . ' )';
 		}
 
 		if ( '' !== $filename ) {
@@ -90,6 +102,20 @@ class ATR_Attachments {
 		}
 
 		return $items;
+	}
+
+	/**
+	 * Meta fields that hold a comma separated list of image ids used on a post.
+	 *
+	 * WooCommerce's product gallery is the one every shop has; a site with another
+	 * can add to it.
+	 *
+	 * @return string[]
+	 */
+	public static function gallery_meta_keys(): array {
+		$keys = class_exists( 'WooCommerce' ) ? array( '_product_image_gallery' ) : array();
+
+		return array_values( array_filter( array_map( 'strval', (array) apply_filters( 'ajax_thumbnail_rebuild_gallery_meta_keys', $keys ) ) ) );
 	}
 
 	/**

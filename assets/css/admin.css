@@ -30,6 +30,17 @@
 	color: #fff;
 }
 
+.atr-badge {
+	display: inline-block;
+	margin-left: 6px;
+	padding: 0 6px;
+	border-radius: 9px;
+	background: #f0f0f1;
+	color: #646970;
+	font-size: 11px;
+	line-height: 1.8;
+}
+
 .atr-progress__track {
 	height: 8px;
 	margin: 4px 0 0;

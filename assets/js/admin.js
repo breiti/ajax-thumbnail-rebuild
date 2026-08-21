@@ -28,7 +28,8 @@
 		var skippedBox = document.getElementById( 'atr-skipped-box' );
 		var skippedList = document.getElementById( 'atr-skipped' );
 		var selectAll = document.getElementById( 'atr-size-select-all' );
-		var sizeBoxes = Array.prototype.slice.call( document.querySelectorAll( '.atr-size' ) );
+		// Sizes marked as on demand are shown but disabled: they are never rebuilt here.
+		var sizeBoxes = Array.prototype.slice.call( document.querySelectorAll( '.atr-size:not([disabled])' ) );
 
 		var stopped = false;
 

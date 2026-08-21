@@ -120,8 +120,12 @@ class ATR_Admin_Page {
 										</tr>
 									</thead>
 									<tbody>
+										<?php $on_demand = ATR_On_Demand::sizes(); ?>
 										<?php foreach ( $sizes as $size ) : ?>
-											<?php $id = 'atr-size-' . sanitize_html_class( $size['name'] ); ?>
+											<?php
+											$id      = 'atr-size-' . sanitize_html_class( $size['name'] );
+											$waiting = in_array( $size['name'], $on_demand, true );
+											?>
 											<tr>
 												<th scope="row" class="check-column">
 													<label class="screen-reader-text" for="<?php echo esc_attr( $id ); ?>">
@@ -130,10 +134,13 @@ class ATR_Admin_Page {
 														printf( esc_html__( 'Rebuild the %s size', 'ajax-thumbnail-rebuild' ), esc_html( $size['name'] ) );
 														?>
 													</label>
-													<input type="checkbox" class="atr-size" id="<?php echo esc_attr( $id ); ?>" value="<?php echo esc_attr( $size['name'] ); ?>" checked="checked" />
+													<input type="checkbox" class="atr-size" id="<?php echo esc_attr( $id ); ?>" value="<?php echo esc_attr( $size['name'] ); ?>" <?php checked( ! $waiting ); ?> <?php disabled( $waiting ); ?> />
 												</th>
 												<td class="column-primary">
 													<label for="<?php echo esc_attr( $id ); ?>"><strong><?php echo esc_html( $size['name'] ); ?></strong></label>
+													<?php if ( $waiting ) : ?>
+														<span class="atr-badge"><?php esc_html_e( 'on demand', 'ajax-thumbnail-rebuild' ); ?></span>
+													<?php endif; ?>
 												</td>
 												<td><?php echo esc_html( ATR_Image_Sizes::dimensions_label( $size ) ); ?></td>
 												<td><?php echo esc_html( ATR_Image_Sizes::crop_label( $size ) ?: '—' ); ?></td>
@@ -173,6 +180,11 @@ class ATR_Admin_Page {
 												<input type="checkbox" id="atr-only-featured" />
 												<?php esc_html_e( 'Only rebuild images used as a featured image', 'ajax-thumbnail-rebuild' ); ?>
 											</label>
+											<?php if ( ATR_Attachments::gallery_meta_keys() ) : ?>
+												<p class="description">
+													<?php esc_html_e( 'A WooCommerce product image is its featured image, so product images are included, and so are the images in a product gallery.', 'ajax-thumbnail-rebuild' ); ?>
+												</p>
+											<?php endif; ?>
 										</td>
 									</tr>
 									<tr>
