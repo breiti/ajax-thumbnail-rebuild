@@ -26,15 +26,19 @@ class ATR_Plugin {
 
 	private ATR_Image_Proxy $proxy;
 
+	private ATR_Webp $webp;
+
 	public function __construct() {
 		$this->admin_page = new ATR_Admin_Page();
 		$this->rest       = new ATR_Rest_Controller();
 		$this->proxy      = new ATR_Image_Proxy();
+		$this->webp       = new ATR_Webp();
 	}
 
 	public function boot(): void {
 		add_action( 'init', array( $this, 'load_textdomain' ) );
 		add_action( 'init', array( $this->proxy, 'register' ) );
+		add_action( 'init', array( $this->webp, 'register' ) );
 		add_action( 'admin_init', array( ATR_Settings::class, 'register' ) );
 		add_action( 'rest_api_init', array( $this->rest, 'register_routes' ) );
 		add_action( 'admin_menu', array( $this->admin_page, 'register' ) );

@@ -2,14 +2,14 @@
 # This file is distributed under the GPL2.
 msgid ""
 msgstr ""
-"Project-Id-Version: AJAX Thumbnail Rebuild 2.1.0\n"
+"Project-Id-Version: AJAX Thumbnail Rebuild 2.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ajax-thumbnail-rebuild\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-21T14:06:24+00:00\n"
+"POT-Creation-Date: 2026-08-21T14:11:38+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: ajax-thumbnail-rebuild\n"
@@ -54,7 +54,7 @@ msgid "Secondary menu"
 msgstr ""
 
 #: includes/class-atr-admin-page.php:71
-#: includes/class-atr-plugin.php:135
+#: includes/class-atr-plugin.php:139
 msgid "Rebuild"
 msgstr ""
 
@@ -131,7 +131,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: includes/class-atr-admin-page.php:210
-#: includes/class-atr-plugin.php:153
+#: includes/class-atr-plugin.php:157
 msgid "Rebuild thumbnails"
 msgstr ""
 
@@ -179,7 +179,7 @@ msgstr ""
 msgid "cropped"
 msgstr ""
 
-#: includes/class-atr-plugin.php:130
+#: includes/class-atr-plugin.php:134
 msgid "Thumbnails"
 msgstr ""
 
@@ -195,45 +195,80 @@ msgstr ""
 msgid "That attachment does not exist."
 msgstr ""
 
-#: includes/class-atr-settings.php:66
+#: includes/class-atr-settings.php:68
 msgid "Same format as the file"
 msgstr ""
 
-#: includes/class-atr-settings.php:80
+#: includes/class-atr-settings.php:82
 msgid "Image proxy"
 msgstr ""
 
-#: includes/class-atr-settings.php:87
+#: includes/class-atr-settings.php:89
 msgid "Serve images through wsrv.nl"
 msgstr ""
 
-#: includes/class-atr-settings.php:95
+#: includes/class-atr-settings.php:97
 msgid "Format"
 msgstr ""
 
-#: includes/class-atr-settings.php:104
+#: includes/class-atr-settings.php:106
+#: includes/class-atr-settings.php:130
 msgid "Quality"
 msgstr ""
 
+#: includes/class-atr-settings.php:115
+msgid "WebP copies"
+msgstr ""
+
+#: includes/class-atr-settings.php:122
+msgid "Make WebP copies"
+msgstr ""
+
 #. translators: 1: opening link tag, 2: closing link tag.
-#: includes/class-atr-settings.php:139
+#: includes/class-atr-settings.php:181
 #, php-format
 msgid "Image URLs on the front end are rewritten to %1$swsrv.nl%2$s, a free image proxy that resizes and re-encodes on the fly and serves the result from a CDN. Your own files are untouched, and turning this off puts every URL back."
 msgstr ""
 
-#: includes/class-atr-settings.php:146
+#: includes/class-atr-settings.php:188
 msgid "The proxy fetches each image from your site, so it only works on a site that is reachable from the internet. On a local or password protected site the images will not load."
 msgstr ""
 
-#: includes/class-atr-settings.php:156
+#: includes/class-atr-settings.php:198
 msgid "Rewrite front end image URLs to the proxy"
 msgstr ""
 
-#: includes/class-atr-settings.php:171
+#: includes/class-atr-settings.php:213
 msgid "WebP files are a good deal smaller than JPEG or PNG and every current browser reads them."
 msgstr ""
 
-#: includes/class-atr-settings.php:179
+#: includes/class-atr-settings.php:220
+msgid "A WebP copy is written next to every image WordPress generates, and the front end serves it through a picture element with the original as the fallback. Your JPEG and PNG files stay where they are, and a copy that would be larger than the original is thrown away."
+msgstr ""
+
+#. translators: 1: opening link tag to the Rebuild tab, 2: closing link tag.
+#: includes/class-atr-settings.php:226
+#, php-format
+msgid "New uploads are converted as they arrive. For the images already in the library, %1$srun a rebuild%2$s once after turning this on."
+msgstr ""
+
+#: includes/class-atr-settings.php:234
+msgid "The image library on this server cannot write WebP, so no copies will be made. Ask your host for GD or Imagick with WebP support."
+msgstr ""
+
+#: includes/class-atr-settings.php:239
+msgid "The proxy is on and already serves WebP from its CDN, so copies made here will not be used on the front end until you turn it off."
+msgstr ""
+
+#: includes/class-atr-settings.php:250
+msgid "Convert generated images to WebP and serve the copies"
+msgstr ""
+
+#: includes/class-atr-settings.php:259
+msgid "1 to 100, used when writing the WebP copies."
+msgstr ""
+
+#: includes/class-atr-settings.php:267
 msgid "1 to 100. Around 80 is the usual compromise between file size and artefacts."
 msgstr ""
 

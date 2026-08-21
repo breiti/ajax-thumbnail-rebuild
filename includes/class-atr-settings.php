@@ -26,6 +26,8 @@ class ATR_Settings {
 			'proxy_enabled' => false,
 			'proxy_output'  => 'webp',
 			'proxy_quality' => 82,
+			'webp_enabled'  => false,
+			'webp_quality'  => 82,
 		);
 	}
 
@@ -107,6 +109,30 @@ class ATR_Settings {
 			'atr_proxy',
 			array( 'label_for' => 'atr-proxy-quality' )
 		);
+
+		add_settings_section(
+			'atr_webp',
+			__( 'WebP copies', 'ajax-thumbnail-rebuild' ),
+			array( __CLASS__, 'render_webp_intro' ),
+			self::GROUP
+		);
+
+		add_settings_field(
+			'webp_enabled',
+			__( 'Make WebP copies', 'ajax-thumbnail-rebuild' ),
+			array( __CLASS__, 'render_webp_enabled' ),
+			self::GROUP,
+			'atr_webp'
+		);
+
+		add_settings_field(
+			'webp_quality',
+			__( 'Quality', 'ajax-thumbnail-rebuild' ),
+			array( __CLASS__, 'render_webp_quality' ),
+			self::GROUP,
+			'atr_webp',
+			array( 'label_for' => 'atr-webp-quality' )
+		);
 	}
 
 	/**
@@ -126,8 +152,24 @@ class ATR_Settings {
 		return array(
 			'proxy_enabled' => ! empty( $input['proxy_enabled'] ),
 			'proxy_output'  => $output,
-			'proxy_quality' => (int) min( 100, max( 1, (int) ( $input['proxy_quality'] ?? $defaults['proxy_quality'] ) ) ),
+			'proxy_quality' => self::quality( $input['proxy_quality'] ?? null, $defaults['proxy_quality'] ),
+			'webp_enabled'  => ! empty( $input['webp_enabled'] ),
+			'webp_quality'  => self::quality( $input['webp_quality'] ?? null, $defaults['webp_quality'] ),
 		);
+	}
+
+	/**
+	 * A quality value in the range the image libraries accept.
+	 *
+	 * @param mixed $value    Submitted value.
+	 * @param int   $fallback Used when nothing was submitted.
+	 */
+	private static function quality( $value, int $fallback ): int {
+		if ( null === $value || '' === $value ) {
+			return $fallback;
+		}
+
+		return (int) min( 100, max( 1, (int) $value ) );
 	}
 
 	public static function render_proxy_intro(): void {
@@ -169,6 +211,52 @@ class ATR_Settings {
 			<?php endforeach; ?>
 		</select>
 		<p class="description"><?php esc_html_e( 'WebP files are a good deal smaller than JPEG or PNG and every current browser reads them.', 'ajax-thumbnail-rebuild' ); ?></p>
+		<?php
+	}
+
+	public static function render_webp_intro(): void {
+		?>
+		<p class="description">
+			<?php esc_html_e( 'A WebP copy is written next to every image WordPress generates, and the front end serves it through a picture element with the original as the fallback. Your JPEG and PNG files stay where they are, and a copy that would be larger than the original is thrown away.', 'ajax-thumbnail-rebuild' ); ?>
+		</p>
+		<p class="description">
+			<?php
+			printf(
+				/* translators: 1: opening link tag to the Rebuild tab, 2: closing link tag. */
+				esc_html__( 'New uploads are converted as they arrive. For the images already in the library, %1$srun a rebuild%2$s once after turning this on.', 'ajax-thumbnail-rebuild' ),
+				'<a href="' . esc_url( ATR_Admin_Page::url( 'rebuild' ) ) . '">',
+				'</a>'
+			);
+			?>
+		</p>
+		<?php if ( ! wp_image_editor_supports( array( 'mime_type' => 'image/webp' ) ) ) : ?>
+			<div class="notice notice-warning inline">
+				<p><?php esc_html_e( 'The image library on this server cannot write WebP, so no copies will be made. Ask your host for GD or Imagick with WebP support.', 'ajax-thumbnail-rebuild' ); ?></p>
+			</div>
+		<?php endif; ?>
+		<?php if ( ATR_Image_Proxy::is_enabled() ) : ?>
+			<div class="notice notice-info inline">
+				<p><?php esc_html_e( 'The proxy is on and already serves WebP from its CDN, so copies made here will not be used on the front end until you turn it off.', 'ajax-thumbnail-rebuild' ); ?></p>
+			</div>
+		<?php endif; ?>
+		<?php
+	}
+
+	public static function render_webp_enabled(): void {
+		$settings = self::all();
+		?>
+		<label>
+			<input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[webp_enabled]" value="1" <?php checked( $settings['webp_enabled'] ); ?> />
+			<?php esc_html_e( 'Convert generated images to WebP and serve the copies', 'ajax-thumbnail-rebuild' ); ?>
+		</label>
+		<?php
+	}
+
+	public static function render_webp_quality(): void {
+		$settings = self::all();
+		?>
+		<input type="number" name="<?php echo esc_attr( self::OPTION ); ?>[webp_quality]" id="atr-webp-quality" class="small-text" min="1" max="100" step="1" value="<?php echo esc_attr( (string) $settings['webp_quality'] ); ?>" />
+		<p class="description"><?php esc_html_e( '1 to 100, used when writing the WebP copies.', 'ajax-thumbnail-rebuild' ); ?></p>
 		<?php
 	}
 
