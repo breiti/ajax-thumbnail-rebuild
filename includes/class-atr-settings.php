@@ -23,6 +23,9 @@ class ATR_Settings {
 	 */
 	public static function defaults(): array {
 		return array(
+			'upload_quality'       => ATR_Uploads::CORE_QUALITY,
+			'max_upload_dimension' => ATR_Uploads::CORE_THRESHOLD,
+
 			'proxy_enabled' => false,
 			'proxy_output'  => 'webp',
 			'proxy_quality' => 82,
@@ -79,6 +82,31 @@ class ATR_Settings {
 			'default'           => self::defaults(),
 			'show_in_rest'      => false,
 		) );
+
+		add_settings_section(
+			'atr_uploads',
+			__( 'Uploads', 'ajax-thumbnail-rebuild' ),
+			array( __CLASS__, 'render_uploads_intro' ),
+			self::GROUP
+		);
+
+		add_settings_field(
+			'upload_quality',
+			__( 'Compression', 'ajax-thumbnail-rebuild' ),
+			array( __CLASS__, 'render_upload_quality' ),
+			self::GROUP,
+			'atr_uploads',
+			array( 'label_for' => 'atr-upload-quality' )
+		);
+
+		add_settings_field(
+			'max_upload_dimension',
+			__( 'Largest an image may stay', 'ajax-thumbnail-rebuild' ),
+			array( __CLASS__, 'render_max_upload_dimension' ),
+			self::GROUP,
+			'atr_uploads',
+			array( 'label_for' => 'atr-max-upload-dimension' )
+		);
 
 		add_settings_section(
 			'atr_proxy',
@@ -176,6 +204,9 @@ class ATR_Settings {
 		}
 
 		return array(
+			'upload_quality'       => self::quality( $input['upload_quality'] ?? null, $defaults['upload_quality'] ),
+			'max_upload_dimension' => max( 0, (int) ( $input['max_upload_dimension'] ?? $defaults['max_upload_dimension'] ) ),
+
 			'proxy_enabled' => ! empty( $input['proxy_enabled'] ),
 			'proxy_output'  => $output,
 			'proxy_quality' => self::quality( $input['proxy_quality'] ?? null, $defaults['proxy_quality'] ),
@@ -201,6 +232,57 @@ class ATR_Settings {
 		}
 
 		return (int) min( 100, max( 1, (int) $value ) );
+	}
+
+	public static function render_uploads_intro(): void {
+		$editor = _wp_image_editor_choose( array( 'mime_type' => 'image/jpeg' ) );
+		?>
+		<p class="description">
+			<?php esc_html_e( 'What WordPress does with a file as it arrives. Both of these apply to new uploads and to anything you rebuild from here; images already on the site keep what they were given until then.', 'ajax-thumbnail-rebuild' ); ?>
+			<?php if ( $editor ) : ?>
+				<?php
+				printf(
+					/* translators: %s: name of the image library in use, e.g. Imagick. */
+					esc_html__( 'This server resizes with %s.', 'ajax-thumbnail-rebuild' ),
+					'<code>' . esc_html( str_replace( 'WP_Image_Editor_', '', (string) $editor ) ) . '</code>'
+				);
+				?>
+			<?php endif; ?>
+		</p>
+		<?php
+	}
+
+	public static function render_upload_quality(): void {
+		$settings = self::all();
+		?>
+		<input type="number" name="<?php echo esc_attr( self::OPTION ); ?>[upload_quality]" id="atr-upload-quality" class="small-text" min="1" max="100" step="1" value="<?php echo esc_attr( (string) $settings['upload_quality'] ); ?>" />
+		<p class="description">
+			<?php
+			printf(
+				/* translators: %s: the quality WordPress uses by default. */
+				esc_html__( '1 to 100, used for every JPEG and PNG copy WordPress writes. WordPress uses %s when nothing says otherwise; higher means larger files.', 'ajax-thumbnail-rebuild' ),
+				'<code>' . esc_html( (string) ATR_Uploads::CORE_QUALITY ) . '</code>'
+			);
+			?>
+		</p>
+		<?php
+	}
+
+	public static function render_max_upload_dimension(): void {
+		$settings = self::all();
+		?>
+		<input type="number" name="<?php echo esc_attr( self::OPTION ); ?>[max_upload_dimension]" id="atr-max-upload-dimension" class="small-text" min="0" step="1" value="<?php echo esc_attr( (string) $settings['max_upload_dimension'] ); ?>" />
+		<?php esc_html_e( 'pixels', 'ajax-thumbnail-rebuild' ); ?>
+		<p class="description">
+			<?php
+			printf(
+				/* translators: %s: the threshold WordPress uses by default. */
+				esc_html__( 'An upload longer than this on its longest edge is scaled down to it, and the untouched original is kept beside it. WordPress uses %s. Set 0 to keep every upload at the size it arrived.', 'ajax-thumbnail-rebuild' ),
+				'<code>' . esc_html( (string) ATR_Uploads::CORE_THRESHOLD ) . '</code>'
+			);
+			?>
+		</p>
+		<?php
 	}
 
 	public static function render_proxy_intro(): void {

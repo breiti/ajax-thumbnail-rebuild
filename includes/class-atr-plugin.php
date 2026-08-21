@@ -32,6 +32,8 @@ class ATR_Plugin {
 
 	private ATR_Media_Library $media_library;
 
+	private ATR_Uploads $uploads;
+
 	public function __construct() {
 		$this->admin_page = new ATR_Admin_Page();
 		$this->rest       = new ATR_Rest_Controller();
@@ -40,6 +42,7 @@ class ATR_Plugin {
 		$this->on_demand  = new ATR_On_Demand();
 
 		$this->media_library = new ATR_Media_Library();
+		$this->uploads       = new ATR_Uploads();
 	}
 
 	public function boot(): void {
@@ -47,6 +50,7 @@ class ATR_Plugin {
 		add_action( 'init', array( $this->proxy, 'register' ) );
 		add_action( 'init', array( $this->webp, 'register' ) );
 		add_action( 'init', array( $this->on_demand, 'register' ) );
+		add_action( 'init', array( $this->uploads, 'register' ) );
 		add_action( 'admin_init', array( ATR_Settings::class, 'register' ) );
 		add_action( 'rest_api_init', array( $this->rest, 'register_routes' ) );
 		add_action( 'admin_menu', array( $this->admin_page, 'register' ) );
