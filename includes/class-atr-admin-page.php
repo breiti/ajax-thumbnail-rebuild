@@ -123,7 +123,7 @@ class ATR_Admin_Page {
 
 				<div id="post-body-content">
 					<div class="postbox">
-						<h2 class="hndle"><span><?php esc_html_e( 'Sizes to rebuild', 'ajax-thumbnail-rebuild' ); ?></span></h2>
+						<div class="postbox-header"><h2 class="hndle"><span><?php esc_html_e( 'Sizes to rebuild', 'ajax-thumbnail-rebuild' ); ?></span></h2></div>
 						<div class="inside">
 							<?php if ( ! $sizes ) : ?>
 								<div class="notice notice-warning inline">
@@ -176,7 +176,7 @@ class ATR_Admin_Page {
 					</div>
 
 					<div class="postbox">
-						<h2 class="hndle"><span><?php esc_html_e( 'Which images', 'ajax-thumbnail-rebuild' ); ?></span></h2>
+						<div class="postbox-header"><h2 class="hndle"><span><?php esc_html_e( 'Which images', 'ajax-thumbnail-rebuild' ); ?></span></h2></div>
 						<div class="inside">
 							<?php $selected = ATR_Media_Library::requested_ids(); ?>
 							<?php if ( $selected ) : ?>
@@ -229,7 +229,7 @@ class ATR_Admin_Page {
 
 				<div id="postbox-container-1" class="postbox-container">
 					<div class="postbox">
-						<h2 class="hndle"><span><?php esc_html_e( 'Run', 'ajax-thumbnail-rebuild' ); ?></span></h2>
+						<div class="postbox-header"><h2 class="hndle"><span><?php esc_html_e( 'Run', 'ajax-thumbnail-rebuild' ); ?></span></h2></div>
 						<div class="inside">
 							<p class="atr-library-count">
 								<?php
@@ -283,7 +283,7 @@ class ATR_Admin_Page {
 					</div>
 
 					<div class="postbox" id="atr-skipped-box" hidden>
-						<h2 class="hndle"><span><?php esc_html_e( 'Skipped images', 'ajax-thumbnail-rebuild' ); ?></span></h2>
+						<div class="postbox-header"><h2 class="hndle"><span><?php esc_html_e( 'Skipped images', 'ajax-thumbnail-rebuild' ); ?></span></h2></div>
 						<div class="inside">
 							<p class="description"><?php esc_html_e( 'These images were left as they were. Their file is missing or is not readable as an image.', 'ajax-thumbnail-rebuild' ); ?></p>
 							<ul class="atr-skipped" id="atr-skipped"></ul>
@@ -303,7 +303,7 @@ class ATR_Admin_Page {
 
 				<div id="post-body-content">
 					<div class="postbox">
-						<h2 class="hndle"><span><?php esc_html_e( 'Files nothing points at', 'ajax-thumbnail-rebuild' ); ?></span></h2>
+						<div class="postbox-header"><h2 class="hndle"><span><?php esc_html_e( 'Files nothing points at', 'ajax-thumbnail-rebuild' ); ?></span></h2></div>
 						<div class="inside">
 							<p>
 								<?php esc_html_e( 'Change a size from 300x300 to 400x400 and WordPress writes the new file and forgets the old one, which stays on disk for good. This looks for those leftovers: files named after an image that the image itself no longer refers to.', 'ajax-thumbnail-rebuild' ); ?>
@@ -330,7 +330,7 @@ class ATR_Admin_Page {
 
 				<div id="postbox-container-1" class="postbox-container">
 					<div class="postbox">
-						<h2 class="hndle"><span><?php esc_html_e( 'Scan', 'ajax-thumbnail-rebuild' ); ?></span></h2>
+						<div class="postbox-header"><h2 class="hndle"><span><?php esc_html_e( 'Scan', 'ajax-thumbnail-rebuild' ); ?></span></h2></div>
 						<div class="inside">
 							<p class="atr-library-count">
 								<?php
@@ -364,7 +364,7 @@ class ATR_Admin_Page {
 					</div>
 
 					<div class="postbox" id="atr-cleanup-delete-box" hidden>
-						<h2 class="hndle"><span><?php esc_html_e( 'Delete', 'ajax-thumbnail-rebuild' ); ?></span></h2>
+						<div class="postbox-header"><h2 class="hndle"><span><?php esc_html_e( 'Delete', 'ajax-thumbnail-rebuild' ); ?></span></h2></div>
 						<div class="inside">
 							<p id="atr-cleanup-summary"></p>
 							<p class="description"><?php esc_html_e( 'Deleting cannot be undone. Take a backup of the uploads folder if you are not sure.', 'ajax-thumbnail-rebuild' ); ?></p>
@@ -396,6 +396,7 @@ class ATR_Admin_Page {
 		// options.php saves and redirects back here; this prints what it has to say.
 		settings_errors();
 		?>
+		<div id="poststuff">
 		<form method="post" action="<?php echo esc_url( admin_url( 'options.php' ) ); ?>">
 			<?php settings_fields( ATR_Settings::GROUP ); ?>
 			<input type="hidden" name="<?php echo esc_attr( ATR_Settings::OPTION ); ?>[_fields]" value="<?php echo esc_attr( implode( ',', $settings['keys'] ) ); ?>" />
@@ -418,6 +419,7 @@ class ATR_Admin_Page {
 
 			<?php submit_button(); ?>
 		</form>
+		</div>
 		<?php
 	}
 
@@ -438,7 +440,7 @@ class ATR_Admin_Page {
 			?>
 			<div class="postbox">
 				<?php if ( ! empty( $section['title'] ) ) : ?>
-					<h2 class="hndle"><span><?php echo esc_html( $section['title'] ); ?></span></h2>
+					<div class="postbox-header"><h2 class="hndle"><span><?php echo esc_html( $section['title'] ); ?></span></h2></div>
 				<?php endif; ?>
 
 				<div class="inside">

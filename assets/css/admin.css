@@ -15,6 +15,7 @@
 /* Every tab's content stands off the tabs themselves. #poststuff brings its own
    padding, so only the plain ones need this. */
 .atr-tab > *:first-child:not(#poststuff),
+.atr-tab > #poststuff > form > *:first-child,
 .atr-tab > form > *:first-child {
 	margin-top: 1.2em;
 }
@@ -39,6 +40,7 @@
 .nav-tab-active /* Every tab's content stands off the tabs themselves. #poststuff brings its own
    padding, so only the plain ones need this. */
 .atr-tab > *:first-child:not(#poststuff),
+.atr-tab > #poststuff > form > *:first-child,
 .atr-tab > form > *:first-child {
 	margin-top: 1.2em;
 }
