@@ -10,6 +10,27 @@
 	var __ = i18n.__;
 	var sprintf = i18n.sprintf;
 
+	/**
+	 * Why an image came out no smaller. "0 B" on its own tells nobody anything.
+	 *
+	 * @param {Object} response What the endpoint answered.
+	 *
+	 * @return {string} A sentence for the person who pressed the button.
+	 */
+	function nothingSaved( response ) {
+		if ( 'png' === response.reason ) {
+			return __( 'PNG files do not get smaller by re-encoding. WebP copies are what helps for these.', 'ajax-thumbnail-rebuild' );
+		}
+
+		if ( 'already' === response.reason ) {
+			/* translators: %d: the quality setting, e.g. 82. */
+			return sprintf( __( 'Already optimised at quality %d.', 'ajax-thumbnail-rebuild' ), response.quality );
+		}
+
+		/* translators: %d: the quality setting, e.g. 82. */
+		return sprintf( __( 'Already as small as it gets at quality %d.', 'ajax-thumbnail-rebuild' ), response.quality );
+	}
+
 	function formatBytes( bytes ) {
 		if ( bytes >= 1048576 ) {
 			return ( bytes / 1048576 ).toFixed( 1 ) + ' MB';
@@ -62,7 +83,7 @@
 			say( response.saved
 				/* translators: %s: how much smaller the files are, e.g. "120 KB". */
 				? sprintf( __( 'Done, %s saved.', 'ajax-thumbnail-rebuild' ), formatBytes( response.saved ) )
-				: __( 'Already as small as it gets.', 'ajax-thumbnail-rebuild' ) );
+				: nothingSaved( response ) );
 		} ).catch( function( error ) {
 			say( error.message || __( 'The thumbnails could not be rebuilt.', 'ajax-thumbnail-rebuild' ) );
 		} ).then( function() {

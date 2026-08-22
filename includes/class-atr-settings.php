@@ -319,6 +319,9 @@ class ATR_Settings {
 			<?php esc_html_e( 'Optimising re-encodes a file that is already the right size, to get the same picture in fewer bytes. Nothing is resized and no file is renamed, the result is kept only when it is genuinely smaller, and the untouched original beside a scaled upload is never touched.', 'ajax-thumbnail-rebuild' ); ?>
 		</p>
 		<p class="description">
+			<?php esc_html_e( 'This is what re-encoding can do, which is a JPEG matter: a PNG written back by the same image library comes out the same size, so PNG images gain nothing here. WebP copies are what makes those smaller.', 'ajax-thumbnail-rebuild' ); ?>
+		</p>
+		<p class="description">
 			<?php
 			printf(
 				/* translators: 1: opening link tag to the Rebuild tab, 2: closing link tag. */

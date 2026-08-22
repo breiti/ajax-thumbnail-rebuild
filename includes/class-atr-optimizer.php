@@ -55,7 +55,7 @@ class ATR_Optimizer {
 	 *
 	 * @param int        $attachment_id Attachment id.
 	 * @param array|null $metadata      Metadata to work from, read from the attachment when null.
-	 * @return array{metadata:array,saved:int,files:int,message:string}
+	 * @return array{metadata:array,saved:int,files:int,message:string,reason:string}
 	 */
 	public static function optimize_attachment( int $attachment_id, ?array $metadata = null ): array {
 		if ( null === $metadata ) {
@@ -71,6 +71,7 @@ class ATR_Optimizer {
 				'saved'    => 0,
 				'files'    => 0,
 				'message'  => __( 'The file is missing from the uploads folder.', 'ajax-thumbnail-rebuild' ),
+				'reason'   => 'missing',
 			);
 		}
 
@@ -85,6 +86,7 @@ class ATR_Optimizer {
 				'saved'    => 0,
 				'files'    => 0,
 				'message'  => '',
+				'reason'   => 'already',
 			);
 		}
 
@@ -102,7 +104,15 @@ class ATR_Optimizer {
 			}
 		}
 
+		$mimes = array();
+
 		foreach ( array_unique( $paths ) as $path ) {
+			$mime = file_exists( $path ) ? wp_get_image_mime( $path ) : '';
+
+			if ( $mime ) {
+				$mimes[ $mime ] = true;
+			}
+
 			$gain = self::optimize_file( $path );
 
 			if ( $gain > 0 ) {
@@ -123,7 +133,31 @@ class ATR_Optimizer {
 			'saved'    => $saved,
 			'files'    => $files,
 			'message'  => '',
+			'reason'   => self::reason_for_nothing( $saved, $mimes ),
 		);
+	}
+
+	/**
+	 * Why an attachment came out no smaller, so the screen can say something
+	 * more useful than "0 B".
+	 *
+	 * @param int   $saved Bytes saved.
+	 * @param array $mimes Mime types seen, keyed by type.
+	 * @return string Empty when there is nothing to explain.
+	 */
+	private static function reason_for_nothing( $saved, array $mimes ) {
+		if ( $saved > 0 ) {
+			return '';
+		}
+
+		/* Re-encoding a PNG with the same library writes the same pixels back at
+		   the same compression: there is nothing to win, whatever the quality is
+		   set to. WebP copies are what helps for those. */
+		if ( $mimes && array( 'image/png' => true ) === $mimes ) {
+			return 'png';
+		}
+
+		return 'no_gain';
 	}
 
 	/**

@@ -243,6 +243,9 @@ class ATR_Rest_Controller {
 			'message' => $result['message'],
 			'saved'   => (int) $result['saved'],
 			'files'   => (int) $result['files'],
+			// Why nothing was saved, so the screen can say more than "0 B".
+			'reason'  => (string) ( $result['reason'] ?? '' ),
+			'quality' => (int) ATR_Settings::get( 'optimize_quality', ATR_Uploads::CORE_QUALITY ),
 		) );
 	}
 

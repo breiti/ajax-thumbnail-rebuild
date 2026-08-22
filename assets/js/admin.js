@@ -39,6 +39,29 @@
 			return checked ? checked.value : 'rebuild';
 		}
 
+		/**
+		 * A run that saved nothing has a reason, and it is not the same reason
+		 * every time. Saying it beats leaving somebody looking at "0 B".
+		 *
+		 * @param {Object} reasons How many images gave each reason.
+		 * @param {number} quality The quality they were measured against.
+		 *
+		 * @return {string} One sentence.
+		 */
+		function whyNothing( reasons, quality ) {
+			if ( reasons.png && ! reasons.no_gain ) {
+				return __( 'These are PNG files, which do not get smaller by re-encoding. WebP copies are what helps for those.', 'ajax-thumbnail-rebuild' );
+			}
+
+			if ( reasons.already && ! reasons.no_gain && ! reasons.png ) {
+				/* translators: %d: the quality setting, e.g. 82. */
+				return sprintf( __( 'They were already optimised at quality %d.', 'ajax-thumbnail-rebuild' ), quality );
+			}
+
+			/* translators: %d: the quality setting, e.g. 82. */
+			return sprintf( __( 'The files are already as small as quality %d makes them; lower it in the settings to gain more.', 'ajax-thumbnail-rebuild' ), quality );
+		}
+
 		function formatBytes( bytes ) {
 			if ( bytes >= 1048576 ) {
 				return ( bytes / 1048576 ).toFixed( 1 ) + ' MB';
@@ -227,6 +250,9 @@
 			var skipped = 0;
 			var rebuilt = 0;
 			var savedBytes = 0;
+			// Why the ones that saved nothing saved nothing, for the summary.
+			var reasons = {};
+			var quality = 0;
 
 			function finish( interrupted ) {
 				setBusy( false );
@@ -234,19 +260,31 @@
 				bar.classList.add( 'is-done' );
 
 				var summary = optimizing
-					? sprintf(
-						/* translators: 1: number of images optimised, 2: bytes saved, 3: number skipped. */
-						_n( '%1$s image optimised, %2$s saved, %3$s skipped.', '%1$s images optimised, %2$s saved, %3$s skipped.', rebuilt, 'ajax-thumbnail-rebuild' ),
-						rebuilt,
-						formatBytes( savedBytes ),
-						skipped
-					)
+					? ( savedBytes
+						? sprintf(
+							/* translators: 1: number of images optimised, 2: bytes saved, 3: number skipped. */
+							_n( '%1$s image optimised, %2$s saved, %3$s skipped.', '%1$s images optimised, %2$s saved, %3$s skipped.', rebuilt, 'ajax-thumbnail-rebuild' ),
+							rebuilt,
+							formatBytes( savedBytes ),
+							skipped
+						)
+						/* Nothing was saved, so nothing was optimised either - saying
+						   "optimised, 0 B saved" would be a contradiction. */
+						: sprintf(
+							/* translators: %s: number of images looked at. */
+							_n( '%s image checked, nothing to save.', '%s images checked, nothing to save.', rebuilt, 'ajax-thumbnail-rebuild' ),
+							rebuilt
+						) )
 					: sprintf(
 						/* translators: %1$s: number of images rebuilt, %2$s: number of images skipped. */
 						_n( '%1$s image rebuilt, %2$s skipped.', '%1$s images rebuilt, %2$s skipped.', rebuilt, 'ajax-thumbnail-rebuild' ),
 						rebuilt,
 						skipped
 					);
+
+				if ( optimizing && ! savedBytes && rebuilt ) {
+					summary += ' ' + whyNothing( reasons, quality );
+				}
 
 				if ( interrupted ) {
 					notice( 'warning', __( 'Stopped.', 'ajax-thumbnail-rebuild' ) + ' ' + summary );
@@ -293,6 +331,11 @@
 					} else {
 						rebuilt++;
 						savedBytes += response.saved || 0;
+
+						if ( optimizing && ! response.saved ) {
+							reasons[ response.reason || 'no_gain' ] = ( reasons[ response.reason || 'no_gain' ] || 0 ) + 1;
+							quality = response.quality || quality;
+						}
 
 						if ( response.thumbnail ) {
 							preview.src = response.thumbnail;
