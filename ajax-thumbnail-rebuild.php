@@ -3,7 +3,7 @@
  * Plugin name: AJAX Thumbnail Rebuild
  * Plugin URI: https://wordpress.org/plugins/ajax-thumbnail-rebuild/
  * Author: junkcoder, ristoniinemets
- * Version: 2.8.0
+ * Version: 2.0.0
  * Description: Rebuild the thumbnails of your media library one image at a time, without running into script timeouts.
  * Requires at least: 5.6
  * Requires PHP: 7.4
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'ATR_VERSION', '2.8.0' );
+define( 'ATR_VERSION', '2.0.0' );
 define( 'ATR_FILE', __FILE__ );
 define( 'ATR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'ATR_URL', plugin_dir_url( __FILE__ ) );

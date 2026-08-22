@@ -5,7 +5,7 @@ Tags: ajax, thumbnail, rebuild, regenerate, admin, image, photo
 Requires at least: 5.6
 Requires PHP: 7.4
 Tested up to: 7.0
-Stable tag: 2.8.0
+Stable tag: 2.0.0
 
 [AJAX Thumbnail Rebuild](https://wordpress.org/plugins/ajax-thumbnail-rebuild/) allows you to rebuild all thumbnails at once without script timeouts on your server.
 
@@ -28,56 +28,70 @@ Upload the plugin to your blog, activate it, done. You can then rebuild all thum
 
 == Changelog ==
 
-= 2.8.0 =
-
-* NEW: A "Cleanup" tab that finds the resized files nothing points at any more - the ones left behind every time an image size changes - and lets you delete them after looking at the list. The scan only reads; a file that is an attachment of its own, or a WebP copy of a file still in use, is never listed.
-
-= 2.7.0 =
-
-* NEW: Optimising. Re-encodes files that are already the right size so the same picture takes fewer bytes. Nothing is resized, a file is replaced only when the new one is smaller, and the untouched original beside a scaled upload is left alone.
-* NEW: Optimise automatically on upload and after a rebuild, or run it over the library from the Rebuild tab, or on single images from the media library.
-
-= 2.6.0 =
-
-* NEW: Upload settings. How hard WordPress compresses the copies it writes, and how large an image may stay before it is scaled down - both of which WordPress decides for you and gives no screen for. Set the size to 0 to keep uploads exactly as they arrive.
-
-= 2.5.0 =
-
-* NEW: Single sizes can be marked as on demand. A marked size is never written on upload and is skipped by a rebuild; it is cut the first time a page asks for it. Useful for the big sizes only a handful of pages use, and it works whether or not on demand is on for everything.
-* NEW: "Only rebuild featured images" also covers the images in a WooCommerce product gallery. A product's main image is its featured image, so that was already included.
-
-= 2.4.0 =
-
-* NEW: Rebuild straight from the media library: a "Rebuild thumbnails" row action for one image, and a bulk action that hands the selection to the plugin's screen, where it runs one image at a time with a progress bar.
-* FIX: WebP copies and the image proxy are independent of each other; either can be on without the other.
-
-= 2.3.0 =
-
-* NEW: Optional on demand sizes. An upload keeps only its own file, and each registered size is cut the first time something asks for it. Off by default; rebuilding still generates whatever you select on the Rebuild tab.
-
-= 2.2.0 =
-
-* NEW: Optional WebP copies. Every image WordPress generates gets a WebP copy written next to it, and the front end serves it through a picture element with the original as the fallback - which works behind a page cache. Off by default; a copy that would be larger than the original is discarded, and the copies are deleted with the attachment.
-
-= 2.1.0 =
-
-* NEW: Optional image proxy. Front end image URLs can be served through wsrv.nl, which resizes and re-encodes on the fly (WebP by default) and serves the result from a CDN. Off by default; your own files are never touched.
-* NEW: A "Settings" tab, built with the WordPress Settings API.
-
 = 2.0.0 =
 
-* NEW: The screen has been rebuilt out of the components WordPress itself uses - tabs, list tables, postboxes and notices - with a progress bar, a running preview and a Stop button.
-* NEW: A "Registered sizes" tab listing every image size on the site with its dimensions and crop setting.
-* NEW: Rebuild only the images whose file name matches a pattern, e.g. `banner-*.jpg`.
-* NEW: The browser now talks to the REST API instead of admin-ajax.
-* FIX: Rebuilding no longer throws away the rest of the attachment metadata. `original_image` and `filesize` survive, so WordPress can still find and delete the untouched upload (props @toolshedlabs-hash).
-* FIX: Sub sizes are cut from the original image rather than from the "-scaled" copy, which used to leave a duplicate set of files behind.
-* FIX: Selecting a subset of sizes rebuilt every size anyway.
-* FIX: Sizes registered through the `intermediate_image_sizes_advanced` filter are picked up; the filter now receives the metadata and attachment id core passes it.
-* FIX: "Toggle all" checks or clears every size instead of inverting each one.
-* FIX: The button on a single attachment works when several attachments are on screen; it no longer prints a copy of the whole script per image.
-* FIX: An image whose file is missing or unreadable is skipped and listed, instead of stalling the run.
-* PHP 8.4 compatible; undefined variables, unchecked `getimagesize()` results and unescaped output cleaned up throughout.
+The whole plugin has been worked through: one 430 line file is now a set of
+classes, the browser talks to a REST API of its own instead of admin-ajax, and
+the screen is built from the components WordPress itself ships.
+
+The screen:
+
+* Rebuilt out of tabs, list tables, postboxes and notices, with a progress bar,
+  a running preview, a Stop button and a list of anything it had to skip.
+* A "Registered sizes" tab listing every image size on the site with its
+  dimensions and crop setting.
+* Rebuild only the images whose file name matches a pattern, e.g. `banner-*.jpg`.
+* Rebuild straight from the media library: a row action for one image, and a
+  bulk action that hands the selection to the plugin's screen, where it runs one
+  image at a time.
+* "Only rebuild featured images" also covers the images in a WooCommerce product
+  gallery. A product's main image is its featured image, so that was already
+  included.
+
+New, all off by default:
+
+* **Upload settings.** How hard WordPress compresses the copies it writes, and
+  how large an image may stay before it is scaled down - both of which WordPress
+  decides for you and gives no screen for. Set the size to 0 to keep uploads
+  exactly as they arrive.
+* **Optimising.** Re-encodes files that are already the right size so the same
+  picture takes fewer bytes. Nothing is resized, a file is replaced only when
+  the new one is smaller, and the untouched original beside a scaled upload is
+  left alone. Runs on upload, over the library, or on single images from the
+  media library.
+* **WebP copies.** Every image WordPress generates gets a WebP copy written next
+  to it, and the front end serves it through a picture element with the original
+  as the fallback - which works behind a page cache. A copy that would be larger
+  than the original is discarded, and the copies are deleted with the attachment.
+* **Image proxy.** Front end image URLs can be served through wsrv.nl, which
+  resizes and re-encodes on the fly and serves the result from a CDN. Your own
+  files are never touched.
+* **Sizes on demand.** An upload keeps only its own file and each size is cut
+  the first time something asks for it - either for every size, or for single
+  sizes ticked off one by one, which a rebuild then skips.
+* **Cleanup.** Finds the resized files nothing points at any more - the ones
+  left behind every time an image size changes - and deletes them after you have
+  looked at the list. The scan only reads; a file that is an attachment of its
+  own, or a WebP copy of a file still in use, is never listed.
+
+Fixed:
+
+* Rebuilding no longer throws away the rest of the attachment metadata.
+  `original_image` and `filesize` survive, so WordPress can still find and
+  delete the untouched upload (props @toolshedlabs-hash).
+* Sub sizes are cut from the original image rather than from the "-scaled" copy,
+  which used to leave a duplicate set of files behind.
+* Selecting a subset of sizes rebuilt every size anyway.
+* Sizes registered through the `intermediate_image_sizes_advanced` filter are
+  picked up; the filter now receives the metadata and attachment id core passes
+  it.
+* "Toggle all" checks or clears every size instead of inverting each one.
+* The button on a single attachment works when several attachments are on
+  screen; it no longer prints a copy of the whole script per image.
+* An image whose file is missing or unreadable is skipped and listed, instead of
+  stalling the run.
+* PHP 8.4 compatible; undefined variables, unchecked `getimagesize()` results
+  and unescaped output cleaned up throughout.
 
 = 1.14 =
 * Fix security issues (props @patchstack)
