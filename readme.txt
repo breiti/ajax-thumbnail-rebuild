@@ -1,5 +1,5 @@
 === AJAX Thumbnail Rebuild ===
-Contributors: junkcoder, RistoNiinemets
+Contributors: ristoniinemets, junkcoder
 Donate link: http://breiti.cc/wordpress/ajax-thumbnail-rebuild/#donate
 Tags: ajax, thumbnail, rebuild, regenerate, admin, image, photo
 Requires at least: 5.6
