@@ -12,6 +12,13 @@
 	display: none;
 }
 
+/* Every tab's content stands off the tabs themselves. #poststuff brings its own
+   padding, so only the plain ones need this. */
+.atr-tab > .postbox,
+.atr-tab > .wp-list-table {
+	margin-top: 1.2em;
+}
+
 .atr-count {
 	display: inline-block;
 	min-width: 1.4em;
@@ -25,7 +32,14 @@
 	text-align: center;
 }
 
-.nav-tab-active .atr-count {
+.nav-tab-active /* Every tab's content stands off the tabs themselves. #poststuff brings its own
+   padding, so only the plain ones need this. */
+.atr-tab > .postbox,
+.atr-tab > .wp-list-table {
+	margin-top: 1.2em;
+}
+
+.atr-count {
 	background: #2271b1;
 	color: #fff;
 }

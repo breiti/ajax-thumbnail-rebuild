@@ -36,6 +36,8 @@ the screen is built from the components WordPress itself ships.
 
 The screen:
 
+* A tab each for rebuilding, the registered sizes, cleanup, and one per group of
+  settings, so no page is a wall of fields.
 * Rebuilt out of tabs, list tables, postboxes and notices, with a progress bar,
   a running preview, a Stop button and a list of anything it had to skip.
 * A "Registered sizes" tab listing every image size on the site with its
@@ -60,8 +62,10 @@ New, all off by default:
   re-encode it, which is where the saving is; where none is installed the plugin
   says so and falls back to re-encoding with PHP's own library. Nothing is
   resized, a file is replaced only when the new one is genuinely smaller, and
-  the untouched original beside a scaled upload is left alone. Runs on upload,
-  over the library, or on single images from the media library.
+  the untouched original beside a scaled upload is left alone unless a site asks
+  for it. Where a host has no optimiser and will not run one, TinyPNG or
+  ShortPixel can do the same job over their API. Runs on upload, over the
+  library, or on single images from the media library.
 * **WebP copies.** Every image WordPress generates gets a WebP copy written next
   to it, and the front end serves it through a picture element with the original
   as the fallback - which works behind a page cache. A copy that would be larger

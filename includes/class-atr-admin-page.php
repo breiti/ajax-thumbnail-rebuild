@@ -44,11 +44,32 @@ class ATR_Admin_Page {
 		return add_query_arg( $args, admin_url( 'tools.php' ) );
 	}
 
+	/**
+	 * Every tab on the screen: what it is called and what it shows.
+	 *
+	 * @return array<string,string>
+	 */
+	private function tabs(): array {
+		$tabs = array(
+			'rebuild' => __( 'Rebuild', 'ajax-thumbnail-rebuild' ),
+			'sizes'   => __( 'Registered sizes', 'ajax-thumbnail-rebuild' ),
+			'cleanup' => __( 'Cleanup', 'ajax-thumbnail-rebuild' ),
+		);
+
+		/* The settings are a tab each. All of them on one page was a wall of
+		   fields nobody could find anything in. */
+		foreach ( ATR_Settings::pages() as $page => $settings ) {
+			$tabs[ $page ] = $settings['label'];
+		}
+
+		return $tabs;
+	}
+
 	private function current_tab(): string {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only navigation.
 		$tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'rebuild';
 
-		return in_array( $tab, array( 'rebuild', 'sizes', 'cleanup', 'settings' ), true ) ? $tab : 'rebuild';
+		return array_key_exists( $tab, $this->tabs() ) ? $tab : 'rebuild';
 	}
 
 	public function render(): void {
@@ -67,30 +88,27 @@ class ATR_Admin_Page {
 			</p>
 
 			<nav class="nav-tab-wrapper wp-clearfix" aria-label="<?php esc_attr_e( 'Secondary menu', 'ajax-thumbnail-rebuild' ); ?>">
-				<a href="<?php echo esc_url( self::url( 'rebuild' ) ); ?>" class="nav-tab <?php echo 'rebuild' === $tab ? 'nav-tab-active' : ''; ?>">
-					<?php esc_html_e( 'Rebuild', 'ajax-thumbnail-rebuild' ); ?>
-				</a>
-				<a href="<?php echo esc_url( self::url( 'sizes' ) ); ?>" class="nav-tab <?php echo 'sizes' === $tab ? 'nav-tab-active' : ''; ?>">
-					<?php esc_html_e( 'Registered sizes', 'ajax-thumbnail-rebuild' ); ?>
-					<span class="atr-count"><?php echo esc_html( number_format_i18n( count( $sizes ) ) ); ?></span>
-				</a>
-				<a href="<?php echo esc_url( self::url( 'cleanup' ) ); ?>" class="nav-tab <?php echo 'cleanup' === $tab ? 'nav-tab-active' : ''; ?>">
-					<?php esc_html_e( 'Cleanup', 'ajax-thumbnail-rebuild' ); ?>
-				</a>
-				<a href="<?php echo esc_url( self::url( 'settings' ) ); ?>" class="nav-tab <?php echo 'settings' === $tab ? 'nav-tab-active' : ''; ?>">
-					<?php esc_html_e( 'Settings', 'ajax-thumbnail-rebuild' ); ?>
-				</a>
+				<?php foreach ( $this->tabs() as $key => $label ) : ?>
+					<a href="<?php echo esc_url( self::url( $key ) ); ?>" class="nav-tab <?php echo $key === $tab ? 'nav-tab-active' : ''; ?>">
+						<?php echo esc_html( $label ); ?>
+						<?php if ( 'sizes' === $key ) : ?>
+							<span class="atr-count"><?php echo esc_html( number_format_i18n( count( $sizes ) ) ); ?></span>
+						<?php endif; ?>
+					</a>
+				<?php endforeach; ?>
 			</nav>
 
-			<?php if ( 'sizes' === $tab ) : ?>
-				<?php $this->render_sizes_tab( $sizes ); ?>
-			<?php elseif ( 'cleanup' === $tab ) : ?>
-				<?php $this->render_cleanup_tab(); ?>
-			<?php elseif ( 'settings' === $tab ) : ?>
-				<?php $this->render_settings_tab(); ?>
-			<?php else : ?>
-				<?php $this->render_rebuild_tab( $sizes ); ?>
-			<?php endif; ?>
+			<div class="atr-tab">
+				<?php if ( 'sizes' === $tab ) : ?>
+					<?php $this->render_sizes_tab( $sizes ); ?>
+				<?php elseif ( 'cleanup' === $tab ) : ?>
+					<?php $this->render_cleanup_tab(); ?>
+				<?php elseif ( isset( ATR_Settings::pages()[ $tab ] ) ) : ?>
+					<?php $this->render_settings_tab( $tab ); ?>
+				<?php else : ?>
+					<?php $this->render_rebuild_tab( $sizes ); ?>
+				<?php endif; ?>
+			</div>
 		</div>
 		<?php
 	}
@@ -367,31 +385,44 @@ class ATR_Admin_Page {
 		<?php
 	}
 
-	private function render_settings_tab(): void {
+	/**
+	 * One settings tab: its own form, saving its own fields and nothing else.
+	 *
+	 * @param string $page Which tab.
+	 */
+	private function render_settings_tab( string $page ): void {
+		$settings = ATR_Settings::pages()[ $page ];
+
 		// options.php saves and redirects back here; this prints what it has to say.
 		settings_errors();
 		?>
-		<?php if ( ATR_Image_Proxy::site_looks_local() ) : ?>
-			<div class="notice notice-warning inline">
-				<p>
-					<?php
-					printf(
-						/* translators: %s: this site's host name. */
-						esc_html__( '%s does not look like a host the proxy can reach from the internet. The settings save either way, but the images will not load while you are on this address.', 'ajax-thumbnail-rebuild' ),
-						'<code>' . esc_html( (string) wp_parse_url( home_url(), PHP_URL_HOST ) ) . '</code>'
-					);
-					?>
-				</p>
-			</div>
-		<?php endif; ?>
+		<div class="postbox">
+			<h2 class="hndle"><span><?php echo esc_html( $settings['label'] ); ?></span></h2>
+			<div class="inside">
+				<?php if ( 'serving' === $page && ATR_Image_Proxy::site_looks_local() ) : ?>
+					<div class="notice notice-warning inline">
+						<p>
+							<?php
+							printf(
+								/* translators: %s: this site's host name. */
+								esc_html__( '%s does not look like a host the proxy can reach from the internet. The settings save either way, but the images will not load while you are on this address.', 'ajax-thumbnail-rebuild' ),
+								'<code>' . esc_html( (string) wp_parse_url( home_url(), PHP_URL_HOST ) ) . '</code>'
+							);
+							?>
+						</p>
+					</div>
+				<?php endif; ?>
 
-		<form method="post" action="<?php echo esc_url( admin_url( 'options.php' ) ); ?>">
-			<?php
-			settings_fields( ATR_Settings::GROUP );
-			do_settings_sections( ATR_Settings::GROUP );
-			submit_button();
-			?>
-		</form>
+				<form method="post" action="<?php echo esc_url( admin_url( 'options.php' ) ); ?>">
+					<?php settings_fields( ATR_Settings::GROUP ); ?>
+					<input type="hidden" name="<?php echo esc_attr( ATR_Settings::OPTION ); ?>[_fields]" value="<?php echo esc_attr( implode( ',', $settings['keys'] ) ); ?>" />
+					<?php
+					do_settings_sections( ATR_Settings::page_slug( $page ) );
+					submit_button();
+					?>
+				</form>
+			</div>
+		</div>
 		<?php
 	}
 

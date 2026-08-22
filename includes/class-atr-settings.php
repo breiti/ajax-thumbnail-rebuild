@@ -28,6 +28,9 @@ class ATR_Settings {
 			'optimize_enabled'     => false,
 			'optimize_quality'     => ATR_Uploads::CORE_QUALITY,
 			'optimize_lossy'       => false,
+			'optimize_original'    => false,
+			'optimize_service'     => 'none',
+			'optimize_service_key' => '',
 
 			'proxy_enabled' => false,
 			'proxy_output'  => 'webp',
@@ -78,6 +81,45 @@ class ATR_Settings {
 		);
 	}
 
+	/**
+	 * The settings screens, in the order they are shown.
+	 *
+	 * Each one is a tab of its own: a single page of everything this plugin can
+	 * be told to do is too long to read. `keys` is what that tab is responsible
+	 * for, so saving one tab cannot wipe the settings of another.
+	 *
+	 * @return array<string,array{label:string,keys:array}>
+	 */
+	public static function pages(): array {
+		return array(
+			'uploads'   => array(
+				'label' => __( 'Uploads', 'ajax-thumbnail-rebuild' ),
+				'keys'  => array( 'upload_quality', 'max_upload_dimension' ),
+			),
+			'optimise'  => array(
+				'label' => __( 'Optimising', 'ajax-thumbnail-rebuild' ),
+				'keys'  => array( 'optimize_enabled', 'optimize_quality', 'optimize_lossy', 'optimize_original', 'optimize_service', 'optimize_service_key' ),
+			),
+			'serving'   => array(
+				'label' => __( 'Serving', 'ajax-thumbnail-rebuild' ),
+				'keys'  => array( 'webp_enabled', 'webp_quality', 'proxy_enabled', 'proxy_output', 'proxy_quality' ),
+			),
+			'on-demand' => array(
+				'label' => __( 'On demand', 'ajax-thumbnail-rebuild' ),
+				'keys'  => array( 'on_demand_enabled', 'on_demand_sizes' ),
+			),
+		);
+	}
+
+	/**
+	 * The Settings API page a tab's sections are registered under.
+	 *
+	 * @param string $page Tab key.
+	 */
+	public static function page_slug( string $page ): string {
+		return 'atr_settings_' . $page;
+	}
+
 	public static function register(): void {
 		register_setting( self::GROUP, self::OPTION, array(
 			'type'              => 'object',
@@ -88,16 +130,16 @@ class ATR_Settings {
 
 		add_settings_section(
 			'atr_uploads',
-			__( 'Uploads', 'ajax-thumbnail-rebuild' ),
+			'',
 			array( __CLASS__, 'render_uploads_intro' ),
-			self::GROUP
+			self::page_slug( 'uploads' )
 		);
 
 		add_settings_field(
 			'upload_quality',
 			__( 'Compression', 'ajax-thumbnail-rebuild' ),
 			array( __CLASS__, 'render_upload_quality' ),
-			self::GROUP,
+			self::page_slug( 'uploads' ),
 			'atr_uploads',
 			array( 'label_for' => 'atr-upload-quality' )
 		);
@@ -106,23 +148,23 @@ class ATR_Settings {
 			'max_upload_dimension',
 			__( 'Largest an image may stay', 'ajax-thumbnail-rebuild' ),
 			array( __CLASS__, 'render_max_upload_dimension' ),
-			self::GROUP,
+			self::page_slug( 'uploads' ),
 			'atr_uploads',
 			array( 'label_for' => 'atr-max-upload-dimension' )
 		);
 
 		add_settings_section(
 			'atr_optimize',
-			__( 'Optimising', 'ajax-thumbnail-rebuild' ),
+			'',
 			array( __CLASS__, 'render_optimize_intro' ),
-			self::GROUP
+			self::page_slug( 'optimise' )
 		);
 
 		add_settings_field(
 			'optimize_enabled',
 			__( 'Optimise automatically', 'ajax-thumbnail-rebuild' ),
 			array( __CLASS__, 'render_optimize_enabled' ),
-			self::GROUP,
+			self::page_slug( 'optimise' ),
 			'atr_optimize'
 		);
 
@@ -130,7 +172,7 @@ class ATR_Settings {
 			'optimize_quality',
 			__( 'Quality', 'ajax-thumbnail-rebuild' ),
 			array( __CLASS__, 'render_optimize_quality' ),
-			self::GROUP,
+			self::page_slug( 'optimise' ),
 			'atr_optimize',
 			array( 'label_for' => 'atr-optimize-quality' )
 		);
@@ -139,22 +181,63 @@ class ATR_Settings {
 			'optimize_lossy',
 			__( 'Lossy PNG', 'ajax-thumbnail-rebuild' ),
 			array( __CLASS__, 'render_optimize_lossy' ),
-			self::GROUP,
+			self::page_slug( 'optimise' ),
 			'atr_optimize'
+		);
+
+		add_settings_field(
+			'optimize_original',
+			__( 'The untouched original', 'ajax-thumbnail-rebuild' ),
+			array( __CLASS__, 'render_optimize_original' ),
+			self::page_slug( 'optimise' ),
+			'atr_optimize'
+		);
+
+		add_settings_field(
+			'optimize_service',
+			__( 'Optimisation service', 'ajax-thumbnail-rebuild' ),
+			array( __CLASS__, 'render_optimize_service' ),
+			self::page_slug( 'optimise' ),
+			'atr_optimize',
+			array( 'label_for' => 'atr-optimize-service' )
+		);
+
+		add_settings_section(
+			'atr_webp',
+			__( 'WebP copies', 'ajax-thumbnail-rebuild' ),
+			array( __CLASS__, 'render_webp_intro' ),
+			self::page_slug( 'serving' )
+		);
+
+		add_settings_field(
+			'webp_enabled',
+			__( 'Make WebP copies', 'ajax-thumbnail-rebuild' ),
+			array( __CLASS__, 'render_webp_enabled' ),
+			self::page_slug( 'serving' ),
+			'atr_webp'
+		);
+
+		add_settings_field(
+			'webp_quality',
+			__( 'Quality', 'ajax-thumbnail-rebuild' ),
+			array( __CLASS__, 'render_webp_quality' ),
+			self::page_slug( 'serving' ),
+			'atr_webp',
+			array( 'label_for' => 'atr-webp-quality' )
 		);
 
 		add_settings_section(
 			'atr_proxy',
 			__( 'Image proxy', 'ajax-thumbnail-rebuild' ),
 			array( __CLASS__, 'render_proxy_intro' ),
-			self::GROUP
+			self::page_slug( 'serving' )
 		);
 
 		add_settings_field(
 			'proxy_enabled',
 			__( 'Serve images through wsrv.nl', 'ajax-thumbnail-rebuild' ),
 			array( __CLASS__, 'render_proxy_enabled' ),
-			self::GROUP,
+			self::page_slug( 'serving' ),
 			'atr_proxy'
 		);
 
@@ -162,7 +245,7 @@ class ATR_Settings {
 			'proxy_output',
 			__( 'Format', 'ajax-thumbnail-rebuild' ),
 			array( __CLASS__, 'render_proxy_output' ),
-			self::GROUP,
+			self::page_slug( 'serving' ),
 			'atr_proxy',
 			array( 'label_for' => 'atr-proxy-output' )
 		);
@@ -171,23 +254,23 @@ class ATR_Settings {
 			'proxy_quality',
 			__( 'Quality', 'ajax-thumbnail-rebuild' ),
 			array( __CLASS__, 'render_proxy_quality' ),
-			self::GROUP,
+			self::page_slug( 'serving' ),
 			'atr_proxy',
 			array( 'label_for' => 'atr-proxy-quality' )
 		);
 
 		add_settings_section(
 			'atr_on_demand',
-			__( 'Sizes on demand', 'ajax-thumbnail-rebuild' ),
+			'',
 			array( __CLASS__, 'render_on_demand_intro' ),
-			self::GROUP
+			self::page_slug( 'on-demand' )
 		);
 
 		add_settings_field(
 			'on_demand_enabled',
 			__( 'Generate on demand', 'ajax-thumbnail-rebuild' ),
 			array( __CLASS__, 'render_on_demand_enabled' ),
-			self::GROUP,
+			self::page_slug( 'on-demand' ),
 			'atr_on_demand'
 		);
 
@@ -195,33 +278,10 @@ class ATR_Settings {
 			'on_demand_sizes',
 			__( 'Sizes made only on demand', 'ajax-thumbnail-rebuild' ),
 			array( __CLASS__, 'render_on_demand_sizes' ),
-			self::GROUP,
+			self::page_slug( 'on-demand' ),
 			'atr_on_demand'
 		);
 
-		add_settings_section(
-			'atr_webp',
-			__( 'WebP copies', 'ajax-thumbnail-rebuild' ),
-			array( __CLASS__, 'render_webp_intro' ),
-			self::GROUP
-		);
-
-		add_settings_field(
-			'webp_enabled',
-			__( 'Make WebP copies', 'ajax-thumbnail-rebuild' ),
-			array( __CLASS__, 'render_webp_enabled' ),
-			self::GROUP,
-			'atr_webp'
-		);
-
-		add_settings_field(
-			'webp_quality',
-			__( 'Quality', 'ajax-thumbnail-rebuild' ),
-			array( __CLASS__, 'render_webp_quality' ),
-			self::GROUP,
-			'atr_webp',
-			array( 'label_for' => 'atr-webp-quality' )
-		);
 	}
 
 	/**
@@ -229,33 +289,86 @@ class ATR_Settings {
 	 * @return array<string,mixed>
 	 */
 	public static function sanitize( $input ): array {
-		$input    = is_array( $input ) ? $input : array();
-		$defaults = self::defaults();
+		$input   = is_array( $input ) ? $input : array();
+		$current = self::all();
 
-		$output = sanitize_key( $input['proxy_output'] ?? $defaults['proxy_output'] );
+		/* Each settings tab posts only its own fields and says which those are.
+		   Without that, saving one tab would read every other tab's checkbox as
+		   "unticked" and quietly turn it off. */
+		$managed = array_filter( array_map( 'sanitize_key', explode( ',', (string) ( $input['_fields'] ?? '' ) ) ) );
+		$managed = array_intersect( $managed, array_keys( self::defaults() ) );
 
-		if ( ! array_key_exists( $output, self::output_formats() ) ) {
-			$output = $defaults['proxy_output'];
+		if ( ! $managed ) {
+			$managed = array_keys( self::defaults() );
 		}
 
-		return array(
-			'upload_quality'       => self::quality( $input['upload_quality'] ?? null, $defaults['upload_quality'] ),
-			'max_upload_dimension' => max( 0, (int) ( $input['max_upload_dimension'] ?? $defaults['max_upload_dimension'] ) ),
-			'optimize_enabled'     => ! empty( $input['optimize_enabled'] ),
-			'optimize_quality'     => self::quality( $input['optimize_quality'] ?? null, $defaults['optimize_quality'] ),
-			'optimize_lossy'       => ! empty( $input['optimize_lossy'] ),
+		foreach ( $managed as $key ) {
+			$current[ $key ] = self::sanitize_one( $key, $input, $current[ $key ] );
+		}
 
-			'proxy_enabled' => ! empty( $input['proxy_enabled'] ),
-			'proxy_output'  => $output,
-			'proxy_quality' => self::quality( $input['proxy_quality'] ?? null, $defaults['proxy_quality'] ),
-			'webp_enabled'  => ! empty( $input['webp_enabled'] ),
-			'webp_quality'  => self::quality( $input['webp_quality'] ?? null, $defaults['webp_quality'] ),
+		return $current;
+	}
 
-			'on_demand_enabled' => ! empty( $input['on_demand_enabled'] ),
-			'on_demand_sizes'   => array_values( array_unique( array_filter(
-				array_map( 'sanitize_key', (array) ( $input['on_demand_sizes'] ?? array() ) )
-			) ) ),
-		);
+	/**
+	 * One setting, by the rule that fits it.
+	 *
+	 * @param string $key      Setting name.
+	 * @param array  $input    Everything that was posted.
+	 * @param mixed  $fallback What it is now.
+	 * @return mixed
+	 */
+	private static function sanitize_one( string $key, array $input, $fallback ) {
+		$defaults = self::defaults();
+
+		switch ( $key ) {
+			// Checkboxes: absent means unticked, which is why $managed matters.
+			case 'optimize_enabled':
+			case 'optimize_lossy':
+			case 'optimize_original':
+			case 'webp_enabled':
+			case 'proxy_enabled':
+			case 'on_demand_enabled':
+				return ! empty( $input[ $key ] );
+
+			case 'upload_quality':
+			case 'optimize_quality':
+			case 'webp_quality':
+			case 'proxy_quality':
+				return self::quality( $input[ $key ] ?? null, (int) $defaults[ $key ] );
+
+			case 'max_upload_dimension':
+				return max( 0, (int) ( $input[ $key ] ?? $defaults[ $key ] ) );
+
+			case 'proxy_output':
+				$output = sanitize_key( (string) ( $input[ $key ] ?? $defaults[ $key ] ) );
+
+				return array_key_exists( $output, self::output_formats() ) ? $output : $defaults[ $key ];
+
+			case 'optimize_service':
+				return self::service( $input[ $key ] ?? $defaults[ $key ] );
+
+			// A credential: unslashed and trimmed, never mangled.
+			case 'optimize_service_key':
+				return trim( (string) wp_unslash( $input[ $key ] ?? $fallback ) );
+
+			case 'on_demand_sizes':
+				return array_values( array_unique( array_filter(
+					array_map( 'sanitize_key', (array) ( $input[ $key ] ?? array() ) )
+				) ) );
+		}
+
+		return $fallback;
+	}
+
+	/**
+	 * One of the services the plugin knows, or none at all.
+	 *
+	 * @param mixed $value Submitted value.
+	 */
+	private static function service( $value ): string {
+		$value = sanitize_key( (string) $value );
+
+		return isset( ATR_Service::services()[ $value ] ) ? $value : 'none';
 	}
 
 	/**
@@ -401,6 +514,72 @@ class ATR_Settings {
 			<?php esc_html_e( 'Allow pngquant, which drops a PNG to fewer colours', 'ajax-thumbnail-rebuild' ); ?>
 		</label>
 		<p class="description"><?php esc_html_e( 'Off by default because it changes the picture, not only the file. On screenshots, logos and flat graphics it typically halves the size with nothing visible to show for it; on photographs saved as PNG, look before you keep it.', 'ajax-thumbnail-rebuild' ); ?></p>
+		<?php
+	}
+
+	public static function render_optimize_original(): void {
+		$settings = self::all();
+		?>
+		<label>
+			<input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[optimize_original]" value="1" <?php checked( $settings['optimize_original'] ); ?> />
+			<?php esc_html_e( 'Also optimise the full size original kept beside a scaled upload', 'ajax-thumbnail-rebuild' ); ?>
+		</label>
+		<p class="description">
+			<?php esc_html_e( 'That file is usually the largest on disk and nothing on the site ever serves it: WordPress keeps it so a size can be cut again later. It is treated as the archive copy it is - only the lossless programs touch it, never a re-encode, never a lossy pass, and it is never sent to a service.', 'ajax-thumbnail-rebuild' ); ?>
+		</p>
+		<?php
+	}
+
+	public static function render_optimize_service(): void {
+		$settings = self::all();
+		$usage    = ATR_Service::usage();
+		?>
+		<select name="<?php echo esc_attr( self::OPTION ); ?>[optimize_service]" id="atr-optimize-service">
+			<option value="none" <?php selected( 'none', $settings['optimize_service'] ); ?>><?php esc_html_e( 'None - use what is on this server', 'ajax-thumbnail-rebuild' ); ?></option>
+			<?php foreach ( ATR_Service::services() as $name => $service ) : ?>
+				<option value="<?php echo esc_attr( $name ); ?>" <?php selected( $name, $settings['optimize_service'] ); ?>><?php echo esc_html( $service['label'] ); ?></option>
+			<?php endforeach; ?>
+		</select>
+
+		<p>
+			<label for="atr-optimize-service-key"><?php esc_html_e( 'API key', 'ajax-thumbnail-rebuild' ); ?></label><br />
+			<input type="password" name="<?php echo esc_attr( self::OPTION ); ?>[optimize_service_key]" id="atr-optimize-service-key" class="regular-text" autocomplete="new-password" value="<?php echo esc_attr( $settings['optimize_service_key'] ); ?>" />
+		</p>
+
+		<p class="description">
+			<?php esc_html_e( 'A service does the same job as the programs above, usually better, and it is the answer on a host that has none and will not let PHP run one. Every file is sent to the service and every file counts against the monthly allowance - a photograph with nine sizes is nine files.', 'ajax-thumbnail-rebuild' ); ?>
+		</p>
+		<p class="description">
+			<?php esc_html_e( 'TinyPNG compresses one way only, which is lossy, so it is used only when lossy compression is allowed above. ShortPixel follows that setting. The untouched original is never sent either way.', 'ajax-thumbnail-rebuild' ); ?>
+		</p>
+
+		<?php if ( $usage && ATR_Service::usage_time() ) : ?>
+			<p class="description">
+				<?php
+				printf(
+					/* translators: 1: number of files, 2: how long ago. */
+					esc_html__( 'The service last reported %1$s files used this month, %2$s ago.', 'ajax-thumbnail-rebuild' ),
+					'<strong>' . esc_html( number_format_i18n( $usage ) ) . '</strong>',
+					esc_html( human_time_diff( ATR_Service::usage_time() ) )
+				);
+				?>
+			</p>
+		<?php endif; ?>
+
+		<?php $error = get_transient( 'atr_service_error' ); ?>
+		<?php if ( $error ) : ?>
+			<div class="notice notice-warning inline">
+				<p>
+					<?php
+					printf(
+						/* translators: %s: what the service said. */
+						esc_html__( 'The last time a file was sent, the service said: %s', 'ajax-thumbnail-rebuild' ),
+						'<em>' . esc_html( $error ) . '</em>'
+					);
+					?>
+				</p>
+			</div>
+		<?php endif; ?>
 		<?php
 	}
 

@@ -30,6 +30,7 @@ require_once ATR_PATH . 'includes/class-atr-image-proxy.php';
 require_once ATR_PATH . 'includes/class-atr-webp.php';
 require_once ATR_PATH . 'includes/class-atr-on-demand.php';
 require_once ATR_PATH . 'includes/class-atr-tools.php';
+require_once ATR_PATH . 'includes/class-atr-service.php';
 require_once ATR_PATH . 'includes/class-atr-optimizer.php';
 require_once ATR_PATH . 'includes/class-atr-cleanup.php';
 require_once ATR_PATH . 'includes/class-atr-media-library.php';

@@ -111,6 +111,19 @@ class ATR_Optimizer {
 			}
 		}
 
+		/* The untouched original is the archive copy, so it is left alone unless a
+		   site asks for it - and then only the lossless programs touch it: never a
+		   re-encode, never a lossy pass, never sent to a service. */
+		$archive = '';
+
+		if ( ATR_Settings::get( 'optimize_original' ) && ! empty( $metadata['original_image'] ) ) {
+			$archive = $directory . $metadata['original_image'];
+
+			if ( file_exists( $archive ) ) {
+				$paths[] = $archive;
+			}
+		}
+
 		$mimes = array();
 
 		foreach ( array_unique( $paths ) as $path ) {
@@ -120,7 +133,7 @@ class ATR_Optimizer {
 				$mimes[ $mime ] = true;
 			}
 
-			$gain = self::optimize_file( $path );
+			$gain = self::optimize_file( $path, $path === $archive );
 
 			if ( $gain > 0 ) {
 				$saved += $gain;
@@ -218,7 +231,7 @@ class ATR_Optimizer {
 	 * @param string $path Absolute path.
 	 * @return int Bytes saved, 0 when the file was left as it was.
 	 */
-	public static function optimize_file( string $path ): int {
+	public static function optimize_file( string $path, bool $lossless_only = false ): int {
 		if ( ! file_exists( $path ) || ! is_writable( $path ) ) {
 			return 0;
 		}
@@ -235,16 +248,26 @@ class ATR_Optimizer {
 			return 0;
 		}
 
-		/* An optimiser installed on the server first: it re-packs the file rather
-		   than re-encoding it, which is both a real saving and not lossy. Only when
-		   there is none does this fall back to writing the image out again, which
-		   wins little on a file WordPress has already written at this quality. */
-		$gain = self::run_tools( $path, $mime, $before );
+		/* A service, when a site has set one up: it does the same job as the local
+		   programs, only better, and it is the answer on a host that has none. */
+		if ( ! $lossless_only ) {
+			$gain = self::run_service( $path, $mime, $before );
 
-		if ( $gain > 0 ) {
+			if ( $gain > 0 ) {
+				return $gain;
+			}
+		}
+
+		/* Then whatever is installed here: it re-packs the file rather than
+		   re-encoding it, which is both a real saving and not lossy. */
+		$gain = self::run_tools( $path, $mime, $before, $lossless_only );
+
+		if ( $gain > 0 || $lossless_only ) {
 			return $gain;
 		}
 
+		/* And only if none of that helped, writing the image out again - which wins
+		   little on a file WordPress has already written at this quality. */
 		return self::reencode( $path, $mime, $before );
 	}
 
@@ -256,8 +279,9 @@ class ATR_Optimizer {
 	 * @param int    $before What it weighs now.
 	 * @return int Bytes saved.
 	 */
-	private static function run_tools( string $path, string $mime, int $before ): int {
-		$programs = ATR_Tools::programs_for( $mime, (bool) ATR_Settings::get( 'optimize_lossy' ) );
+	private static function run_tools( string $path, string $mime, int $before, bool $lossless_only = false ): int {
+		$lossy    = ! $lossless_only && (bool) ATR_Settings::get( 'optimize_lossy' );
+		$programs = ATR_Tools::programs_for( $mime, $lossy );
 
 		if ( ! $programs ) {
 			return 0;
@@ -298,6 +322,42 @@ class ATR_Optimizer {
 		}
 
 		return self::keep_if_better( $path, $work, $before, $mime );
+	}
+
+	/**
+	 * Hand the file to the optimisation service, if there is one.
+	 *
+	 * @param string $path   Absolute path.
+	 * @param string $mime   Its mime type.
+	 * @param int    $before What it weighs now.
+	 * @return int Bytes saved.
+	 */
+	private static function run_service( string $path, string $mime, int $before ): int {
+		if ( ! ATR_Service::handles( $mime ) ) {
+			return 0;
+		}
+
+		$candidate = self::temporary_path( $path, 'service' );
+		$sent      = ATR_Service::optimize( $path, $mime, $candidate );
+
+		if ( is_wp_error( $sent ) ) {
+			self::discard( $candidate );
+			self::remember_service_error( $sent );
+
+			return 0;
+		}
+
+		return self::keep_if_better( $path, $candidate, $before, $mime );
+	}
+
+	/**
+	 * Keep the last thing a service complained about, so the screen can show it
+	 * rather than leaving somebody guessing why nothing happened.
+	 *
+	 * @param WP_Error $error What went wrong.
+	 */
+	private static function remember_service_error( WP_Error $error ): void {
+		set_transient( 'atr_service_error', $error->get_error_message(), HOUR_IN_SECONDS );
 	}
 
 	/**
