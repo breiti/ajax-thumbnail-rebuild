@@ -297,6 +297,14 @@ class ATR_Optimizer {
 		}
 
 		foreach ( $programs as $program ) {
+			/* Making a file progressive helps a browser draw it sooner, which is
+			   worth nothing on the archive copy nobody ever downloads - and a
+			   progressive JPEG is marginally slower to decode when a size is cut
+			   from it later. */
+			if ( $lossless_only ) {
+				$program['args'] = array_values( array_diff( $program['args'], array( '--all-progressive', '-progressive' ) ) );
+			}
+
 			$candidate = self::temporary_path( $path, $program['name'] );
 
 			if ( ! ATR_Tools::run( $program, $work, $candidate ) ) {
