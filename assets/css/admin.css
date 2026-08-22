@@ -14,8 +14,12 @@
 
 /* Every tab's content stands off the tabs themselves. #poststuff brings its own
    padding, so only the plain ones need this. */
-.atr-tab > .postbox,
-.atr-tab > .wp-list-table {
+.atr-tab > *:first-child:not(#poststuff),
+.atr-tab > form > *:first-child {
+	margin-top: 1.2em;
+}
+
+.atr-tab .postbox + .postbox {
 	margin-top: 1.2em;
 }
 
@@ -34,8 +38,12 @@
 
 .nav-tab-active /* Every tab's content stands off the tabs themselves. #poststuff brings its own
    padding, so only the plain ones need this. */
-.atr-tab > .postbox,
-.atr-tab > .wp-list-table {
+.atr-tab > *:first-child:not(#poststuff),
+.atr-tab > form > *:first-child {
+	margin-top: 1.2em;
+}
+
+.atr-tab .postbox + .postbox {
 	margin-top: 1.2em;
 }
 

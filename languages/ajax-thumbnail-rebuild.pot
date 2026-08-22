@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-22T05:37:23+00:00\n"
+"POT-Creation-Date: 2026-08-22T05:44:30+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: ajax-thumbnail-rebuild\n"
@@ -41,7 +41,7 @@ msgid "Rebuild Thumbnails"
 msgstr ""
 
 #: includes/class-atr-admin-page.php:54
-#: includes/class-atr-plugin.php:167
+#: includes/class-atr-plugin.php:183
 msgid "Rebuild"
 msgstr ""
 
@@ -80,7 +80,7 @@ msgstr ""
 
 #: includes/class-atr-admin-page.php:140
 #: includes/class-atr-admin-page.php:322
-#: includes/class-atr-admin-page.php:437
+#: includes/class-atr-admin-page.php:468
 msgid "Size"
 msgstr ""
 
@@ -89,7 +89,7 @@ msgid "Dimensions"
 msgstr ""
 
 #: includes/class-atr-admin-page.php:142
-#: includes/class-atr-admin-page.php:440
+#: includes/class-atr-admin-page.php:471
 msgid "Crop"
 msgstr ""
 
@@ -168,7 +168,7 @@ msgstr ""
 #: includes/class-atr-admin-page.php:276
 #: includes/class-atr-media-library.php:47
 #: includes/class-atr-media-library.php:68
-#: includes/class-atr-plugin.php:185
+#: includes/class-atr-plugin.php:201
 msgid "Rebuild thumbnails"
 msgstr ""
 
@@ -236,30 +236,30 @@ msgid "Delete the listed files"
 msgstr ""
 
 #. translators: %s: this site's host name.
-#: includes/class-atr-admin-page.php:408
+#: includes/class-atr-admin-page.php:409
 #, php-format
 msgid "%s does not look like a host the proxy can reach from the internet. The settings save either way, but the images will not load while you are on this address."
 msgstr ""
 
-#: includes/class-atr-admin-page.php:438
+#: includes/class-atr-admin-page.php:469
 msgid "Width"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:439
+#: includes/class-atr-admin-page.php:470
 msgid "Height"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:446
+#: includes/class-atr-admin-page.php:477
 msgid "No image sizes are registered on this site."
 msgstr ""
 
-#: includes/class-atr-admin-page.php:452
-#: includes/class-atr-admin-page.php:453
+#: includes/class-atr-admin-page.php:483
+#: includes/class-atr-admin-page.php:484
 #: includes/class-atr-image-sizes.php:127
 msgid "any"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:461
+#: includes/class-atr-admin-page.php:492
 msgid "Sizes come from WordPress, your theme and your plugins. Change them where they are registered, then rebuild."
 msgstr ""
 
@@ -276,7 +276,7 @@ msgstr ""
 msgid "The file is missing from the uploads folder."
 msgstr ""
 
-#: includes/class-atr-plugin.php:162
+#: includes/class-atr-plugin.php:178
 msgid "Thumbnails"
 msgstr ""
 

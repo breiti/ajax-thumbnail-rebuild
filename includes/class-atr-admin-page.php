@@ -396,34 +396,65 @@ class ATR_Admin_Page {
 		// options.php saves and redirects back here; this prints what it has to say.
 		settings_errors();
 		?>
-		<div class="postbox">
-			<h2 class="hndle"><span><?php echo esc_html( $settings['label'] ); ?></span></h2>
-			<div class="inside">
-				<?php if ( 'serving' === $page && ATR_Image_Proxy::site_looks_local() ) : ?>
-					<div class="notice notice-warning inline">
-						<p>
-							<?php
-							printf(
-								/* translators: %s: this site's host name. */
-								esc_html__( '%s does not look like a host the proxy can reach from the internet. The settings save either way, but the images will not load while you are on this address.', 'ajax-thumbnail-rebuild' ),
-								'<code>' . esc_html( (string) wp_parse_url( home_url(), PHP_URL_HOST ) ) . '</code>'
-							);
-							?>
-						</p>
-					</div>
+		<form method="post" action="<?php echo esc_url( admin_url( 'options.php' ) ); ?>">
+			<?php settings_fields( ATR_Settings::GROUP ); ?>
+			<input type="hidden" name="<?php echo esc_attr( ATR_Settings::OPTION ); ?>[_fields]" value="<?php echo esc_attr( implode( ',', $settings['keys'] ) ); ?>" />
+
+			<?php if ( 'serving' === $page && ATR_Image_Proxy::site_looks_local() ) : ?>
+				<div class="notice notice-warning inline">
+					<p>
+						<?php
+						printf(
+							/* translators: %s: this site's host name. */
+							esc_html__( '%s does not look like a host the proxy can reach from the internet. The settings save either way, but the images will not load while you are on this address.', 'ajax-thumbnail-rebuild' ),
+							'<code>' . esc_html( (string) wp_parse_url( home_url(), PHP_URL_HOST ) ) . '</code>'
+						);
+						?>
+					</p>
+				</div>
+			<?php endif; ?>
+
+			<?php $this->render_settings_sections( ATR_Settings::page_slug( $page ) ); ?>
+
+			<?php submit_button(); ?>
+		</form>
+		<?php
+	}
+
+	/**
+	 * Each registered section as a card of its own.
+	 *
+	 * do_settings_sections() prints the section title as a plain heading inside
+	 * whatever it is called in, and WordPress styles a heading inside a postbox
+	 * as a pre-4.4 box title - which lands in the wrong place. A section is a
+	 * card here, with the title in the header where a postbox keeps it.
+	 *
+	 * @param string $slug Settings API page.
+	 */
+	private function render_settings_sections( string $slug ): void {
+		global $wp_settings_sections, $wp_settings_fields;
+
+		foreach ( (array) ( $wp_settings_sections[ $slug ] ?? array() ) as $section ) {
+			?>
+			<div class="postbox">
+				<?php if ( ! empty( $section['title'] ) ) : ?>
+					<h2 class="hndle"><span><?php echo esc_html( $section['title'] ); ?></span></h2>
 				<?php endif; ?>
 
-				<form method="post" action="<?php echo esc_url( admin_url( 'options.php' ) ); ?>">
-					<?php settings_fields( ATR_Settings::GROUP ); ?>
-					<input type="hidden" name="<?php echo esc_attr( ATR_Settings::OPTION ); ?>[_fields]" value="<?php echo esc_attr( implode( ',', $settings['keys'] ) ); ?>" />
-					<?php
-					do_settings_sections( ATR_Settings::page_slug( $page ) );
-					submit_button();
-					?>
-				</form>
+				<div class="inside">
+					<?php if ( ! empty( $section['callback'] ) ) : ?>
+						<?php call_user_func( $section['callback'], $section ); ?>
+					<?php endif; ?>
+
+					<?php if ( isset( $wp_settings_fields[ $slug ][ $section['id'] ] ) ) : ?>
+						<table class="form-table" role="presentation">
+							<?php do_settings_fields( $slug, $section['id'] ); ?>
+						</table>
+					<?php endif; ?>
+				</div>
 			</div>
-		</div>
-		<?php
+			<?php
+		}
 	}
 
 	/**

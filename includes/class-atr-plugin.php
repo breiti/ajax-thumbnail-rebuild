@@ -89,19 +89,35 @@ class ATR_Plugin {
 		}
 	}
 
+	/**
+	 * The version an asset is served under.
+	 *
+	 * The plugin version alone is not enough: a stylesheet edited between two
+	 * releases keeps the same URL, and browsers - and caches in front of the
+	 * site - go on serving what they already have. The file's own timestamp
+	 * changes whenever the file does.
+	 *
+	 * @param string $relative Path inside the plugin.
+	 */
+	private function asset_version( string $relative ): string {
+		$path = ATR_PATH . $relative;
+
+		return file_exists( $path ) ? ATR_VERSION . '.' . filemtime( $path ) : ATR_VERSION;
+	}
+
 	private function enqueue_page(): void {
 		wp_enqueue_style(
 			'ajax-thumbnail-rebuild',
 			ATR_URL . 'assets/css/admin.css',
 			array( 'common' ),
-			ATR_VERSION
+			$this->asset_version( 'assets/css/admin.css' )
 		);
 
 		wp_enqueue_script(
 			'ajax-thumbnail-rebuild',
 			ATR_URL . 'assets/js/admin.js',
 			array( 'wp-api-fetch', 'wp-i18n' ),
-			ATR_VERSION,
+			$this->asset_version( 'assets/js/admin.js' ),
 			true
 		);
 
@@ -115,7 +131,7 @@ class ATR_Plugin {
 			'ajax-thumbnail-rebuild-cleanup',
 			ATR_URL . 'assets/js/cleanup.js',
 			array( 'wp-api-fetch', 'wp-i18n' ),
-			ATR_VERSION,
+			$this->asset_version( 'assets/js/cleanup.js' ),
 			true
 		);
 
@@ -135,7 +151,7 @@ class ATR_Plugin {
 			'ajax-thumbnail-rebuild-attachment',
 			ATR_URL . 'assets/js/attachment.js',
 			array( 'wp-api-fetch', 'wp-i18n' ),
-			ATR_VERSION,
+			$this->asset_version( 'assets/js/attachment.js' ),
 			true
 		);
 
