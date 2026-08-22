@@ -54,11 +54,14 @@ New, all off by default:
   how large an image may stay before it is scaled down - both of which WordPress
   decides for you and gives no screen for. Set the size to 0 to keep uploads
   exactly as they arrive.
-* **Optimising.** Re-encodes files that are already the right size so the same
-  picture takes fewer bytes. Nothing is resized, a file is replaced only when
-  the new one is smaller, and the untouched original beside a scaled upload is
-  left alone. Runs on upload, over the library, or on single images from the
-  media library.
+* **Optimising.** Makes files that are already the right size smaller, using the
+  optimisers installed on the server - jpegoptim, optipng, gifsicle, and
+  pngquant when a site allows lossy PNG. They re-pack a file rather than
+  re-encode it, which is where the saving is; where none is installed the plugin
+  says so and falls back to re-encoding with PHP's own library. Nothing is
+  resized, a file is replaced only when the new one is genuinely smaller, and
+  the untouched original beside a scaled upload is left alone. Runs on upload,
+  over the library, or on single images from the media library.
 * **WebP copies.** Every image WordPress generates gets a WebP copy written next
   to it, and the front end serves it through a picture element with the original
   as the fallback - which works behind a page cache. A copy that would be larger

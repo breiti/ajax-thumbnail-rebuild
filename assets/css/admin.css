@@ -41,6 +41,19 @@
 	line-height: 1.8;
 }
 
+.atr-tools {
+	margin: .6em 0;
+}
+
+.atr-tools li {
+	margin: 0 0 .3em;
+}
+
+.atr-badge--yes {
+	background: #edfaef;
+	color: #00713b;
+}
+
 .atr-mode label {
 	display: block;
 	margin-bottom: 4px;

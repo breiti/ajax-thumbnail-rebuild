@@ -49,6 +49,14 @@
 		 * @return {string} One sentence.
 		 */
 		function whyNothing( reasons, quality ) {
+			if ( reasons.no_tools ) {
+				return __( 'This server has no image optimiser installed - jpegoptim, optipng and the like - so all this can do is write the image out again, which wins nothing on files WordPress has already written. The settings say which are missing.', 'ajax-thumbnail-rebuild' );
+			}
+
+			if ( reasons.png_lossy_off && ! reasons.no_gain ) {
+				return __( 'These PNG files are already as small as lossless optimising makes them. Allowing lossy PNG in the settings lets pngquant take them further.', 'ajax-thumbnail-rebuild' );
+			}
+
 			if ( reasons.png && ! reasons.no_gain ) {
 				return __( 'These are PNG files, which do not get smaller by re-encoding. WebP copies are what helps for those.', 'ajax-thumbnail-rebuild' );
 			}

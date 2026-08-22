@@ -27,6 +27,7 @@ class ATR_Settings {
 			'max_upload_dimension' => ATR_Uploads::CORE_THRESHOLD,
 			'optimize_enabled'     => false,
 			'optimize_quality'     => ATR_Uploads::CORE_QUALITY,
+			'optimize_lossy'       => false,
 
 			'proxy_enabled' => false,
 			'proxy_output'  => 'webp',
@@ -134,6 +135,14 @@ class ATR_Settings {
 			array( 'label_for' => 'atr-optimize-quality' )
 		);
 
+		add_settings_field(
+			'optimize_lossy',
+			__( 'Lossy PNG', 'ajax-thumbnail-rebuild' ),
+			array( __CLASS__, 'render_optimize_lossy' ),
+			self::GROUP,
+			'atr_optimize'
+		);
+
 		add_settings_section(
 			'atr_proxy',
 			__( 'Image proxy', 'ajax-thumbnail-rebuild' ),
@@ -234,6 +243,7 @@ class ATR_Settings {
 			'max_upload_dimension' => max( 0, (int) ( $input['max_upload_dimension'] ?? $defaults['max_upload_dimension'] ) ),
 			'optimize_enabled'     => ! empty( $input['optimize_enabled'] ),
 			'optimize_quality'     => self::quality( $input['optimize_quality'] ?? null, $defaults['optimize_quality'] ),
+			'optimize_lossy'       => ! empty( $input['optimize_lossy'] ),
 
 			'proxy_enabled' => ! empty( $input['proxy_enabled'] ),
 			'proxy_output'  => $output,
@@ -318,9 +328,7 @@ class ATR_Settings {
 		<p class="description">
 			<?php esc_html_e( 'Optimising re-encodes a file that is already the right size, to get the same picture in fewer bytes. Nothing is resized and no file is renamed, the result is kept only when it is genuinely smaller, and the untouched original beside a scaled upload is never touched.', 'ajax-thumbnail-rebuild' ); ?>
 		</p>
-		<p class="description">
-			<?php esc_html_e( 'This is what re-encoding can do, which is a JPEG matter: a PNG written back by the same image library comes out the same size, so PNG images gain nothing here. WebP copies are what makes those smaller.', 'ajax-thumbnail-rebuild' ); ?>
-		</p>
+		<?php self::render_tool_status(); ?>
 		<p class="description">
 			<?php
 			printf(
@@ -331,6 +339,68 @@ class ATR_Settings {
 			);
 			?>
 		</p>
+		<?php
+	}
+
+	/**
+	 * What the server has to optimise with, said plainly.
+	 *
+	 * Without one of these programs all the plugin can do is write the image out
+	 * again, which wins next to nothing on files WordPress has already written -
+	 * so it is worth saying before somebody presses the button and sees "0 B".
+	 */
+	public static function render_tool_status(): void {
+		$available = ATR_Tools::available();
+		$known     = array();
+
+		foreach ( ATR_Tools::definitions() as $programs ) {
+			foreach ( array_keys( (array) $programs ) as $name ) {
+				$known[ $name ] = isset( $available[ $name ] );
+			}
+		}
+
+		if ( ! ATR_Tools::can_run() ) {
+			?>
+			<div class="notice notice-warning inline">
+				<p><?php esc_html_e( 'This server does not let PHP run other programs, so the image optimisers cannot be used at all. Optimising falls back to writing the image out again, which gains little on files WordPress has already written.', 'ajax-thumbnail-rebuild' ); ?></p>
+			</div>
+			<?php
+			return;
+		}
+		?>
+		<p class="description">
+			<?php esc_html_e( 'Optimising uses the programs installed on the server. They re-pack a file rather than re-encode it, which is where the real saving is; without them all this can do is write the image out again, and WordPress wrote it at this quality already.', 'ajax-thumbnail-rebuild' ); ?>
+		</p>
+
+		<ul class="atr-tools">
+			<?php foreach ( $known as $name => $installed ) : ?>
+				<li>
+					<span class="atr-badge <?php echo $installed ? 'atr-badge--yes' : ''; ?>">
+						<?php echo $installed ? esc_html__( 'installed', 'ajax-thumbnail-rebuild' ) : esc_html__( 'missing', 'ajax-thumbnail-rebuild' ); ?>
+					</span>
+					<code><?php echo esc_html( $name ); ?></code>
+				</li>
+			<?php endforeach; ?>
+		</ul>
+
+		<?php if ( ! $available ) : ?>
+			<div class="notice notice-warning inline">
+				<p>
+					<?php esc_html_e( 'None of them is installed, so optimising will save almost nothing. Ask the host to install jpegoptim and optipng - they are in every distribution and need no configuration.', 'ajax-thumbnail-rebuild' ); ?>
+				</p>
+			</div>
+		<?php endif; ?>
+		<?php
+	}
+
+	public static function render_optimize_lossy(): void {
+		$settings = self::all();
+		?>
+		<label>
+			<input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[optimize_lossy]" value="1" <?php checked( $settings['optimize_lossy'] ); ?> />
+			<?php esc_html_e( 'Allow pngquant, which drops a PNG to fewer colours', 'ajax-thumbnail-rebuild' ); ?>
+		</label>
+		<p class="description"><?php esc_html_e( 'Off by default because it changes the picture, not only the file. On screenshots, logos and flat graphics it typically halves the size with nothing visible to show for it; on photographs saved as PNG, look before you keep it.', 'ajax-thumbnail-rebuild' ); ?></p>
 		<?php
 	}
 

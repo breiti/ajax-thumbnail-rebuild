@@ -18,6 +18,14 @@
 	 * @return {string} A sentence for the person who pressed the button.
 	 */
 	function nothingSaved( response ) {
+		if ( 'no_tools' === response.reason ) {
+			return __( 'Nothing to save: this server has no image optimiser installed, so all this can do is write the image out again.', 'ajax-thumbnail-rebuild' );
+		}
+
+		if ( 'png_lossy_off' === response.reason ) {
+			return __( 'Already as small as lossless optimising makes it. Allow lossy PNG in the settings to take it further.', 'ajax-thumbnail-rebuild' );
+		}
+
 		if ( 'png' === response.reason ) {
 			return __( 'PNG files do not get smaller by re-encoding. WebP copies are what helps for these.', 'ajax-thumbnail-rebuild' );
 		}

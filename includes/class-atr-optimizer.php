@@ -18,8 +18,14 @@ class ATR_Optimizer {
 	/** Formats worth re-encoding. */
 	const MIMES = array( 'image/jpeg', 'image/png', 'image/webp' );
 
-	/** Anything below this is not worth the write. */
+	/** Anything below this is not worth the write, on a file of any size. */
 	const MIN_SAVING_BYTES = 512;
+
+	/** The floor for a small file, where 512 bytes would be most of it. */
+	const MIN_SAVING_FLOOR = 64;
+
+	/** A saving worth taking on a small file, as a share of what it weighs. */
+	const MIN_SAVING_SHARE = 0.05;
 
 	/** Metadata key recording the quality an attachment was last optimised at. */
 	const DONE_KEY = 'atr_optimized';
@@ -79,8 +85,9 @@ class ATR_Optimizer {
 
 		/* Re-encoding is lossy, so running it again over files that were already
 		   encoded at this quality would only degrade them for a few bytes. A rebuild
-		   clears the mark, because it writes the files afresh. */
-		if ( (int) ( $metadata[ self::DONE_KEY ] ?? 0 ) >= $quality && $quality > 0 ) {
+		   clears the mark, because it writes the files afresh - and so does
+		   installing an optimiser the last pass did not have. */
+		if ( self::already_done( $metadata, $quality ) ) {
 			return array(
 				'metadata' => $metadata,
 				'saved'    => 0,
@@ -126,7 +133,11 @@ class ATR_Optimizer {
 			$metadata = self::refresh_filesizes( $metadata, $file );
 		}
 
-		$metadata[ self::DONE_KEY ] = $quality;
+		$metadata[ self::DONE_KEY ] = array(
+			'quality' => $quality,
+			'tools'   => ATR_Tools::signature(),
+			'lossy'   => (bool) ATR_Settings::get( 'optimize_lossy' ),
+		);
 
 		return array(
 			'metadata' => $metadata,
@@ -135,6 +146,33 @@ class ATR_Optimizer {
 			'message'  => '',
 			'reason'   => self::reason_for_nothing( $saved, $mimes ),
 		);
+	}
+
+	/**
+	 * Whether this attachment has already been through exactly this treatment.
+	 *
+	 * @param array $metadata Attachment metadata.
+	 * @param int   $quality  Quality it would be optimised at now.
+	 */
+	private static function already_done( array $metadata, int $quality ): bool {
+		$mark = $metadata[ self::DONE_KEY ] ?? null;
+
+		if ( null === $mark || $quality <= 0 ) {
+			return false;
+		}
+
+		// Before 2.0 the mark was the quality on its own, with no programs involved.
+		$done_quality = is_array( $mark ) ? (int) ( $mark['quality'] ?? 0 ) : (int) $mark;
+		$done_tools   = is_array( $mark ) ? (string) ( $mark['tools'] ?? '' ) : '';
+		$done_lossy   = is_array( $mark ) ? ! empty( $mark['lossy'] ) : false;
+
+		/* Turning lossy compression on is a new offer to make, so a pass that was
+		   made without it does not count as this pass having been made. */
+		if ( ATR_Settings::get( 'optimize_lossy' ) && ! $done_lossy ) {
+			return false;
+		}
+
+		return $done_quality >= $quality && $done_tools === ATR_Tools::signature();
 	}
 
 	/**
@@ -150,10 +188,24 @@ class ATR_Optimizer {
 			return '';
 		}
 
-		/* Re-encoding a PNG with the same library writes the same pixels back at
-		   the same compression: there is nothing to win, whatever the quality is
-		   set to. WebP copies are what helps for those. */
+		/* Without an optimiser installed all this can do is re-encode, which wins
+		   nothing on files WordPress itself has just written at this quality. That
+		   is the answer worth giving, before anything about the format. */
+		if ( ! ATR_Tools::available() ) {
+			return 'no_tools';
+		}
+
 		if ( $mimes && array( 'image/png' => true ) === $mimes ) {
+			$available = ATR_Tools::available();
+
+			/* A PNG that optipng cannot shrink any further is not a dead end: the
+			   thing that does shrink it is pngquant, which the site has turned off
+			   because it is lossy. Worth pointing at rather than sending somebody
+			   away with "nothing to do". */
+			if ( isset( $available['pngquant'] ) && ! ATR_Settings::get( 'optimize_lossy' ) ) {
+				return 'png_lossy_off';
+			}
+
 			return 'png';
 		}
 
@@ -179,10 +231,84 @@ class ATR_Optimizer {
 
 		$before = (int) filesize( $path );
 
-		if ( $before < self::MIN_SAVING_BYTES ) {
+		if ( $before < self::MIN_SAVING_FLOOR ) {
 			return 0;
 		}
 
+		/* An optimiser installed on the server first: it re-packs the file rather
+		   than re-encoding it, which is both a real saving and not lossy. Only when
+		   there is none does this fall back to writing the image out again, which
+		   wins little on a file WordPress has already written at this quality. */
+		$gain = self::run_tools( $path, $mime, $before );
+
+		if ( $gain > 0 ) {
+			return $gain;
+		}
+
+		return self::reencode( $path, $mime, $before );
+	}
+
+	/**
+	 * Hand the file to whatever optimiser the server has for its format.
+	 *
+	 * @param string $path   Absolute path.
+	 * @param string $mime   Its mime type.
+	 * @param int    $before What it weighs now.
+	 * @return int Bytes saved.
+	 */
+	private static function run_tools( string $path, string $mime, int $before ): int {
+		$programs = ATR_Tools::programs_for( $mime, (bool) ATR_Settings::get( 'optimize_lossy' ) );
+
+		if ( ! $programs ) {
+			return 0;
+		}
+
+		/* Each program works on what the one before it produced, on a copy: two of
+		   them in a row do better than either alone, and nothing touches the file
+		   itself until the whole chain has finished and won. */
+		$work = self::temporary_path( $path );
+
+		if ( ! copy( $path, $work ) ) { // phpcs:ignore WordPress.WP.AlternativeFunctions
+			return 0;
+		}
+
+		foreach ( $programs as $program ) {
+			$candidate = self::temporary_path( $path, $program['name'] );
+
+			if ( ! ATR_Tools::run( $program, $work, $candidate ) ) {
+				self::discard( $candidate );
+
+				continue;
+			}
+
+			clearstatcache( true, $candidate );
+			clearstatcache( true, $work );
+
+			// A program that made it bigger, or changed it into something else, is
+			// simply not used; the chain carries on with what it had.
+			if ( filesize( $candidate ) < filesize( $work )
+				&& wp_get_image_mime( $candidate ) === $mime
+				&& self::same_dimensions( $work, $candidate ) ) {
+				self::discard( $work );
+
+				$work = $candidate;
+			} else {
+				self::discard( $candidate );
+			}
+		}
+
+		return self::keep_if_better( $path, $work, $before, $mime );
+	}
+
+	/**
+	 * Write the image out again with PHP's own library.
+	 *
+	 * @param string $path   Absolute path.
+	 * @param string $mime   Its mime type.
+	 * @param int    $before What it weighs now.
+	 * @return int Bytes saved.
+	 */
+	private static function reencode( string $path, string $mime, int $before ): int {
 		$editor = wp_get_image_editor( $path );
 
 		if ( is_wp_error( $editor ) ) {
@@ -194,29 +320,74 @@ class ATR_Optimizer {
 		/* Written beside the file and moved over it only if it wins, so a failed or
 		   fatter encode can never damage what is already there. The name keeps the
 		   extension: the editor rewrites it to match the format anyway. */
-		$temporary = trailingslashit( dirname( $path ) ) . 'atr-optimizing-' . wp_basename( $path );
-		$saved     = $editor->save( $temporary, $mime );
+		$saved = $editor->save( self::temporary_path( $path ), $mime );
 
 		if ( is_wp_error( $saved ) || empty( $saved['path'] ) || ! file_exists( $saved['path'] ) ) {
 			return 0;
 		}
 
-		$after = (int) filesize( $saved['path'] );
+		return self::keep_if_better( $path, $saved['path'], $before, $mime );
+	}
+
+	/**
+	 * Put a candidate in place of the file, if it is worth it.
+	 *
+	 * @param string $path      The file as it stands.
+	 * @param string $candidate What was just written beside it.
+	 * @param int    $before    What the file weighed.
+	 * @param string $mime      The format it must still be in.
+	 * @return int Bytes saved, 0 when the candidate was thrown away.
+	 */
+	private static function keep_if_better( string $path, string $candidate, int $before, string $mime ): int {
+		clearstatcache( true, $candidate );
+
+		$after = (int) filesize( $candidate );
 		$gain  = $before - $after;
 
-		if ( $gain < self::MIN_SAVING_BYTES || ! self::same_dimensions( $path, $saved['path'] ) ) {
-			wp_delete_file( $saved['path'] );
+		if ( $gain < self::worth_writing( $before )
+			|| wp_get_image_mime( $candidate ) !== $mime
+			|| ! self::same_dimensions( $path, $candidate ) ) {
+			self::discard( $candidate );
 
 			return 0;
 		}
 
-		if ( ! @rename( $saved['path'], $path ) ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors
-			wp_delete_file( $saved['path'] );
+		if ( ! @rename( $candidate, $path ) ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors
+			self::discard( $candidate );
 
 			return 0;
 		}
 
 		return $gain;
+	}
+
+	/**
+	 * How much has to be saved before the file is worth rewriting.
+	 *
+	 * A flat 512 bytes is right for a photograph and absurd for a 900 byte icon,
+	 * where it is most of the file: on small files a share of the size is the
+	 * measure that means anything.
+	 *
+	 * @param int $before What the file weighs.
+	 */
+	private static function worth_writing( int $before ): int {
+		return max( self::MIN_SAVING_FLOOR, (int) min( self::MIN_SAVING_BYTES, $before * self::MIN_SAVING_SHARE ) );
+	}
+
+	/**
+	 * Where a candidate is written while it is being judged.
+	 */
+	private static function temporary_path( string $path, string $tag = '' ): string {
+		return trailingslashit( dirname( $path ) ) . 'atr-optimizing-' . ( '' === $tag ? '' : $tag . '-' ) . wp_basename( $path );
+	}
+
+	/**
+	 * @param string $path File to remove, if it is there.
+	 */
+	private static function discard( string $path ): void {
+		if ( file_exists( $path ) ) {
+			wp_delete_file( $path );
+		}
 	}
 
 	/**
