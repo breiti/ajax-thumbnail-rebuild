@@ -1,4 +1,4 @@
-# Copyright (C) 2026 junkcoder, ristoniinemets
+# Copyright (C) 2026 ristoniinemets, junkcoder
 # This file is distributed under the GPL2.
 msgid ""
 msgstr ""
@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-22T05:44:30+00:00\n"
+"POT-Creation-Date: 2026-08-23T07:44:45+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: ajax-thumbnail-rebuild\n"
@@ -31,7 +31,7 @@ msgstr ""
 
 #. Author of the plugin
 #: ajax-thumbnail-rebuild.php
-msgid "junkcoder, ristoniinemets"
+msgid "ristoniinemets, junkcoder"
 msgstr ""
 
 #: includes/class-atr-admin-page.php:25
@@ -41,7 +41,6 @@ msgid "Rebuild Thumbnails"
 msgstr ""
 
 #: includes/class-atr-admin-page.php:54
-#: includes/class-atr-plugin.php:183
 msgid "Rebuild"
 msgstr ""
 
@@ -54,7 +53,7 @@ msgid "Cleanup"
 msgstr ""
 
 #: includes/class-atr-admin-page.php:77
-#: includes/class-atr-rest-controller.php:134
+#: includes/class-atr-rest-controller.php:149
 msgid "You are not allowed to rebuild thumbnails."
 msgstr ""
 
@@ -80,7 +79,7 @@ msgstr ""
 
 #: includes/class-atr-admin-page.php:140
 #: includes/class-atr-admin-page.php:322
-#: includes/class-atr-admin-page.php:468
+#: includes/class-atr-admin-page.php:470
 msgid "Size"
 msgstr ""
 
@@ -89,7 +88,7 @@ msgid "Dimensions"
 msgstr ""
 
 #: includes/class-atr-admin-page.php:142
-#: includes/class-atr-admin-page.php:471
+#: includes/class-atr-admin-page.php:473
 msgid "Crop"
 msgstr ""
 
@@ -168,7 +167,7 @@ msgstr ""
 #: includes/class-atr-admin-page.php:276
 #: includes/class-atr-media-library.php:47
 #: includes/class-atr-media-library.php:68
-#: includes/class-atr-plugin.php:201
+#: includes/class-atr-plugin.php:220
 msgid "Rebuild thumbnails"
 msgstr ""
 
@@ -236,30 +235,30 @@ msgid "Delete the listed files"
 msgstr ""
 
 #. translators: %s: this site's host name.
-#: includes/class-atr-admin-page.php:409
+#: includes/class-atr-admin-page.php:410
 #, php-format
 msgid "%s does not look like a host the proxy can reach from the internet. The settings save either way, but the images will not load while you are on this address."
 msgstr ""
 
-#: includes/class-atr-admin-page.php:469
+#: includes/class-atr-admin-page.php:471
 msgid "Width"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:470
+#: includes/class-atr-admin-page.php:472
 msgid "Height"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:477
+#: includes/class-atr-admin-page.php:479
 msgid "No image sizes are registered on this site."
 msgstr ""
 
-#: includes/class-atr-admin-page.php:483
-#: includes/class-atr-admin-page.php:484
+#: includes/class-atr-admin-page.php:485
+#: includes/class-atr-admin-page.php:486
 #: includes/class-atr-image-sizes.php:127
 msgid "any"
 msgstr ""
 
-#: includes/class-atr-admin-page.php:492
+#: includes/class-atr-admin-page.php:494
 msgid "Sizes come from WordPress, your theme and your plugins. Change them where they are registered, then rebuild."
 msgstr ""
 
@@ -268,6 +267,7 @@ msgid "cropped"
 msgstr ""
 
 #: includes/class-atr-media-library.php:53
+#: includes/class-atr-plugin.php:186
 msgid "Optimise"
 msgstr ""
 
@@ -277,18 +277,81 @@ msgid "The file is missing from the uploads folder."
 msgstr ""
 
 #: includes/class-atr-plugin.php:178
-msgid "Thumbnails"
+msgid "Images"
+msgstr ""
+
+#: includes/class-atr-plugin.php:185
+msgid "Rebuild sizes"
+msgstr ""
+
+#: includes/class-atr-plugin.php:193
+msgid "Replace file"
+msgstr ""
+
+#: includes/class-atr-plugin.php:201
+msgid "Replace"
+msgstr ""
+
+#: includes/class-atr-plugin.php:202
+msgid "The new file has to be the same kind of image, because the name and the address stay as they are - which is what keeps every link to this image working."
 msgstr ""
 
 #: includes/class-atr-regenerator.php:40
 msgid "The file could not be read as an image."
 msgstr ""
 
-#: includes/class-atr-rest-controller.php:179
-#: includes/class-atr-rest-controller.php:204
-#: includes/class-atr-rest-controller.php:229
-#: includes/class-atr-rest-controller.php:261
+#: includes/class-atr-replace.php:33
+msgid "Only images can be replaced here."
+msgstr ""
+
+#: includes/class-atr-replace.php:45
+msgid "That attachment has no file."
+msgstr ""
+
+#. translators: 1: the extension of the file being uploaded, 2: the extension it has to be.
+#: includes/class-atr-replace.php:65
+#, php-format
+msgid "This is a .%1$s file and the image it would replace is a .%2$s. Replacing keeps the file name so that every link to it goes on working, which only holds while the type stays the same."
+msgstr ""
+
+#: includes/class-atr-replace.php:73
+msgid "The uploads folder cannot be written to."
+msgstr ""
+
+#: includes/class-atr-replace.php:80
+msgid "The new file could not be written into the uploads folder."
+msgstr ""
+
+#: includes/class-atr-replace.php:91
+msgid "The new file was written but its sizes could not be generated."
+msgstr ""
+
+#: includes/class-atr-replace.php:126
+msgid "The file did not arrive in one piece."
+msgstr ""
+
+#: includes/class-atr-replace.php:135
+msgid "That kind of file cannot be uploaded here."
+msgstr ""
+
+#: includes/class-atr-replace.php:139
+msgid "That file is not an image WordPress can read."
+msgstr ""
+
+#: includes/class-atr-rest-controller.php:169
+msgid "You are not allowed to replace that image."
+msgstr ""
+
+#: includes/class-atr-rest-controller.php:185
+#: includes/class-atr-rest-controller.php:251
+#: includes/class-atr-rest-controller.php:276
+#: includes/class-atr-rest-controller.php:301
+#: includes/class-atr-rest-controller.php:333
 msgid "That attachment does not exist."
+msgstr ""
+
+#: includes/class-atr-rest-controller.php:195
+msgid "No file was sent."
 msgstr ""
 
 #: includes/class-atr-service.php:96
@@ -728,6 +791,24 @@ msgstr ""
 
 #: assets/js/attachment.js:96
 msgid "The thumbnails could not be rebuilt."
+msgstr ""
+
+#: assets/js/attachment.js:125
+msgid "Choose a file first."
+msgstr ""
+
+#: assets/js/attachment.js:134
+msgid "Replacing…"
+msgstr ""
+
+#. translators: 1: image width, 2: image height.
+#: assets/js/attachment.js:143
+#, js-format
+msgid "Replaced. The image is now %1$d by %2$d; reload to see it."
+msgstr ""
+
+#: assets/js/attachment.js:150
+msgid "The image could not be replaced."
 msgstr ""
 
 #: assets/js/cleanup.js:123

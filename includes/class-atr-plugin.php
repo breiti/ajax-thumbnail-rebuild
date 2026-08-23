@@ -175,12 +175,31 @@ class ATR_Plugin {
 		/* The id lives in a data attribute and the message next to the button, so several
 		   attachments on one screen no longer share one element id between them. */
 		$fields['ajax-thumbnail-rebuild'] = array(
-			'label' => __( 'Thumbnails', 'ajax-thumbnail-rebuild' ),
+			'label' => __( 'Images', 'ajax-thumbnail-rebuild' ),
 			'input' => 'html',
 			'html'  => sprintf(
-				'<button type="button" class="button atr-rebuild-button" data-id="%1$d">%2$s</button> <span class="atr-rebuild-message" aria-live="polite"></span>',
+				'<button type="button" class="button atr-rebuild-button" data-id="%1$d">%2$s</button> '
+				. '<button type="button" class="button atr-rebuild-button" data-id="%1$d" data-mode="optimize">%3$s</button> '
+				. '<span class="atr-rebuild-message" aria-live="polite"></span>',
 				(int) $post->ID,
-				esc_html__( 'Rebuild', 'ajax-thumbnail-rebuild' )
+				esc_html__( 'Rebuild sizes', 'ajax-thumbnail-rebuild' ),
+				esc_html__( 'Optimise', 'ajax-thumbnail-rebuild' )
+			),
+		);
+
+		/* Replacing keeps the id and the URL, so everything already pointing at this
+		   image goes on pointing at it and simply shows the new one. */
+		$fields['ajax-thumbnail-rebuild-replace'] = array(
+			'label' => __( 'Replace file', 'ajax-thumbnail-rebuild' ),
+			'input' => 'html',
+			'html'  => sprintf(
+				'<input type="file" class="atr-replace-file" accept="image/*" data-id="%1$d" /> '
+				. '<button type="button" class="button atr-replace-button" data-id="%1$d">%2$s</button>'
+				. '<span class="atr-replace-message" aria-live="polite"></span>'
+				. '<p class="description">%3$s</p>',
+				(int) $post->ID,
+				esc_html__( 'Replace', 'ajax-thumbnail-rebuild' ),
+				esc_html__( 'The new file has to be the same kind of image, because the name and the address stay as they are - which is what keeps every link to this image working.', 'ajax-thumbnail-rebuild' )
 			),
 		);
 

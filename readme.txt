@@ -46,6 +46,14 @@ The screen:
 * Rebuild straight from the media library: a row action for one image, and a
   bulk action that hands the selection to the plugin's screen, where it runs one
   image at a time.
+* Rebuild, optimise or replace an image from the attachment details, wherever
+  they open - the media library, the grid, or the modal inside the post editor -
+  without leaving the page you are on.
+* **Replace an image** by uploading a new file. The attachment keeps its id, its
+  title and its address, so every post and product already pointing at it shows
+  the new picture; the sizes are cut again and what the old picture left behind
+  is deleted. The new file has to be the same kind of image, which is what keeps
+  the links working.
 * "Only rebuild featured images" also covers the images in a WooCommerce product
   gallery. A product's main image is its featured image, so that was already
   included.

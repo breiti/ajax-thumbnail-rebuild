@@ -98,4 +98,80 @@
 			button.disabled = false;
 		} );
 	} );
+	/* -------------------------------------------------------------------
+	 * Replacing the file behind an image.
+	 * ---------------------------------------------------------------- */
+
+	document.addEventListener( 'click', function ( event ) {
+		var button = event.target.closest ? event.target.closest( '.atr-replace-button' ) : null;
+
+		if ( ! button || ! button.dataset.id ) {
+			return;
+		}
+
+		event.preventDefault();
+
+		var field = button.parentNode;
+		var input = field.querySelector( '.atr-replace-file' );
+		var message = field.querySelector( '.atr-replace-message' );
+
+		function say( text ) {
+			if ( message ) {
+				message.textContent = ' ' + text;
+			}
+		}
+
+		if ( ! input || ! input.files || ! input.files.length ) {
+			say( __( 'Choose a file first.', 'ajax-thumbnail-rebuild' ) );
+			return;
+		}
+
+		var body = new FormData();
+		body.append( 'id', button.dataset.id );
+		body.append( 'file', input.files[0] );
+
+		button.disabled = true;
+		say( __( 'Replacing…', 'ajax-thumbnail-rebuild' ) );
+
+		apiFetch( {
+			path: '/ajax-thumbnail-rebuild/v1/replace',
+			method: 'POST',
+			body: body
+		} ).then( function ( response ) {
+			say( sprintf(
+				/* translators: 1: image width, 2: image height. */
+				__( 'Replaced. The image is now %1$d by %2$d; reload to see it.', 'ajax-thumbnail-rebuild' ),
+				response.width,
+				response.height
+			) );
+
+			refresh( response );
+		} ).catch( function ( error ) {
+			say( error.message || __( 'The image could not be replaced.', 'ajax-thumbnail-rebuild' ) );
+		} ).then( function () {
+			button.disabled = false;
+		} );
+	} );
+
+	/**
+	 * Show the new picture without a reload.
+	 *
+	 * The URL has not changed - that is the point of replacing - so the browser
+	 * would go on showing what it already has; a throwaway query string is what
+	 * makes it look again.
+	 *
+	 * @param {Object} response What the endpoint answered.
+	 */
+	function refresh( response ) {
+		var stamp = 'atr=' + Date.now();
+
+		document.querySelectorAll( '.media-modal img, .attachment-details img, .wp_attachment_image img, .attachment-preview img' ).forEach( function ( image ) {
+			if ( ! image.src ) {
+				return;
+			}
+
+			image.src = image.src.split( '#' )[0].replace( /([?&])atr=\d+/, '$1' ).replace( /[?&]$/, '' )
+				+ ( image.src.indexOf( '?' ) === -1 ? '?' : '&' ) + stamp;
+		} );
+	}
 } )( wp.apiFetch, wp.i18n );

@@ -33,6 +33,7 @@ require_once ATR_PATH . 'includes/class-atr-tools.php';
 require_once ATR_PATH . 'includes/class-atr-service.php';
 require_once ATR_PATH . 'includes/class-atr-optimizer.php';
 require_once ATR_PATH . 'includes/class-atr-cleanup.php';
+require_once ATR_PATH . 'includes/class-atr-replace.php';
 require_once ATR_PATH . 'includes/class-atr-media-library.php';
 require_once ATR_PATH . 'includes/class-atr-attachments.php';
 require_once ATR_PATH . 'includes/class-atr-regenerator.php';

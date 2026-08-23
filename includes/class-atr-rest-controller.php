@@ -103,6 +103,21 @@ class ATR_Rest_Controller {
 			),
 		) );
 
+		register_rest_route( self::REST_NAMESPACE, '/replace', array(
+			array(
+				'methods'             => WP_REST_Server::CREATABLE,
+				'callback'            => array( $this, 'replace' ),
+				'permission_callback' => array( $this, 'check_replace_permission' ),
+				'args'                => array(
+					'id' => array(
+						'type'     => 'integer',
+						'required' => true,
+						'minimum'  => 1,
+					),
+				),
+			),
+		) );
+
 		register_rest_route( self::REST_NAMESPACE, '/optimize', array(
 			array(
 				'methods'             => WP_REST_Server::CREATABLE,
@@ -134,6 +149,63 @@ class ATR_Rest_Controller {
 			__( 'You are not allowed to rebuild thumbnails.', 'ajax-thumbnail-rebuild' ),
 			array( 'status' => rest_authorization_required_code() )
 		);
+	}
+
+	/**
+	 * Replacing a file is editing that attachment, so it is that capability
+	 * rather than the plugin's own that decides.
+	 *
+	 * @return true|WP_Error
+	 */
+	public function check_replace_permission( WP_REST_Request $request ) {
+		$id = (int) $request['id'];
+
+		if ( current_user_can( ATR_Plugin::capability() ) || current_user_can( 'edit_post', $id ) ) {
+			return true;
+		}
+
+		return new WP_Error(
+			'atr_forbidden',
+			__( 'You are not allowed to replace that image.', 'ajax-thumbnail-rebuild' ),
+			array( 'status' => rest_authorization_required_code() )
+		);
+	}
+
+	/**
+	 * Put a new file behind an existing attachment.
+	 *
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function replace( WP_REST_Request $request ) {
+		$id = (int) $request['id'];
+
+		if ( 'attachment' !== get_post_type( $id ) ) {
+			return new WP_Error(
+				'atr_not_found',
+				__( 'That attachment does not exist.', 'ajax-thumbnail-rebuild' ),
+				array( 'status' => 404 )
+			);
+		}
+
+		$files = $request->get_file_params();
+
+		if ( empty( $files['file'] ) ) {
+			return new WP_Error(
+				'atr_replace_no_file',
+				__( 'No file was sent.', 'ajax-thumbnail-rebuild' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		$result = ATR_Replace::replace( $id, (array) $files['file'] );
+
+		if ( is_wp_error( $result ) ) {
+			$result->add_data( array( 'status' => 400 ) );
+
+			return $result;
+		}
+
+		return rest_ensure_response( $result );
 	}
 
 	public function get_sizes(): WP_REST_Response {
