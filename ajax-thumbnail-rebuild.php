@@ -7,9 +7,9 @@
  * Description: Rebuild the thumbnails of your media library one image at a time, without running into script timeouts.
  * Requires at least: 5.6
  * Requires PHP: 7.4
- * Tested up to: 7.0
+ * Tested up to: 7.1
  * Text Domain: ajax-thumbnail-rebuild
- * License: GPL2
+ * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Domain Path: /languages
  */
