@@ -1,7 +1,7 @@
 === AJAX Thumbnail Rebuild ===
 Contributors: ristoniinemets, junkcoder
 Donate link: http://breiti.cc/wordpress/ajax-thumbnail-rebuild/#donate
-Tags: ajax, thumbnail, rebuild, regenerate, image
+Tags: thumbnail, rebuild, regenerate, image, optimize
 Requires at least: 5.6
 Requires PHP: 7.4
 Tested up to: 7.1
