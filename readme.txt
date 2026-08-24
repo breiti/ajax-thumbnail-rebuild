@@ -192,7 +192,12 @@ Fixed:
 
 == Screenshots ==
 
-1. Plugin in action
+1. Rebuilding the library one image at a time, with a progress bar, the image being worked on, and a Stop button.
+2. Every image size registered on the site, with its dimensions and whether it crops.
+3. Rebuild or optimise a single image straight from the media library.
+4. Rebuild, optimise or replace an image from the attachment details, without leaving the page.
+5. Optimising, using the programs installed on the server - or TinyPNG or ShortPixel where there are none.
+6. AVIF and WebP copies of every generated image, served through a picture element.
 
 == Upgrade Notice ==
 
