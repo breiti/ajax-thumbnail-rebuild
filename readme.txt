@@ -43,6 +43,40 @@ Contributions are welcome at [Github](https://github.com/breiti/ajax-thumbnail-r
 
 Upload the plugin to your blog, activate it, done. Everything is under Tools -> Rebuild Thumbnails: the rebuild screen itself, the registered sizes, cleanup, and a tab per group of settings.
 
+== Frequently Asked Questions ==
+
+= Does rebuilding change my original images? =
+
+No. A rebuild writes the resized copies again and leaves the file you uploaded as it is. The only setting that touches an original is "Also optimise the full size original" on the Optimising tab, and even then only the lossless programs run on it - never a re-encode.
+
+= What happens if I close the page while it is running? =
+
+It stops where it is. The images it had already got through keep their new copies and nothing is left half written, but the run does not carry on in the background - open the screen and start it again.
+
+= Optimising saved nothing on my images. Why? =
+
+Look at the Optimising tab: it lists which optimisers are installed on this server. Those re-pack a file rather than re-encode it, which is where the saving is. Where none of them is installed the plugin falls back to PHP's own image library, and since WordPress already wrote those files at that quality there is usually nothing left to win. On such a host, TinyPNG or ShortPixel will do the job over their API.
+
+= Is it safe to turn on AVIF or WebP copies? =
+
+Yes. The copies are extra files written next to your images; the originals stay exactly where they are, a copy that comes out larger than the original is thrown away, and the copies are deleted along with the attachment. Turning the setting back off puts the front end back to serving the originals. AVIF costs several times the processing WebP does, so expect uploads and rebuilds to take longer with it on, and where the server's image library cannot write AVIF the screen says so and the WebP copies go on being served.
+
+= I turned on WebP or AVIF. Do I need to rebuild? =
+
+New uploads are converted as they arrive. For the images already in your library, run a rebuild once.
+
+= Can I replace an image with a different kind of file? =
+
+No - a JPEG can only be replaced by a JPEG, a PNG by a PNG. The attachment keeps its name and its address, which is what keeps every post and product already pointing at it working, and that only holds while the file type stays the same.
+
+= What does Cleanup delete? =
+
+Only resized files left on disk that no image size on this site refers to any more - what a removed theme or a size you no longer register leaves behind. It shows you the list and what it would free before anything is deleted, and the files your attachments actually use are never among them.
+
+= Does it need JavaScript? =
+
+Yes. The screen talks to the site over a REST API of its own, one image at a time, which is what keeps a large library from running into a script timeout.
+
 == Changelog ==
 
 = 2.0.0 =
