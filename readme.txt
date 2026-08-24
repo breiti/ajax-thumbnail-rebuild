@@ -9,24 +9,39 @@ Stable tag: 2.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-[AJAX Thumbnail Rebuild](https://wordpress.org/plugins/ajax-thumbnail-rebuild/) allows you to rebuild all thumbnails at once without script timeouts on your server.
+Rebuild your media library one image at a time, without script timeouts - and optimise, replace, or write WebP and AVIF copies of your images.
 
 == Description ==
 
-AJAX Thumbnail Rebuild allows you to rebuild all thumbnails on your site. There are already some plugins available for this, but they have one thing in common: All thumbnails are rebuilt in a single step. This works fine when you don’t have that many photos on your site. When you have a lot of full-size photos, the script on the server side takes a long time to run. Unfortunately the time a script is allowed to run is limited, which sets an upper limit to the number of thumbnails you can regenerate. This number depends on the server configuration and the computing power your server has available. When you get over this limit, you won’t be able to rebuild your thumbnails.
+AJAX Thumbnail Rebuild recreates the resized copies WordPress makes of every image in your media library. It does them one image at a time, so a library of any size gets through without running into the script timeout that stops the plugins which rebuild everything in a single request.
 
-Why would you want to rebuild your thumbnails? Wordpress allows you to change the size of thumbnails. This way, you can make the size of thumbnails fit the design of your website. When you change the size to fit for a new theme, all future photos you are going to upload will have this new size. Your old thumbnails won’t be resized. That’s where this plugin comes into action. After changing the image sizes, you can rebuild all thumbnails. But instead of telling the server to recreate all thumbnails at once, they are rebuilt one after another. Rebuilding thumbnails for one photo won’t take all too long, so you won’t run into any script timeouts. Note that you still have to wait until all thumbnails have been rebuilt. If you close the page before the task is completed, you have to start all over again.
+You need this whenever the sizes change: a new theme with different dimensions, a plugin that registers a size of its own, or a size you have edited yourself. WordPress applies those to images uploaded afterwards and leaves everything already in the library at its old dimensions. Rebuilding fills the gap.
 
-You can also select the thumbnail sizes you want to rebuild, so that you don't need to recreate all images if you've just changed one thumbnail-size. You can also choose to only rebuild post thumbnails (featured images).
+On its screen under Tools you can:
+
+* Pick which of the registered sizes to rebuild, so a single changed size does not mean redoing all of them.
+* Rebuild only the images used as a featured image - which covers WooCommerce product images and product galleries - or only the file names matching a pattern, e.g. `banner-*.jpg`.
+* Watch it run: a progress bar, the image being worked on, a Stop button, and a list of anything it had to skip.
+* See every image size registered on the site with its dimensions and crop setting.
+* Clean up the resized files left behind by sizes that no longer exist.
+
+You can also work on one image at a time without leaving the media library: a row action rebuilds or optimises a single image, a bulk action hands a selection to the plugin's screen, and the attachment details panel - wherever it opens - rebuilds, optimises, or **replaces the file**. A replaced image keeps its id, title and address, so every post and product already pointing at it shows the new picture.
+
+Beyond rebuilding, each of these is off until you turn it on:
+
+* **Uploads.** How hard WordPress compresses the copies it writes, and how large an image may stay before it is scaled down.
+* **Optimising.** Makes files smaller without resizing them, using the optimisers installed on the server - jpegoptim, optipng, gifsicle, and pngquant where lossy PNG is allowed. Where a host has none, TinyPNG or ShortPixel can do the same job over their API. A file is replaced only when the new one is genuinely smaller.
+* **AVIF and WebP copies.** Written next to every image WordPress generates and served through a picture element, AVIF first, WebP after it, the original as the fallback - which works behind a page cache.
+* **Image proxy.** Front end image URLs can be served through wsrv.nl, which resizes and re-encodes on the fly and serves the result from a CDN. Your own files are never touched.
+* **Sizes on demand.** An upload keeps only its own file, and each size is cut the first time something asks for it.
 
 This plugin requires JavaScript to be enabled.
-
 
 Contributions are welcome at [Github](https://github.com/breiti/ajax-thumbnail-rebuild)
 
 == Installation ==
 
-Upload the plugin to your blog, activate it, done. You can then rebuild all thumbnails in the tools section (Tools -> Rebuild Thumbnails).
+Upload the plugin to your blog, activate it, done. Everything is under Tools -> Rebuild Thumbnails: the rebuild screen itself, the registered sizes, cleanup, and a tab per group of settings.
 
 == Changelog ==
 
