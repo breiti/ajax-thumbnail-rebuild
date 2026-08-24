@@ -26,8 +26,6 @@ class ATR_Plugin {
 
 	private ATR_Image_Proxy $proxy;
 
-	private ATR_Webp $webp;
-
 	private ATR_On_Demand $on_demand;
 
 	private ATR_Media_Library $media_library;
@@ -40,7 +38,6 @@ class ATR_Plugin {
 		$this->admin_page = new ATR_Admin_Page();
 		$this->rest       = new ATR_Rest_Controller();
 		$this->proxy      = new ATR_Image_Proxy();
-		$this->webp       = new ATR_Webp();
 		$this->on_demand  = new ATR_On_Demand();
 
 		$this->media_library = new ATR_Media_Library();
@@ -51,7 +48,7 @@ class ATR_Plugin {
 	public function boot(): void {
 		add_action( 'init', array( $this, 'load_textdomain' ) );
 		add_action( 'init', array( $this->proxy, 'register' ) );
-		add_action( 'init', array( $this->webp, 'register' ) );
+		add_action( 'init', array( ATR_Copies::class, 'register' ) );
 		add_action( 'init', array( $this->on_demand, 'register' ) );
 		add_action( 'init', array( $this->uploads, 'register' ) );
 		add_action( 'init', array( $this->optimizer, 'register' ) );

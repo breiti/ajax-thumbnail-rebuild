@@ -36,7 +36,9 @@ class ATR_Settings {
 			'proxy_output'  => 'webp',
 			'proxy_quality' => 82,
 			'webp_enabled'  => false,
-			'webp_quality'  => 82,
+			'webp_quality'  => ATR_Webp::DEFAULT_QUALITY,
+			'avif_enabled'  => false,
+			'avif_quality'  => ATR_Avif::DEFAULT_QUALITY,
 
 			'on_demand_enabled' => false,
 			'on_demand_sizes'   => array(),
@@ -72,8 +74,10 @@ class ATR_Settings {
 	 */
 	public static function output_formats(): array {
 		/* The proxy serves the file's own format unless asked otherwise - it does not
-		   negotiate WebP from the Accept header - so WebP is a choice to make here. */
+		   negotiate a modern format from the Accept header - so AVIF and WebP are a
+		   choice to make here. */
 		return array(
+			'avif'     => 'AVIF',
 			'webp'     => 'WebP',
 			'jpg'      => 'JPEG',
 			'png'      => 'PNG',
@@ -102,7 +106,7 @@ class ATR_Settings {
 			),
 			'serving'   => array(
 				'label' => __( 'Serving', 'ajax-thumbnail-rebuild' ),
-				'keys'  => array( 'webp_enabled', 'webp_quality', 'proxy_enabled', 'proxy_output', 'proxy_quality' ),
+				'keys'  => array( 'webp_enabled', 'webp_quality', 'avif_enabled', 'avif_quality', 'proxy_enabled', 'proxy_output', 'proxy_quality' ),
 			),
 			'on-demand' => array(
 				'label' => __( 'On demand', 'ajax-thumbnail-rebuild' ),
@@ -227,6 +231,30 @@ class ATR_Settings {
 		);
 
 		add_settings_section(
+			'atr_avif',
+			__( 'AVIF copies', 'ajax-thumbnail-rebuild' ),
+			array( __CLASS__, 'render_avif_intro' ),
+			self::page_slug( 'serving' )
+		);
+
+		add_settings_field(
+			'avif_enabled',
+			__( 'Make AVIF copies', 'ajax-thumbnail-rebuild' ),
+			array( __CLASS__, 'render_avif_enabled' ),
+			self::page_slug( 'serving' ),
+			'atr_avif'
+		);
+
+		add_settings_field(
+			'avif_quality',
+			__( 'Quality', 'ajax-thumbnail-rebuild' ),
+			array( __CLASS__, 'render_avif_quality' ),
+			self::page_slug( 'serving' ),
+			'atr_avif',
+			array( 'label_for' => 'atr-avif-quality' )
+		);
+
+		add_settings_section(
 			'atr_proxy',
 			__( 'Image proxy', 'ajax-thumbnail-rebuild' ),
 			array( __CLASS__, 'render_proxy_intro' ),
@@ -326,6 +354,7 @@ class ATR_Settings {
 			case 'optimize_lossy':
 			case 'optimize_original':
 			case 'webp_enabled':
+			case 'avif_enabled':
 			case 'proxy_enabled':
 			case 'on_demand_enabled':
 				return ! empty( $input[ $key ] );
@@ -333,6 +362,7 @@ class ATR_Settings {
 			case 'upload_quality':
 			case 'optimize_quality':
 			case 'webp_quality':
+			case 'avif_quality':
 			case 'proxy_quality':
 				return self::quality( $input[ $key ] ?? null, (int) $defaults[ $key ] );
 
@@ -695,6 +725,9 @@ class ATR_Settings {
 			<?php esc_html_e( 'A WebP copy is written next to every image WordPress generates, and the front end serves it through a picture element with the original as the fallback. Your JPEG and PNG files stay where they are, and a copy that would be larger than the original is thrown away.', 'ajax-thumbnail-rebuild' ); ?>
 		</p>
 		<p class="description">
+			<?php esc_html_e( 'Every browser still in use reads WebP, so this is the safe copy to make. AVIF, below, is smaller again and is offered ahead of it where both are on.', 'ajax-thumbnail-rebuild' ); ?>
+		</p>
+		<p class="description">
 			<?php
 			printf(
 				/* translators: 1: opening link tag to the Rebuild tab, 2: closing link tag. */
@@ -704,7 +737,7 @@ class ATR_Settings {
 			);
 			?>
 		</p>
-		<?php if ( ! wp_image_editor_supports( array( 'mime_type' => 'image/webp' ) ) ) : ?>
+		<?php if ( ! ATR_Copies::supported( ATR_Webp::MIME ) ) : ?>
 			<div class="notice notice-warning inline">
 				<p><?php esc_html_e( 'The image library on this server cannot write WebP, so no copies will be made. Ask your host for GD or Imagick with WebP support.', 'ajax-thumbnail-rebuild' ); ?></p>
 			</div>
@@ -732,6 +765,40 @@ class ATR_Settings {
 		?>
 		<input type="number" name="<?php echo esc_attr( self::OPTION ); ?>[webp_quality]" id="atr-webp-quality" class="small-text" min="1" max="100" step="1" value="<?php echo esc_attr( (string) $settings['webp_quality'] ); ?>" />
 		<p class="description"><?php esc_html_e( '1 to 100, used when writing the WebP copies.', 'ajax-thumbnail-rebuild' ); ?></p>
+		<?php
+	}
+
+	public static function render_avif_intro(): void {
+		?>
+		<p class="description">
+			<?php esc_html_e( 'The same thing again in AVIF, which is a good deal smaller than WebP at the same quality. Where both are on, the picture element offers AVIF first and the browser falls back to the WebP copy, and then to the original, when it cannot read it.', 'ajax-thumbnail-rebuild' ); ?>
+		</p>
+		<p class="description">
+			<?php esc_html_e( 'Encoding AVIF costs several times the processing that WebP does, so uploads and rebuilds take noticeably longer with this on. On a small server it is worth turning on for new uploads and rebuilding the library in batches.', 'ajax-thumbnail-rebuild' ); ?>
+		</p>
+		<?php if ( ! ATR_Copies::supported( ATR_Avif::MIME ) ) : ?>
+			<div class="notice notice-warning inline">
+				<p><?php esc_html_e( 'The image library on this server cannot write AVIF, so no copies will be made. It needs WordPress 6.5 or later with GD or Imagick built against an AVIF encoder - ask your host. Nothing breaks meanwhile: the WebP copies go on being served.', 'ajax-thumbnail-rebuild' ); ?></p>
+			</div>
+		<?php endif; ?>
+		<?php
+	}
+
+	public static function render_avif_enabled(): void {
+		$settings = self::all();
+		?>
+		<label>
+			<input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[avif_enabled]" value="1" <?php checked( $settings['avif_enabled'] ); ?> />
+			<?php esc_html_e( 'Convert generated images to AVIF and serve the copies', 'ajax-thumbnail-rebuild' ); ?>
+		</label>
+		<?php
+	}
+
+	public static function render_avif_quality(): void {
+		$settings = self::all();
+		?>
+		<input type="number" name="<?php echo esc_attr( self::OPTION ); ?>[avif_quality]" id="atr-avif-quality" class="small-text" min="1" max="100" step="1" value="<?php echo esc_attr( (string) $settings['avif_quality'] ); ?>" />
+		<p class="description"><?php esc_html_e( '1 to 100, used when writing the AVIF copies. The scale is not the same one JPEG and WebP use - AVIF around 60 looks about like JPEG at 82, and going higher costs a lot of file size for very little.', 'ajax-thumbnail-rebuild' ); ?></p>
 		<?php
 	}
 

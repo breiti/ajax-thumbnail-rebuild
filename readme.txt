@@ -74,10 +74,14 @@ New, all off by default:
   for it. Where a host has no optimiser and will not run one, TinyPNG or
   ShortPixel can do the same job over their API. Runs on upload, over the
   library, or on single images from the media library.
-* **WebP copies.** Every image WordPress generates gets a WebP copy written next
-  to it, and the front end serves it through a picture element with the original
-  as the fallback - which works behind a page cache. A copy that would be larger
-  than the original is discarded, and the copies are deleted with the attachment.
+* **AVIF and WebP copies.** Every image WordPress generates gets a copy written
+  next to it in either format, and the front end serves them through a picture
+  element - AVIF first, WebP after it, the original as the fallback - which
+  works behind a page cache. Each format has a switch and a quality of its own,
+  a copy that would be larger than the original is discarded, and the copies are
+  deleted with the attachment. AVIF is the smaller of the two and the slower to
+  encode; where the server's image library cannot write it, the screen says so
+  and the WebP copies go on being served.
 * **Image proxy.** Front end image URLs can be served through wsrv.nl, which
   resizes and re-encodes on the fly and serves the result from a CDN. Your own
   files are never touched.
@@ -87,7 +91,7 @@ New, all off by default:
 * **Cleanup.** Finds the resized files nothing points at any more - the ones
   left behind every time an image size changes - and deletes them after you have
   looked at the list. The scan only reads; a file that is an attachment of its
-  own, or a WebP copy of a file still in use, is never listed.
+  own, or an AVIF or WebP copy of a file still in use, is never listed.
 
 Fixed:
 

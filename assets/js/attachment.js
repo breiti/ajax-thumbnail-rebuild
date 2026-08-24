@@ -27,7 +27,7 @@
 		}
 
 		if ( 'png' === response.reason ) {
-			return __( 'PNG files do not get smaller by re-encoding. WebP copies are what helps for these.', 'ajax-thumbnail-rebuild' );
+			return __( 'PNG files do not get smaller by re-encoding. AVIF and WebP copies are what helps for these.', 'ajax-thumbnail-rebuild' );
 		}
 
 		if ( 'already' === response.reason ) {

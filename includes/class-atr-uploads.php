@@ -34,8 +34,8 @@ class ATR_Uploads {
 	 * @return int
 	 */
 	public function filter_quality( $quality, $mime_type = '' ) {
-		if ( 'image/webp' === $mime_type ) {
-			// The WebP copies have a quality of their own.
+		if ( in_array( $mime_type, array( 'image/webp', 'image/avif' ), true ) ) {
+			// The AVIF and WebP copies have a quality of their own.
 			return $quality;
 		}
 

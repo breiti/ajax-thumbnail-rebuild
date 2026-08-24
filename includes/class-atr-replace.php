@@ -155,8 +155,8 @@ class ATR_Replace {
 	 * @param string $target        Where the new file is about to go.
 	 */
 	private static function delete_old_files( int $attachment_id, array $metadata, string $attached, string $target ): void {
-		// The WebP copies first: they are found from the metadata that is about to change.
-		( new ATR_Webp() )->delete_for_attachment( $attachment_id );
+		// The AVIF and WebP copies first: they are found from the metadata that is about to change.
+		ATR_Copies::delete_for_attachment( $attachment_id );
 
 		$directory = trailingslashit( dirname( $attached ) );
 		$paths     = array( $attached );

@@ -309,7 +309,7 @@ class ATR_Admin_Page {
 								<?php esc_html_e( 'Change a size from 300x300 to 400x400 and WordPress writes the new file and forgets the old one, which stays on disk for good. This looks for those leftovers: files named after an image that the image itself no longer refers to.', 'ajax-thumbnail-rebuild' ); ?>
 							</p>
 							<p class="description">
-								<?php esc_html_e( 'The scan only reads. Nothing is deleted until you look at the list and say so, and a file that is an attachment in its own right, or that a WebP copy belongs to, is never listed. Sizes that are still in an image\'s metadata are left alone even when nothing on the site uses them any more - deleting those is not something a scan can decide for you.', 'ajax-thumbnail-rebuild' ); ?>
+								<?php esc_html_e( 'The scan only reads. Nothing is deleted until you look at the list and say so, and a file that is an attachment in its own right, or that an AVIF or WebP copy belongs to, is never listed. Sizes that are still in an image\'s metadata are left alone even when nothing on the site uses them any more - deleting those is not something a scan can decide for you.', 'ajax-thumbnail-rebuild' ); ?>
 							</p>
 
 							<div id="atr-cleanup-result"></div>

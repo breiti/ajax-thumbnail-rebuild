@@ -143,9 +143,7 @@ class ATR_On_Demand {
 		$metadata['sizes'][ $size ] = $intermediate;
 		wp_update_attachment_metadata( $id, $metadata );
 
-		if ( ATR_Webp::is_enabled() ) {
-			ATR_Webp::convert( trailingslashit( dirname( $file ) ) . $intermediate['file'] );
-		}
+		ATR_Copies::convert_all( trailingslashit( dirname( $file ) ) . $intermediate['file'] );
 
 		$upload_dir = trailingslashit( dirname( (string) _wp_relative_upload_path( $file ) ) );
 		$base       = trailingslashit( wp_get_upload_dir()['baseurl'] );

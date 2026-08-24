@@ -153,11 +153,13 @@ class ATR_Cleanup {
 			}
 		}
 
-		// The WebP copy of a file we keep is a file we keep.
+		// The AVIF or WebP copy of a file we keep is a file we keep.
 		$copies = array();
 
 		foreach ( $names as $name ) {
-			$copies[] = $name . ATR_Webp::SUFFIX;
+			foreach ( ATR_Copies::suffixes() as $suffix ) {
+				$copies[] = $name . $suffix;
+			}
 		}
 
 		return array_fill_keys( array_merge( $names, $copies ), true );
@@ -175,13 +177,20 @@ class ATR_Cleanup {
 		$base      = wp_basename( $file, ".{$extension}" );
 
 		/* WordPress scales an original down to "name-scaled.ext" and cuts sizes as
-		   "name-800x600.ext", sometimes with a "-1" when a name was taken. Our WebP
-		   copies sit beside any of those. */
+		   "name-800x600.ext", sometimes with a "-1" when a name was taken. Our AVIF and
+		   WebP copies sit beside any of those. */
+		$suffixes = array_map(
+			static function ( $suffix ) {
+				return preg_quote( $suffix, '#' );
+			},
+			ATR_Copies::suffixes()
+		);
+
 		$pattern = sprintf(
 			'#^%s-(\d+x\d+|scaled)(-\d+)?\.%s(%s)?$#i',
 			preg_quote( $base, '#' ),
 			preg_quote( $extension, '#' ),
-			preg_quote( ATR_Webp::SUFFIX, '#' )
+			implode( '|', $suffixes )
 		);
 
 		$found = array();
