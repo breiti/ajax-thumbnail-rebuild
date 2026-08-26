@@ -5,7 +5,7 @@ Tags: thumbnail, rebuild, regenerate, image, optimize
 Requires at least: 5.6
 Requires PHP: 7.4
 Tested up to: 7.1
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -61,6 +61,12 @@ Look at the Optimising tab: it lists which optimisers are installed on this serv
 
 Yes. The copies are extra files written next to your images; the originals stay exactly where they are, a copy that comes out larger than the original is thrown away, and the copies are deleted along with the attachment. Turning the setting back off puts the front end back to serving the originals. AVIF costs several times the processing WebP does, so expect uploads and rebuilds to take longer with it on, and where the server's image library cannot write AVIF the screen says so and the WebP copies go on being served.
 
+= Can it write the WebP and AVIF copies without serving them? =
+
+Yes, with one line of code. The screen has a single switch per format, but a filter separates the two, so the copies go on being written while the front end serves your originals - which is what you want when a CDN or the server itself hands the copies out:
+
+`add_filter( 'ajax_thumbnail_rebuild_serve_copies', '__return_false' );`
+
 = I turned on WebP or AVIF. Do I need to rebuild? =
 
 New uploads are converted as they arrive. For the images already in your library, run a rebuild once.
@@ -78,6 +84,10 @@ Only resized files left on disk that no image size on this site refers to any mo
 Yes. The screen talks to the site over a REST API of its own, one image at a time, which is what keeps a large library from running into a script timeout.
 
 == Changelog ==
+
+= 2.0.1 =
+
+* New filter `ajax_thumbnail_rebuild_serve_copies`. Return false to keep writing the WebP and AVIF copies while the front end serves the originals, for a site where a CDN or the server itself hands the copies out.
 
 = 2.0.0 =
 
@@ -249,6 +259,10 @@ Fixed:
 6. AVIF and WebP copies of every generated image, served through a picture element.
 
 == Upgrade Notice ==
+
+= 2.0.1 =
+
+Adds a filter for sites that write the WebP and AVIF copies but serve them some other way. Nothing changes unless you use it.
 
 = 2.0.0 =
 

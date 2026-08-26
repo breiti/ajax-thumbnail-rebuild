@@ -156,7 +156,17 @@ abstract class ATR_Copies {
 	 * modern format from its CDN for that image anyway.
 	 */
 	public static function is_serving(): bool {
-		return (bool) self::enabled_formats();
+		/**
+		 * Filter whether the front end serves the copies.
+		 *
+		 * Writing the copies and serving them are one switch on the screen. Return
+		 * false here to go on writing them while the front end serves the originals,
+		 * which is what a site wants when something else hands the copies out - a
+		 * CDN, or the server itself negotiating on the Accept header.
+		 *
+		 * @param bool $serving Whether any copy format is switched on.
+		 */
+		return (bool) apply_filters( 'ajax_thumbnail_rebuild_serve_copies', (bool) self::enabled_formats() );
 	}
 
 	/**
