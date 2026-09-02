@@ -5,7 +5,7 @@ Tags: thumbnail, rebuild, regenerate, image, optimize
 Requires at least: 5.6
 Requires PHP: 7.4
 Tested up to: 7.1
-Stable tag: 2.0.1
+Stable tag: 2.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,6 +32,7 @@ Beyond rebuilding, each of these is off until you turn it on:
 * **Uploads.** How hard WordPress compresses the copies it writes, and how large an image may stay before it is scaled down.
 * **Optimising.** Makes files smaller without resizing them, using the optimisers installed on the server - jpegoptim, optipng, gifsicle, and pngquant where lossy PNG is allowed. Where a host has none, TinyPNG or ShortPixel can do the same job over their API. A file is replaced only when the new one is genuinely smaller.
 * **AVIF and WebP copies.** Written next to every image WordPress generates and served through a picture element, AVIF first, WebP after it, the original as the fallback - which works behind a page cache.
+* **Background processing.** Optimising and the copies are the slow half of an upload. Queue them instead, and the upload finishes as soon as the sizes are written - on Action Scheduler where the site has it, on WP-Cron where it does not.
 * **Image proxy.** Front end image URLs can be served through wsrv.nl, which resizes and re-encodes on the fly and serves the result from a CDN. Your own files are never touched.
 * **Sizes on demand.** An upload keeps only its own file, and each size is cut the first time something asks for it.
 
@@ -56,6 +57,10 @@ It stops where it is. The images it had already got through keep their new copie
 = Optimising saved nothing on my images. Why? =
 
 Look at the Optimising tab: it lists which optimisers are installed on this server. Those re-pack a file rather than re-encode it, which is where the saving is. Where none of them is installed the plugin falls back to PHP's own image library, and since WordPress already wrote those files at that quality there is usually nothing left to win. On such a host, TinyPNG or ShortPixel will do the job over their API.
+
+= Uploading a batch of photographs is slow. Can that be fixed? =
+
+Turn on background processing, under Optimising. Optimising a file and writing its WebP and AVIF copies both happen while the browser is still waiting for the upload, and neither has to: with this on the upload finishes as soon as the resized copies are written, and the rest is queued. Action Scheduler runs the queue where a plugin provides it - WooCommerce and many others do - and WP-Cron runs it everywhere else. An image is served in its own format for the minute or two before the queue reaches it.
 
 = Is it safe to turn on AVIF or WebP copies? =
 
@@ -84,6 +89,11 @@ Only resized files left on disk that no image size on this site refers to any mo
 Yes. The screen talks to the site over a REST API of its own, one image at a time, which is what keeps a large library from running into a script timeout.
 
 == Changelog ==
+
+= 2.1.0 =
+
+* New setting **When the work happens**, under Optimising: optimising and the WebP and AVIF copies can be queued instead of run on upload, so an upload finishes as soon as the resized copies are written. The queue runs on Action Scheduler where the site has it and on WP-Cron where it does not.
+* New filters `ajax_thumbnail_rebuild_background_enabled` and `ajax_thumbnail_rebuild_use_action_scheduler`.
 
 = 2.0.1 =
 

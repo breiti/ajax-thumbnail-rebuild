@@ -118,7 +118,7 @@ abstract class ATR_Copies {
 
 	public static function register(): void {
 		// Generation follows the metadata, so uploads and rebuilds are both covered.
-		add_filter( 'wp_generate_attachment_metadata', array( self::class, 'generate_for_attachment' ), 20, 2 );
+		add_filter( 'wp_generate_attachment_metadata', array( self::class, 'maybe_generate_for_attachment' ), 20, 2 );
 		add_action( 'delete_attachment', array( self::class, 'delete_for_attachment' ) );
 
 		if ( ! self::is_serving() ) {
@@ -167,6 +167,24 @@ abstract class ATR_Copies {
 		 * @param bool $serving Whether any copy format is switched on.
 		 */
 		return (bool) apply_filters( 'ajax_thumbnail_rebuild_serve_copies', (bool) self::enabled_formats() );
+	}
+
+	/**
+	 * Write the copies on upload, unless the site has asked for that to wait.
+	 *
+	 * The queue calls generate_for_attachment() directly, so this stands aside
+	 * only for the request the visitor is waiting on.
+	 *
+	 * @param array $metadata      Attachment metadata.
+	 * @param int   $attachment_id Attachment id.
+	 * @return array
+	 */
+	public static function maybe_generate_for_attachment( $metadata, $attachment_id ) {
+		if ( ATR_Queue::is_deferring() ) {
+			return $metadata;
+		}
+
+		return self::generate_for_attachment( $metadata, $attachment_id );
 	}
 
 	/**

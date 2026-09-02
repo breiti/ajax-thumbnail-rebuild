@@ -34,6 +34,8 @@ class ATR_Plugin {
 
 	private ATR_Optimizer $optimizer;
 
+	private ATR_Queue $queue;
+
 	public function __construct() {
 		$this->admin_page = new ATR_Admin_Page();
 		$this->rest       = new ATR_Rest_Controller();
@@ -43,6 +45,7 @@ class ATR_Plugin {
 		$this->media_library = new ATR_Media_Library();
 		$this->uploads       = new ATR_Uploads();
 		$this->optimizer     = new ATR_Optimizer();
+		$this->queue         = new ATR_Queue();
 	}
 
 	public function boot(): void {
@@ -52,6 +55,7 @@ class ATR_Plugin {
 		add_action( 'init', array( $this->on_demand, 'register' ) );
 		add_action( 'init', array( $this->uploads, 'register' ) );
 		add_action( 'init', array( $this->optimizer, 'register' ) );
+		add_action( 'init', array( $this->queue, 'register' ) );
 		add_action( 'admin_init', array( ATR_Settings::class, 'register' ) );
 		add_action( 'rest_api_init', array( $this->rest, 'register_routes' ) );
 		add_action( 'admin_menu', array( $this->admin_page, 'register' ) );

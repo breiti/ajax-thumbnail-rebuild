@@ -31,6 +31,7 @@ class ATR_Settings {
 			'optimize_original'    => false,
 			'optimize_service'     => 'none',
 			'optimize_service_key' => '',
+			'background_enabled'   => false,
 
 			'proxy_enabled' => false,
 			'proxy_output'  => 'webp',
@@ -102,7 +103,7 @@ class ATR_Settings {
 			),
 			'optimise'  => array(
 				'label' => __( 'Optimising', 'ajax-thumbnail-rebuild' ),
-				'keys'  => array( 'optimize_enabled', 'optimize_quality', 'optimize_lossy', 'optimize_original', 'optimize_service', 'optimize_service_key' ),
+				'keys'  => array( 'optimize_enabled', 'background_enabled', 'optimize_quality', 'optimize_lossy', 'optimize_original', 'optimize_service', 'optimize_service_key' ),
 			),
 			'serving'   => array(
 				'label' => __( 'Serving', 'ajax-thumbnail-rebuild' ),
@@ -168,6 +169,14 @@ class ATR_Settings {
 			'optimize_enabled',
 			__( 'Optimise automatically', 'ajax-thumbnail-rebuild' ),
 			array( __CLASS__, 'render_optimize_enabled' ),
+			self::page_slug( 'optimise' ),
+			'atr_optimize'
+		);
+
+		add_settings_field(
+			'background_enabled',
+			__( 'When the work happens', 'ajax-thumbnail-rebuild' ),
+			array( __CLASS__, 'render_background_enabled' ),
 			self::page_slug( 'optimise' ),
 			'atr_optimize'
 		);
@@ -351,6 +360,7 @@ class ATR_Settings {
 		switch ( $key ) {
 			// Checkboxes: absent means unticked, which is why $managed matters.
 			case 'optimize_enabled':
+			case 'background_enabled':
 			case 'optimize_lossy':
 			case 'optimize_original':
 			case 'webp_enabled':
@@ -620,6 +630,46 @@ class ATR_Settings {
 			<input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[optimize_enabled]" value="1" <?php checked( $settings['optimize_enabled'] ); ?> />
 			<?php esc_html_e( 'Optimise images as they are uploaded and after a rebuild', 'ajax-thumbnail-rebuild' ); ?>
 		</label>
+		<?php
+	}
+
+	/**
+	 * Whether the slow half of an upload is queued instead of waited on.
+	 *
+	 * Worth naming the runner: on a site with Action Scheduler the queue is a
+	 * screen somebody can open, and on one without it the jobs only move when a
+	 * request comes in, which is the difference between a quiet site and a busy
+	 * one finishing its queue.
+	 */
+	public static function render_background_enabled(): void {
+		$settings = self::all();
+		$pending  = ATR_Queue::pending();
+		?>
+		<label>
+			<input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[background_enabled]" value="1" <?php checked( $settings['background_enabled'] ); ?> />
+			<?php esc_html_e( 'Do it in the background, after the upload has finished', 'ajax-thumbnail-rebuild' ); ?>
+		</label>
+		<p class="description">
+			<?php esc_html_e( 'Optimising a file, and writing its WebP and AVIF copies, both happen while the browser is still waiting for the upload. With this on the upload finishes as soon as the sizes are written and the rest is queued, which is what makes uploading a batch of photographs feel quick. An image is served in its own format for the minute or two before the queue reaches it.', 'ajax-thumbnail-rebuild' ); ?>
+		</p>
+		<p class="description">
+			<?php
+			if ( 'action-scheduler' === ATR_Queue::runner() ) {
+				esc_html_e( 'The queue runs on Action Scheduler, which this site has.', 'ajax-thumbnail-rebuild' );
+			} else {
+				esc_html_e( 'The queue runs on WP-Cron, which needs a visit to the site to move: on a quiet site it works through the queue slowly. Action Scheduler is used instead wherever a plugin provides it.', 'ajax-thumbnail-rebuild' );
+			}
+
+			if ( $pending > 0 ) {
+				echo ' ';
+				printf(
+					/* translators: %s: number of images. */
+					esc_html( _n( '%s image is waiting in the queue.', '%s images are waiting in the queue.', $pending, 'ajax-thumbnail-rebuild' ) ),
+					esc_html( number_format_i18n( $pending ) )
+				);
+			}
+			?>
+		</p>
 		<?php
 	}
 

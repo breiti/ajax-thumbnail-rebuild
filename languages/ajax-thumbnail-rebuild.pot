@@ -1,15 +1,15 @@
 # Copyright (C) 2026 ristoniinemets, junkcoder
-# This file is distributed under the GPL2.
+# This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: AJAX Thumbnail Rebuild 2.0.0\n"
+"Project-Id-Version: AJAX Thumbnail Rebuild 2.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ajax-thumbnail-rebuild\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-23T07:44:45+00:00\n"
+"POT-Creation-Date: 2026-09-02T07:52:10+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: ajax-thumbnail-rebuild\n"
@@ -167,7 +167,7 @@ msgstr ""
 #: includes/class-atr-admin-page.php:276
 #: includes/class-atr-media-library.php:47
 #: includes/class-atr-media-library.php:68
-#: includes/class-atr-plugin.php:220
+#: includes/class-atr-plugin.php:221
 msgid "Rebuild thumbnails"
 msgstr ""
 
@@ -199,7 +199,7 @@ msgid "Change a size from 300x300 to 400x400 and WordPress writes the new file a
 msgstr ""
 
 #: includes/class-atr-admin-page.php:312
-msgid "The scan only reads. Nothing is deleted until you look at the list and say so, and a file that is an attachment in its own right, or that a WebP copy belongs to, is never listed. Sizes that are still in an image's metadata are left alone even when nothing on the site uses them any more - deleting those is not something a scan can decide for you."
+msgid "The scan only reads. Nothing is deleted until you look at the list and say so, and a file that is an attachment in its own right, or that an AVIF or WebP copy belongs to, is never listed. Sizes that are still in an image's metadata are left alone even when nothing on the site uses them any more - deleting those is not something a scan can decide for you."
 msgstr ""
 
 #: includes/class-atr-admin-page.php:320
@@ -267,32 +267,32 @@ msgid "cropped"
 msgstr ""
 
 #: includes/class-atr-media-library.php:53
-#: includes/class-atr-plugin.php:186
+#: includes/class-atr-plugin.php:187
 msgid "Optimise"
 msgstr ""
 
-#: includes/class-atr-optimizer.php:79
+#: includes/class-atr-optimizer.php:85
 #: includes/class-atr-regenerator.php:31
 msgid "The file is missing from the uploads folder."
 msgstr ""
 
-#: includes/class-atr-plugin.php:178
+#: includes/class-atr-plugin.php:179
 msgid "Images"
 msgstr ""
 
-#: includes/class-atr-plugin.php:185
+#: includes/class-atr-plugin.php:186
 msgid "Rebuild sizes"
 msgstr ""
 
-#: includes/class-atr-plugin.php:193
+#: includes/class-atr-plugin.php:194
 msgid "Replace file"
 msgstr ""
 
-#: includes/class-atr-plugin.php:201
+#: includes/class-atr-plugin.php:202
 msgid "Replace"
 msgstr ""
 
-#: includes/class-atr-plugin.php:202
+#: includes/class-atr-plugin.php:203
 msgid "The new file has to be the same kind of image, because the name and the address stay as they are - which is what keeps every link to this image working."
 msgstr ""
 
@@ -398,262 +398,323 @@ msgstr ""
 msgid "The optimised file could not be written."
 msgstr ""
 
-#: includes/class-atr-settings.php:80
+#: includes/class-atr-settings.php:85
 msgid "Same format as the file"
 msgstr ""
 
-#: includes/class-atr-settings.php:96
+#: includes/class-atr-settings.php:101
 msgid "Uploads"
 msgstr ""
 
-#: includes/class-atr-settings.php:100
+#: includes/class-atr-settings.php:105
 msgid "Optimising"
 msgstr ""
 
-#: includes/class-atr-settings.php:104
+#: includes/class-atr-settings.php:109
 msgid "Serving"
 msgstr ""
 
-#: includes/class-atr-settings.php:108
+#: includes/class-atr-settings.php:113
 msgid "On demand"
 msgstr ""
 
-#: includes/class-atr-settings.php:140
+#: includes/class-atr-settings.php:145
 msgid "Compression"
 msgstr ""
 
-#: includes/class-atr-settings.php:149
+#: includes/class-atr-settings.php:154
 msgid "Largest an image may stay"
 msgstr ""
 
-#: includes/class-atr-settings.php:165
+#: includes/class-atr-settings.php:170
 msgid "Optimise automatically"
 msgstr ""
 
-#: includes/class-atr-settings.php:173
-#: includes/class-atr-settings.php:222
-#: includes/class-atr-settings.php:255
+#: includes/class-atr-settings.php:178
+msgid "When the work happens"
+msgstr ""
+
+#: includes/class-atr-settings.php:186
+#: includes/class-atr-settings.php:235
+#: includes/class-atr-settings.php:259
+#: includes/class-atr-settings.php:292
 msgid "Quality"
 msgstr ""
 
-#: includes/class-atr-settings.php:182
+#: includes/class-atr-settings.php:195
 msgid "Lossy PNG"
 msgstr ""
 
-#: includes/class-atr-settings.php:190
+#: includes/class-atr-settings.php:203
 msgid "The untouched original"
 msgstr ""
 
-#: includes/class-atr-settings.php:198
+#: includes/class-atr-settings.php:211
 msgid "Optimisation service"
 msgstr ""
 
-#: includes/class-atr-settings.php:207
+#: includes/class-atr-settings.php:220
 msgid "WebP copies"
 msgstr ""
 
-#: includes/class-atr-settings.php:214
+#: includes/class-atr-settings.php:227
 msgid "Make WebP copies"
 msgstr ""
 
-#: includes/class-atr-settings.php:231
+#: includes/class-atr-settings.php:244
+msgid "AVIF copies"
+msgstr ""
+
+#: includes/class-atr-settings.php:251
+msgid "Make AVIF copies"
+msgstr ""
+
+#: includes/class-atr-settings.php:268
 msgid "Image proxy"
 msgstr ""
 
-#: includes/class-atr-settings.php:238
+#: includes/class-atr-settings.php:275
 msgid "Serve images through wsrv.nl"
 msgstr ""
 
-#: includes/class-atr-settings.php:246
+#: includes/class-atr-settings.php:283
 msgid "Format"
 msgstr ""
 
-#: includes/class-atr-settings.php:271
+#: includes/class-atr-settings.php:308
 msgid "Generate on demand"
 msgstr ""
 
-#: includes/class-atr-settings.php:279
-#: includes/class-atr-settings.php:674
+#: includes/class-atr-settings.php:316
+#: includes/class-atr-settings.php:754
 msgid "Sizes made only on demand"
 msgstr ""
 
-#: includes/class-atr-settings.php:392
+#: includes/class-atr-settings.php:432
 msgid "What WordPress does with a file as it arrives. Both of these apply to new uploads and to anything you rebuild from here; images already on the site keep what they were given until then."
 msgstr ""
 
 #. translators: %s: name of the image library in use, e.g. Imagick.
-#: includes/class-atr-settings.php:397
+#: includes/class-atr-settings.php:437
 #, php-format
 msgid "This server resizes with %s."
 msgstr ""
 
 #. translators: %s: the quality WordPress uses by default.
-#: includes/class-atr-settings.php:414
+#: includes/class-atr-settings.php:454
 #, php-format
 msgid "1 to 100, used for every JPEG and PNG copy WordPress writes. WordPress uses %s when nothing says otherwise; higher means larger files."
 msgstr ""
 
-#: includes/class-atr-settings.php:426
+#: includes/class-atr-settings.php:466
 msgid "pixels"
 msgstr ""
 
 #. translators: %s: the threshold WordPress uses by default.
-#: includes/class-atr-settings.php:431
+#: includes/class-atr-settings.php:471
 #, php-format
 msgid "An upload longer than this on its longest edge is scaled down to it, and the untouched original is kept beside it. WordPress uses %s. Set 0 to keep every upload at the size it arrived."
 msgstr ""
 
-#: includes/class-atr-settings.php:442
+#: includes/class-atr-settings.php:482
 msgid "Optimising re-encodes a file that is already the right size, to get the same picture in fewer bytes. Nothing is resized and no file is renamed, the result is kept only when it is genuinely smaller, and the untouched original beside a scaled upload is never touched."
 msgstr ""
 
 #. translators: 1: opening link tag to the Rebuild tab, 2: closing link tag.
-#: includes/class-atr-settings.php:449
+#: includes/class-atr-settings.php:489
 #, php-format
 msgid "For the images already on the site, %1$srun it over the library%2$s, or optimise single images from the media library. Turning this on covers new uploads and anything you rebuild."
 msgstr ""
 
-#: includes/class-atr-settings.php:478
+#: includes/class-atr-settings.php:518
 msgid "This server does not let PHP run other programs, so the image optimisers cannot be used at all. Optimising falls back to writing the image out again, which gains little on files WordPress has already written."
 msgstr ""
 
-#: includes/class-atr-settings.php:485
+#: includes/class-atr-settings.php:525
 msgid "Optimising uses the programs installed on the server. They re-pack a file rather than re-encode it, which is where the real saving is; without them all this can do is write the image out again, and WordPress wrote it at this quality already."
 msgstr ""
 
-#: includes/class-atr-settings.php:492
+#: includes/class-atr-settings.php:532
 msgid "installed"
 msgstr ""
 
-#: includes/class-atr-settings.php:492
+#: includes/class-atr-settings.php:532
 msgid "missing"
 msgstr ""
 
-#: includes/class-atr-settings.php:502
+#: includes/class-atr-settings.php:542
 msgid "None of them is installed, so optimising will save almost nothing. Ask the host to install jpegoptim and optipng - they are in every distribution and need no configuration."
 msgstr ""
 
-#: includes/class-atr-settings.php:514
+#: includes/class-atr-settings.php:554
 msgid "Allow pngquant, which drops a PNG to fewer colours"
 msgstr ""
 
-#: includes/class-atr-settings.php:516
+#: includes/class-atr-settings.php:556
 msgid "Off by default because it changes the picture, not only the file. On screenshots, logos and flat graphics it typically halves the size with nothing visible to show for it; on photographs saved as PNG, look before you keep it."
 msgstr ""
 
-#: includes/class-atr-settings.php:525
+#: includes/class-atr-settings.php:565
 msgid "Also optimise the full size original kept beside a scaled upload"
 msgstr ""
 
-#: includes/class-atr-settings.php:528
+#: includes/class-atr-settings.php:568
 msgid "That file is usually the largest on disk and nothing on the site ever serves it: WordPress keeps it so a size can be cut again later. It is treated as the archive copy it is - only the lossless programs touch it, never a re-encode, never a lossy pass, and it is never sent to a service."
 msgstr ""
 
-#: includes/class-atr-settings.php:538
+#: includes/class-atr-settings.php:578
 msgid "None - use what is on this server"
 msgstr ""
 
-#: includes/class-atr-settings.php:545
+#: includes/class-atr-settings.php:585
 msgid "API key"
 msgstr ""
 
-#: includes/class-atr-settings.php:550
+#: includes/class-atr-settings.php:590
 msgid "A service does the same job as the programs above, usually better, and it is the answer on a host that has none and will not let PHP run one. Every file is sent to the service and every file counts against the monthly allowance - a photograph with nine sizes is nine files."
 msgstr ""
 
-#: includes/class-atr-settings.php:553
+#: includes/class-atr-settings.php:593
 msgid "TinyPNG compresses one way only, which is lossy, so it is used only when lossy compression is allowed above. ShortPixel follows that setting. The untouched original is never sent either way."
 msgstr ""
 
 #. translators: 1: number of files, 2: how long ago.
-#: includes/class-atr-settings.php:561
+#: includes/class-atr-settings.php:601
 #, php-format
 msgid "The service last reported %1$s files used this month, %2$s ago."
 msgstr ""
 
 #. translators: %s: what the service said.
-#: includes/class-atr-settings.php:576
+#: includes/class-atr-settings.php:616
 #, php-format
 msgid "The last time a file was sent, the service said: %s"
 msgstr ""
 
-#: includes/class-atr-settings.php:591
+#: includes/class-atr-settings.php:631
 msgid "Optimise images as they are uploaded and after a rebuild"
 msgstr ""
 
-#: includes/class-atr-settings.php:600
+#: includes/class-atr-settings.php:650
+msgid "Do it in the background, after the upload has finished"
+msgstr ""
+
+#: includes/class-atr-settings.php:653
+msgid "Optimising a file, and writing its WebP and AVIF copies, both happen while the browser is still waiting for the upload. With this on the upload finishes as soon as the sizes are written and the rest is queued, which is what makes uploading a batch of photographs feel quick. An image is served in its own format for the minute or two before the queue reaches it."
+msgstr ""
+
+#: includes/class-atr-settings.php:658
+msgid "The queue runs on Action Scheduler, which this site has."
+msgstr ""
+
+#: includes/class-atr-settings.php:660
+msgid "The queue runs on WP-Cron, which needs a visit to the site to move: on a quiet site it works through the queue slowly. Action Scheduler is used instead wherever a plugin provides it."
+msgstr ""
+
+#. translators: %s: number of images.
+#: includes/class-atr-settings.php:667
+#, php-format
+msgid "%s image is waiting in the queue."
+msgid_plural "%s images are waiting in the queue."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-atr-settings.php:680
 msgid "1 to 100, used when re-encoding. Below the compression setting above there is something to gain; at or above it, most files will already be as small as they get."
 msgstr ""
 
 #. translators: 1: opening link tag, 2: closing link tag.
-#: includes/class-atr-settings.php:610
+#: includes/class-atr-settings.php:690
 #, php-format
 msgid "Image URLs on the front end are rewritten to %1$swsrv.nl%2$s, a free image proxy that resizes and re-encodes on the fly and serves the result from a CDN. Your own files are untouched, and turning this off puts every URL back."
 msgstr ""
 
-#: includes/class-atr-settings.php:617
+#: includes/class-atr-settings.php:697
 msgid "The proxy fetches each image from your site, so it only works on a site that is reachable from the internet. On a local or password protected site the images will not load."
 msgstr ""
 
-#: includes/class-atr-settings.php:627
+#: includes/class-atr-settings.php:707
 msgid "Rewrite front end image URLs to the proxy"
 msgstr ""
 
-#: includes/class-atr-settings.php:642
+#: includes/class-atr-settings.php:722
 msgid "WebP files are a good deal smaller than JPEG or PNG and every current browser reads them."
 msgstr ""
 
-#: includes/class-atr-settings.php:649
+#: includes/class-atr-settings.php:729
 msgid "WordPress normally cuts every registered size the moment a file is uploaded, most of which no page ever asks for. With this on, an upload keeps only its own file and each size is cut the first time something requests it, then stays on disk like any other."
 msgstr ""
 
-#: includes/class-atr-settings.php:652
+#: includes/class-atr-settings.php:732
 msgid "Uploads get quicker and the uploads folder stays smaller. The first visitor to need a size waits for it to be cut, and until then an image has no other size to offer in its srcset."
 msgstr ""
 
-#: includes/class-atr-settings.php:662
+#: includes/class-atr-settings.php:742
 msgid "Cut each size when it is first requested, not on upload"
 msgstr ""
 
-#: includes/class-atr-settings.php:664
+#: includes/class-atr-settings.php:744
 msgid "Rebuilding from the Rebuild tab still generates whatever you select there."
 msgstr ""
 
-#: includes/class-atr-settings.php:676
+#: includes/class-atr-settings.php:756
 msgid "This site has no image sizes registered."
 msgstr ""
 
-#: includes/class-atr-settings.php:687
+#: includes/class-atr-settings.php:767
 msgid "A size ticked here is never written on upload and is skipped by a rebuild, whatever the Rebuild tab has selected. It is cut the first time a page asks for it. Useful for the big sizes only a handful of pages ever use."
 msgstr ""
 
-#: includes/class-atr-settings.php:695
+#: includes/class-atr-settings.php:775
 msgid "A WebP copy is written next to every image WordPress generates, and the front end serves it through a picture element with the original as the fallback. Your JPEG and PNG files stay where they are, and a copy that would be larger than the original is thrown away."
 msgstr ""
 
+#: includes/class-atr-settings.php:778
+msgid "Every browser still in use reads WebP, so this is the safe copy to make. AVIF, below, is smaller again and is offered ahead of it where both are on."
+msgstr ""
+
 #. translators: 1: opening link tag to the Rebuild tab, 2: closing link tag.
-#: includes/class-atr-settings.php:701
+#: includes/class-atr-settings.php:784
 #, php-format
 msgid "New uploads are converted as they arrive. For the images already in the library, %1$srun a rebuild%2$s once after turning this on."
 msgstr ""
 
-#: includes/class-atr-settings.php:709
+#: includes/class-atr-settings.php:792
 msgid "The image library on this server cannot write WebP, so no copies will be made. Ask your host for GD or Imagick with WebP support."
 msgstr ""
 
-#: includes/class-atr-settings.php:714
+#: includes/class-atr-settings.php:797
 msgid "This works on its own, but the proxy above is on and already delivers WebP from its CDN for the images it rewrites. The copies made here are what gets served whenever the proxy is off or does not handle an image."
 msgstr ""
 
-#: includes/class-atr-settings.php:725
+#: includes/class-atr-settings.php:808
 msgid "Convert generated images to WebP and serve the copies"
 msgstr ""
 
-#: includes/class-atr-settings.php:734
+#: includes/class-atr-settings.php:817
 msgid "1 to 100, used when writing the WebP copies."
 msgstr ""
 
-#: includes/class-atr-settings.php:742
+#: includes/class-atr-settings.php:824
+msgid "The same thing again in AVIF, which is a good deal smaller than WebP at the same quality. Where both are on, the picture element offers AVIF first and the browser falls back to the WebP copy, and then to the original, when it cannot read it."
+msgstr ""
+
+#: includes/class-atr-settings.php:827
+msgid "Encoding AVIF costs several times the processing that WebP does, so uploads and rebuilds take noticeably longer with this on. On a small server it is worth turning on for new uploads and rebuilding the library in batches."
+msgstr ""
+
+#: includes/class-atr-settings.php:831
+msgid "The image library on this server cannot write AVIF, so no copies will be made. It needs WordPress 6.5 or later with GD or Imagick built against an AVIF encoder - ask your host. Nothing breaks meanwhile: the WebP copies go on being served."
+msgstr ""
+
+#: includes/class-atr-settings.php:842
+msgid "Convert generated images to AVIF and serve the copies"
+msgstr ""
+
+#: includes/class-atr-settings.php:851
+msgid "1 to 100, used when writing the AVIF copies. The scale is not the same one JPEG and WebP use - AVIF around 60 looks about like JPEG at 82, and going higher costs a lot of file size for very little."
+msgstr ""
+
+#: includes/class-atr-settings.php:859
 msgid "1 to 100. Around 80 is the usual compromise between file size and artefacts."
 msgstr ""
 
@@ -666,7 +727,7 @@ msgid "These PNG files are already as small as lossless optimising makes them. A
 msgstr ""
 
 #: assets/js/admin.js:61
-msgid "These are PNG files, which do not get smaller by re-encoding. WebP copies are what helps for those."
+msgid "These are PNG files, which do not get smaller by re-encoding. AVIF and WebP copies are what helps for those."
 msgstr ""
 
 #. translators: %d: the quality setting, e.g. 82.
@@ -757,7 +818,7 @@ msgid "Already as small as lossless optimising makes it. Allow lossy PNG in the 
 msgstr ""
 
 #: assets/js/attachment.js:30
-msgid "PNG files do not get smaller by re-encoding. WebP copies are what helps for these."
+msgid "PNG files do not get smaller by re-encoding. AVIF and WebP copies are what helps for these."
 msgstr ""
 
 #. translators: %d: the quality setting, e.g. 82.

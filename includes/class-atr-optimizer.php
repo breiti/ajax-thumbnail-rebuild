@@ -51,6 +51,12 @@ class ATR_Optimizer {
 			return $metadata;
 		}
 
+		/* Left for the queue, which calls optimize_attachment() itself once the
+		   upload the visitor is waiting on has finished. */
+		if ( ATR_Queue::is_deferring() ) {
+			return $metadata;
+		}
+
 		$result = self::optimize_attachment( (int) $attachment_id, $metadata );
 
 		return $result['metadata'];
