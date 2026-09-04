@@ -270,6 +270,10 @@ Fixed:
 
 == Upgrade Notice ==
 
+= 2.1.0 =
+
+Optimising and the WebP/AVIF copies can now be queued instead of run on upload, so uploading a batch of photographs no longer waits for them. Off by default; turn it on under Optimising.
+
 = 2.0.1 =
 
 Adds a filter for sites that write the WebP and AVIF copies but serve them some other way. Nothing changes unless you use it.
