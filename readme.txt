@@ -5,7 +5,7 @@ Tags: thumbnail, rebuild, regenerate, image, optimize
 Requires at least: 5.6
 Requires PHP: 7.4
 Tested up to: 7.1
-Stable tag: 2.1.0
+Stable tag: 2.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -89,6 +89,10 @@ Only resized files left on disk that no image size on this site refers to any mo
 Yes. The screen talks to the site over a REST API of its own, one image at a time, which is what keeps a large library from running into a script timeout.
 
 == Changelog ==
+
+= 2.1.1 =
+
+* Sizes a theme or plugin adds through `ajax_thumbnail_rebuild_on_demand_sizes` now show up ticked under **Made on demand** instead of looking switched off, and are greyed out there: unticking one never had any effect, because the filter put it back on the next read.
 
 = 2.1.0 =
 
@@ -269,6 +273,10 @@ Fixed:
 6. AVIF and WebP copies of every generated image, served through a picture element.
 
 == Upgrade Notice ==
+
+= 2.1.1 =
+
+The Made on demand list now shows the sizes a theme sets in code, ticked and greyed out, rather than leaving them looking switched off. Display only; nothing about which sizes wait has changed.
 
 = 2.1.0 =
 

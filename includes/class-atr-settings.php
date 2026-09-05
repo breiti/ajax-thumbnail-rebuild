@@ -747,25 +747,53 @@ class ATR_Settings {
 
 	public static function render_on_demand_sizes(): void {
 		$settings = self::all();
-		$marked   = (array) $settings['on_demand_sizes'];
+		$stored   = (array) $settings['on_demand_sizes'];
 		$sizes    = ATR_Image_Sizes::all();
+
+		/* What the site actually treats as on demand, which is the stored list
+		   plus whatever ajax_thumbnail_rebuild_on_demand_sizes adds. A theme
+		   declaring its own sizes in code is the case this is for: the size
+		   and the template that asks for it then live in the same commit. */
+		$effective = ATR_On_Demand::sizes();
+
+		/* Declared in code rather than here. Ticking one of these off would do
+		   nothing - the filter puts it straight back on the next read - so the
+		   box says what is true and does not pretend to be editable. */
+		$declared = array_diff( $effective, $stored );
 		?>
 		<fieldset>
 			<legend class="screen-reader-text"><?php esc_html_e( 'Sizes made only on demand', 'ajax-thumbnail-rebuild' ); ?></legend>
 			<?php if ( ! $sizes ) : ?>
 				<p class="description"><?php esc_html_e( 'This site has no image sizes registered.', 'ajax-thumbnail-rebuild' ); ?></p>
 			<?php endif; ?>
-			<?php foreach ( $sizes as $size ) : ?>
+			<?php
+			foreach ( $sizes as $size ) :
+				$is_declared = in_array( $size['name'], $declared, true );
+				?>
 				<label style="display:block; margin-bottom:4px;">
-					<input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[on_demand_sizes][]" value="<?php echo esc_attr( $size['name'] ); ?>" <?php checked( in_array( $size['name'], $marked, true ) ); ?> />
+					<?php if ( $is_declared ) : ?>
+						<?php /* No name attribute: a disabled box posts nothing anyway, and one
+						         that did would write a filter's decision into the option. */ ?>
+						<input type="checkbox" value="<?php echo esc_attr( $size['name'] ); ?>" checked disabled />
+					<?php else : ?>
+						<input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[on_demand_sizes][]" value="<?php echo esc_attr( $size['name'] ); ?>" <?php checked( in_array( $size['name'], $stored, true ) ); ?> />
+					<?php endif; ?>
 					<code><?php echo esc_html( $size['name'] ); ?></code>
 					<span class="description"><?php echo esc_html( ATR_Image_Sizes::dimensions_label( $size ) ); ?></span>
+					<?php if ( $is_declared ) : ?>
+						<span class="description"><?php esc_html_e( '- declared in code', 'ajax-thumbnail-rebuild' ); ?></span>
+					<?php endif; ?>
 				</label>
 			<?php endforeach; ?>
 		</fieldset>
 		<p class="description">
 			<?php esc_html_e( 'A size ticked here is never written on upload and is skipped by a rebuild, whatever the Rebuild tab has selected. It is cut the first time a page asks for it. Useful for the big sizes only a handful of pages ever use.', 'ajax-thumbnail-rebuild' ); ?>
 		</p>
+		<?php if ( $declared ) : ?>
+			<p class="description">
+				<?php esc_html_e( 'The greyed-out ones are set by a theme or plugin through the ajax_thumbnail_rebuild_on_demand_sizes filter and cannot be changed here.', 'ajax-thumbnail-rebuild' ); ?>
+			</p>
+		<?php endif; ?>
 		<?php
 	}
 
