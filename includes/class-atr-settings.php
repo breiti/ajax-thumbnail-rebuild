@@ -25,6 +25,7 @@ class ATR_Settings {
 		return array(
 			'upload_quality'       => ATR_Uploads::CORE_QUALITY,
 			'max_upload_dimension' => ATR_Uploads::CORE_THRESHOLD,
+			'shrink_original'      => false,
 			'optimize_enabled'     => false,
 			'optimize_quality'     => ATR_Uploads::CORE_QUALITY,
 			'optimize_lossy'       => false,
@@ -99,7 +100,7 @@ class ATR_Settings {
 		return array(
 			'uploads'   => array(
 				'label' => __( 'Uploads', 'ajax-thumbnail-rebuild' ),
-				'keys'  => array( 'upload_quality', 'max_upload_dimension' ),
+				'keys'  => array( 'upload_quality', 'max_upload_dimension', 'shrink_original' ),
 			),
 			'optimise'  => array(
 				'label' => __( 'Optimising', 'ajax-thumbnail-rebuild' ),
@@ -156,6 +157,14 @@ class ATR_Settings {
 			self::page_slug( 'uploads' ),
 			'atr_uploads',
 			array( 'label_for' => 'atr-max-upload-dimension' )
+		);
+
+		add_settings_field(
+			'shrink_original',
+			__( 'The untouched original', 'ajax-thumbnail-rebuild' ),
+			array( __CLASS__, 'render_shrink_original' ),
+			self::page_slug( 'uploads' ),
+			'atr_uploads'
 		);
 
 		add_settings_section(
@@ -359,6 +368,7 @@ class ATR_Settings {
 
 		switch ( $key ) {
 			// Checkboxes: absent means unticked, which is why $managed matters.
+			case 'shrink_original':
 			case 'optimize_enabled':
 			case 'background_enabled':
 			case 'optimize_lossy':
@@ -472,6 +482,22 @@ class ATR_Settings {
 				'<code>' . esc_html( (string) ATR_Uploads::CORE_THRESHOLD ) . '</code>'
 			);
 			?>
+		</p>
+		<?php
+	}
+
+	public static function render_shrink_original(): void {
+		$settings = self::all();
+		?>
+		<label>
+			<input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[shrink_original]" value="1" <?php checked( $settings['shrink_original'] ); ?> />
+			<?php esc_html_e( 'Bring the untouched original down to this limit as well', 'ajax-thumbnail-rebuild' ); ?>
+		</label>
+		<p class="description">
+			<?php esc_html_e( 'The original is what the sub sizes are cut from; once they are cut it only sits there, and on a photograph from a modern camera it is most of what the library weighs. With this on it is scaled to the limit like everything else - on upload, and for images already here the next time they are rebuilt.', 'ajax-thumbnail-rebuild' ); ?>
+		</p>
+		<p class="description">
+			<strong><?php esc_html_e( 'This cannot be undone: the full resolution the original was uploaded at is gone, and no size larger than the limit can be cut from it afterwards.', 'ajax-thumbnail-rebuild' ); ?></strong>
 		</p>
 		<?php
 	}

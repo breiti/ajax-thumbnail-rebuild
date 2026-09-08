@@ -445,6 +445,7 @@ msgstr ""
 msgid "Lossy PNG"
 msgstr ""
 
+#: includes/class-atr-settings.php:164
 #: includes/class-atr-settings.php:203
 msgid "The untouched original"
 msgstr ""
@@ -514,6 +515,18 @@ msgstr ""
 #: includes/class-atr-settings.php:471
 #, php-format
 msgid "An upload longer than this on its longest edge is scaled down to it, and the untouched original is kept beside it. WordPress uses %s. Set 0 to keep every upload at the size it arrived."
+msgstr ""
+
+#: includes/class-atr-settings.php:494
+msgid "Bring the untouched original down to this limit as well"
+msgstr ""
+
+#: includes/class-atr-settings.php:497
+msgid "The original is what the sub sizes are cut from; once they are cut it only sits there, and on a photograph from a modern camera it is most of what the library weighs. With this on it is scaled to the limit like everything else - on upload, and for images already here the next time they are rebuilt."
+msgstr ""
+
+#: includes/class-atr-settings.php:500
+msgid "This cannot be undone: the full resolution the original was uploaded at is gone, and no size larger than the limit can be cut from it afterwards."
 msgstr ""
 
 #: includes/class-atr-settings.php:482

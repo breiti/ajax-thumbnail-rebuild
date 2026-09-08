@@ -88,6 +88,11 @@ class ATR_Regenerator {
 			return $metadata;
 		}
 
+		/* Before the sizes are cut, so they are cut from a source that is already
+		   within the limit - and before the dimensions below are read, so what is
+		   stored describes the file as it is left. */
+		$metadata = ATR_Uploads::enforce_limit( $attachment_id, $metadata );
+
 		$imagesize = wp_getimagesize( $file );
 
 		if ( ! $imagesize ) {
