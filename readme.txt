@@ -5,7 +5,7 @@ Tags: thumbnail, rebuild, regenerate, image, optimize
 Requires at least: 5.6
 Requires PHP: 7.4
 Tested up to: 7.1
-Stable tag: 2.1.1
+Stable tag: 2.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -89,6 +89,11 @@ Only resized files left on disk that no image size on this site refers to any mo
 Yes. The screen talks to the site over a REST API of its own, one image at a time, which is what keeps a large library from running into a script timeout.
 
 == Changelog ==
+
+= 2.2.0 =
+
+* New setting **The untouched original**, under Uploads beside the limit: the full size original kept beside a scaled upload is brought down to the limit as well. WordPress cuts the sub sizes from that file and then leaves it alone at whatever it arrived as, which on a photograph from a modern camera is most of what the library weighs. Off by default, and it cannot be undone - the resolution the original was uploaded at is gone, and no size larger than the limit can be cut from it afterwards. New uploads are covered as they arrive; an image already in the library is covered the next time it is rebuilt, and its `-scaled` copy comes down with it where that was written to an older limit.
+* A size marked as made on demand can be rebuilt again. It was shown ticked off and disabled on the rebuild screen, so a file cut for it stayed as it was however the size changed. It is now rebuilt for the images that already have it and cut for no others, which refreshes what is there without writing the files the setting exists to avoid.
 
 = 2.1.1 =
 
@@ -273,6 +278,10 @@ Fixed:
 6. AVIF and WebP copies of every generated image, served through a picture element.
 
 == Upgrade Notice ==
+
+= 2.2.0 =
+
+The untouched original beside a scaled upload can now be brought down to the size limit as well, which is where most of a library's weight usually sits. Off by default; it cannot be undone. Sizes made on demand can also be rebuilt now, for the images that already have them.
 
 = 2.1.1 =
 
