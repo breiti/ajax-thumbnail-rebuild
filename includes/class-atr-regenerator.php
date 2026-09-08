@@ -116,7 +116,9 @@ class ATR_Regenerator {
 
 		$source = self::source_file( $attachment_id, $file );
 
-		$on_demand = ATR_On_Demand::sizes();
+		/* Read before the loop writes to it, so "did this image have the size" is
+		   answered about the state the rebuild started from. */
+		$had = $metadata['sizes'];
 
 		foreach ( ATR_Image_Sizes::all( $metadata, $attachment_id ) as $name => $size ) {
 			if ( null !== $only_sizes && ! in_array( $name, $only_sizes, true ) ) {
@@ -124,8 +126,13 @@ class ATR_Regenerator {
 				continue;
 			}
 
-			if ( in_array( $name, $on_demand, true ) ) {
-				// Marked as on demand: it is cut when a page asks for it, not here.
+			/* A size that waits is rebuilt where the image already has it and nowhere
+			   else. The file is as stale as any other after a size changes, so it has
+			   to be redoable - but cutting it for an image no page has asked about
+			   would fill the library with exactly the files this feature exists to
+			   avoid writing. Whether it waits is asked of covers(), so the one switch
+			   for the whole site and a single size marked on its own behave alike. */
+			if ( ATR_On_Demand::covers( $name ) && empty( $had[ $name ] ) ) {
 				continue;
 			}
 
