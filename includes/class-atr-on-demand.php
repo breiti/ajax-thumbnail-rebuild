@@ -116,6 +116,13 @@ class ATR_On_Demand {
 			return $downsize;
 		}
 
+		if ( ! self::is_resizable( (string) get_post_mime_type( $id ) ) ) {
+			/* wp_attachment_is_image() says yes to an SVG, so everything that asks an image
+			   for its sizes asks one of these for all of them — and a drawing has no crop to
+			   make. Core never cuts one and neither should this. */
+			return $downsize;
+		}
+
 		$file = get_attached_file( $id );
 
 		if ( ! $file || ! file_exists( $file ) ) {
@@ -124,9 +131,24 @@ class ATR_On_Demand {
 
 		self::$generated[ $id . '|' . $size ] = true;
 
+		$source = ATR_Regenerator::source_file( $id, $file );
+
+		if ( ! self::fits( $source, $file, $metadata, $sizes[ $size ] ) ) {
+			/* The original is smaller than the box being asked for, and WordPress does not
+			   upscale, so there is nothing here to cut — not on this page view and not on
+			   any later one either.
+
+			   Worked out by arithmetic rather than by trying. image_make_intermediate_size()
+			   reaches the same answer, but it loads an image editor and reads the file to
+			   get there, and self::$generated above remembers the attempt only for the
+			   length of the request: a size too large for its original was being attempted
+			   again on every single render, for as long as a page asked for it. Measured on
+			   one site at 37 ms a time, six of them on the front page, on every hit. */
+			return $downsize;
+		}
+
 		ATR_Regenerator::load_image_api();
 
-		$source       = ATR_Regenerator::source_file( $id, $file );
 		$intermediate = image_make_intermediate_size(
 			$source,
 			$sizes[ $size ]['width'],
@@ -135,7 +157,8 @@ class ATR_On_Demand {
 		);
 
 		if ( ! $intermediate ) {
-			/* Smaller than the requested box, so there is nothing to cut: core's own
+			/* The arithmetic said there was a crop here and the editor disagreed — a file
+			   that is not what its mime type says, or one it cannot read. Core's own
 			   fallback to the full file is the right answer. */
 			return $downsize;
 		}
@@ -154,5 +177,78 @@ class ATR_On_Demand {
 			(int) $intermediate['height'],
 			true,
 		);
+	}
+
+	/**
+	 * Whether a crop of this size can be cut from the source at all.
+	 *
+	 * The cut is made from the source file, which is the unscaled original wherever
+	 * WordPress kept one — so the metadata's own width and height, which describe the
+	 * scaled file beside it, are not the figures to measure against. They are used
+	 * only when the two are the same file, which saves reading a header for the
+	 * common case of an upload small enough never to have been scaled.
+	 *
+	 * @param  string $source   Path the crop would be cut from.
+	 * @param  string $file     Path the attachment metadata describes.
+	 * @param  array  $metadata Attachment metadata.
+	 * @param  array  $size     Registered size, as ATR_Image_Sizes::all() returns one.
+	 * @return bool
+	 */
+	private static function fits( string $source, string $file, array $metadata, array $size ): bool {
+		if ( $source === $file ) {
+			$width  = (int) ( $metadata['width'] ?? 0 );
+			$height = (int) ( $metadata['height'] ?? 0 );
+		} else {
+			$dimensions = @getimagesize( $source ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+			$width      = (int) ( $dimensions[0] ?? 0 );
+			$height     = (int) ( $dimensions[1] ?? 0 );
+		}
+
+		if ( ! $width || ! $height ) {
+			// Nothing to measure. Leave the answer to the editor, as before.
+			return true;
+		}
+
+		return false !== image_resize_dimensions(
+			$width,
+			$height,
+			(int) $size['width'],
+			(int) $size['height'],
+			$size['crop']
+		);
+	}
+
+	/**
+	 * Whether an image editor here will resize this mime type.
+	 *
+	 * Vectors are answered without asking. An Imagick built with librsvg says it can
+	 * resize an SVG and is right — it would rasterise the drawing and write a PNG crop
+	 * of a mark that was already the right size at every size. Core never cuts one
+	 * whatever the editors say.
+	 *
+	 * Answered per mime type rather than per attachment: which formats can be resized
+	 * is a property of the GD and Imagick this site runs on, and the question is asked
+	 * once per size per image on a page.
+	 *
+	 * @param  string $mime Mime type.
+	 * @return bool
+	 */
+	private static function is_resizable( string $mime ): bool {
+		if ( 'image/svg+xml' === $mime || 'image/svg' === $mime ) {
+			return false;
+		}
+
+		static $supported = array();
+
+		if ( ! isset( $supported[ $mime ] ) ) {
+			$supported[ $mime ] = (bool) wp_image_editor_supports(
+				array(
+					'mime_type' => $mime,
+					'methods'   => array( 'resize' ),
+				)
+			);
+		}
+
+		return $supported[ $mime ];
 	}
 }
