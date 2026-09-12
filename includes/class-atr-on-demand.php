@@ -22,6 +22,17 @@ class ATR_On_Demand {
 	/** Attachments generated during this request, so one request cuts a size once. */
 	private static array $generated = array();
 
+	/**
+	 * The attachment ACF is currently reading every registered size of, or 0.
+	 *
+	 * See maybe_generate() for what it is for. Held as an id rather than a flag so
+	 * that a filter short-circuiting acf_get_attachment(), or an attachment that
+	 * turns out not to exist, cannot leave a plain true standing for the rest of the
+	 * request: those paths return before 'acf/load_attachment' fires, and the worst
+	 * a stale id can do is hold back one attachment until the next page view.
+	 */
+	private static int $enumerating = 0;
+
 	public function register(): void {
 		if ( ! self::is_enabled() && ! self::sizes() ) {
 			return;
@@ -29,6 +40,40 @@ class ATR_On_Demand {
 
 		add_filter( 'intermediate_image_sizes_advanced', array( __CLASS__, 'strip_sizes' ), self::STRIP_PRIORITY, 3 );
 		add_filter( 'image_downsize', array( $this, 'maybe_generate' ), 10, 3 );
+
+		/* Advanced Custom Fields reads every size an attachment has whenever it hands
+		   an image field back as an array, which is what it does by default. See
+		   maybe_generate(). */
+		add_filter( 'acf/pre_load_attachment', array( __CLASS__, 'enumeration_began' ), 10, 2 );
+		add_filter( 'acf/load_attachment', array( __CLASS__, 'enumeration_ended' ), PHP_INT_MAX );
+	}
+
+	/**
+	 * Note that ACF has started reading an attachment's sizes.
+	 *
+	 * Hooked to a filter it has no business answering, so whatever it was given is
+	 * handed straight back.
+	 *
+	 * @param  mixed           $response   Short-circuit value from another filter.
+	 * @param  int|WP_Post     $attachment Attachment being loaded.
+	 * @return mixed
+	 */
+	public static function enumeration_began( $response, $attachment = 0 ) {
+		self::$enumerating = $attachment instanceof WP_Post ? (int) $attachment->ID : (int) $attachment;
+
+		return $response;
+	}
+
+	/**
+	 * Note that it has finished.
+	 *
+	 * @param  mixed $response Loaded attachment data.
+	 * @return mixed
+	 */
+	public static function enumeration_ended( $response ) {
+		self::$enumerating = 0;
+
+		return $response;
 	}
 
 	/**
@@ -89,6 +134,31 @@ class ATR_On_Demand {
 		$id = (int) $id;
 
 		if ( isset( self::$generated[ $id . '|' . $size ] ) ) {
+			return $downsize;
+		}
+
+		if ( $id === self::$enumerating && ! self::generate_while_enumerating() ) {
+			/* Advanced Custom Fields is part-way through acf_get_attachment(), which walks
+			   every size the site registers and asks wp_get_attachment_image_src() for each
+			   one so it can hand an image field back as an array of them all. That is what
+			   it does by default.
+
+			   It is a listing, not a page asking to show a picture, and answering it by
+			   cutting is the end of this feature: a site with ninety registered sizes had
+			   one field on one page write ninety files and take half a minute doing it,
+			   inside a visitor's request — which is worse than the upload this was meant to
+			   spare them. Measured at 29.5 s and 240 files for a single field.
+
+			   So nothing is cut here. Core's own fallback answers instead, which is the
+			   full file, and the array says so honestly: the size does not exist yet. The
+			   first time something actually renders it — wp_get_attachment_image(), a
+			   template asking for one size — that is outside this window and cut as always,
+			   so on-demand keeps working exactly as it should.
+
+			   A site that would rather have the old behaviour says so:
+
+			       add_filter( 'ajax_thumbnail_rebuild_on_demand_while_enumerating', '__return_true' );
+			 */
 			return $downsize;
 		}
 
@@ -177,6 +247,20 @@ class ATR_On_Demand {
 			(int) $intermediate['height'],
 			true,
 		);
+	}
+
+	/**
+	 * Whether a size should still be cut while something is listing them all.
+	 *
+	 * False by default: see maybe_generate() for what does the listing and what it
+	 * costs. Answer true to have this feature behave as it did before 2.2.1, at the
+	 * price of every registered size being cut the first time an ACF image field
+	 * returning an array is read.
+	 *
+	 * @return bool
+	 */
+	private static function generate_while_enumerating(): bool {
+		return (bool) apply_filters( 'ajax_thumbnail_rebuild_on_demand_while_enumerating', false );
 	}
 
 	/**

@@ -88,6 +88,20 @@ Only resized files left on disk that no image size on this site refers to any mo
 
 Yes. The screen talks to the site over a REST API of its own, one image at a time, which is what keeps a large library from running into a script timeout.
 
+= I use Advanced Custom Fields. Why do my sizes not say what they should? =
+
+An ACF image field hands back an array of every size the site registers, which is what it does unless you tell it otherwise - and to build that array it asks for all of them at once. With sizes waiting to be cut, that is a listing rather than a page asking to show a picture, and cutting ninety files inside a visitor's page view to answer it is worse than the upload this feature was meant to spare you.
+
+So nothing is cut while an ACF field is being read. The sizes already on disk are reported as usual; one that is still waiting is reported as the full file, which is what WordPress itself falls back to for a size that does not exist yet. Nothing else changes: the first time a template actually renders that size it is cut, exactly as before.
+
+If you read sizes out of that array - `$image['sizes']['my-size']` - ask the field for an ID instead and let WordPress draw the image:
+
+`'return_format' => 'id'` on the field, then `wp_get_attachment_image( $id, 'my-size' )`.
+
+To have it behave as it did before, cutting every size the moment such a field is read:
+
+`add_filter( 'ajax_thumbnail_rebuild_on_demand_while_enumerating', '__return_true' );`
+
 == Changelog ==
 
 = 2.2.0 =
