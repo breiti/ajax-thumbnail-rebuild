@@ -199,6 +199,10 @@ class ATR_On_Demand {
 			return $downsize;
 		}
 
+		/* Noted before the attempt rather than after it, so that anything the cut itself
+		   sets off — a filter on the metadata write, a plugin listening for the new
+		   file — cannot come back round and start the same cut again. Cleared on
+		   success below, where the metadata takes over the job of answering. */
 		self::$generated[ $id . '|' . $size ] = true;
 
 		$source = ATR_Regenerator::source_file( $id, $file );
@@ -235,6 +239,15 @@ class ATR_On_Demand {
 
 		$metadata['sizes'][ $size ] = $intermediate;
 		wp_update_attachment_metadata( $id, $metadata );
+
+		/* The record above is what answers the next request for this size, so the note
+		   made before the cut has nothing left to do — and leaving it standing is
+		   wrong. Something can take the record away again inside the same request: a
+		   rebuild, a wp media regenerate, anything that rewrites the metadata. Asked
+		   for after that, this used to refuse on the strength of a note saying it had
+		   already been made, and the caller was served the full file instead of the
+		   crop. */
+		unset( self::$generated[ $id . '|' . $size ] );
 
 		ATR_Copies::convert_all( trailingslashit( dirname( $file ) ) . $intermediate['file'] );
 
