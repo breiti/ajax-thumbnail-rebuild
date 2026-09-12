@@ -2,10 +2,10 @@
 Contributors: ristoniinemets, junkcoder
 Donate link: http://breiti.cc/wordpress/ajax-thumbnail-rebuild/#donate
 Tags: thumbnail, rebuild, regenerate, image, optimize
-Requires at least: 5.6
+Requires at least: 5.7
 Requires PHP: 7.4
 Tested up to: 7.1
-Stable tag: 2.2.0
+Stable tag: 2.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -103,6 +103,12 @@ To have it behave as it did before, cutting every size the moment such a field i
 `add_filter( 'ajax_thumbnail_rebuild_on_demand_while_enumerating', '__return_true' );`
 
 == Changelog ==
+
+= 2.2.1 =
+
+* Nothing is cut while something is only listing the sizes. Advanced Custom Fields hands an image field back as an array of every size the site registers - and a video or audio field the same array for its poster image - and every entry in those lists was answered by cutting the file for it - on a site with ninety-six registered sizes, one image field on one page wrote 240 files and took 29.5 seconds, inside a visitor's request. Inside that window the full file is returned instead, which is the honest answer while the size does not exist yet; the first time something actually renders one of those sizes it is cut exactly as before. `ajax_thumbnail_rebuild_on_demand_while_enumerating` puts the old behaviour back.
+* A size the original is too small for is no longer attempted. WordPress does not upscale, so the cut could only fail - but it failed the expensive way, after loading an image editor and reading the file, and again on the next page view for as long as anything asked for that size. It is worked out as arithmetic now, against the file the crop would actually be cut from. An SVG is skipped before any of that, rather than being rasterised once per registered size.
+* A size asked for after its record has gone is cut again. The note that keeps one request from cutting the same size twice was never taken down, so once a rebuild or `wp media regenerate` had rewritten the attachment metadata, anything asking for that size again was served the full file where it had asked for a crop.
 
 = 2.2.0 =
 
@@ -292,6 +298,10 @@ Fixed:
 6. AVIF and WebP copies of every generated image, served through a picture element.
 
 == Upgrade Notice ==
+
+= 2.2.1 =
+
+Three fixes to the sizes that wait to be asked for: nothing is cut while a plugin is only listing the registered sizes, which with Advanced Custom Fields could write hundreds of files inside a single page view; a size the original is too small for is no longer attempted; and a size whose record has gone - after a rebuild, say - is cut again instead of being refused. Only affects sites with Made on demand turned on.
 
 = 2.2.0 =
 
