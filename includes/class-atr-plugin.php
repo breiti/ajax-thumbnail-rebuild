@@ -123,9 +123,11 @@ class ATR_Plugin {
 		);
 
 		wp_localize_script( 'ajax-thumbnail-rebuild', 'ATRSettings', array(
-			'editLink' => admin_url( 'post.php?post=%d&action=edit' ),
+			'editLink'   => admin_url( 'post.php?post=%d&action=edit' ),
 			// Set when the media library sent a selection over; empty means the whole library.
-			'include'  => ATR_Media_Library::requested_ids(),
+			'include'    => ATR_Media_Library::requested_ids(),
+			// Where the Largest images tab sends what was picked, the way the media library does.
+			'rebuildUrl' => ATR_Admin_Page::url( 'rebuild' ),
 		) );
 
 		wp_enqueue_script(
@@ -136,8 +138,17 @@ class ATR_Plugin {
 			true
 		);
 
+		wp_enqueue_script(
+			'ajax-thumbnail-rebuild-largest',
+			ATR_URL . 'assets/js/largest.js',
+			array( 'wp-api-fetch', 'wp-i18n', 'ajax-thumbnail-rebuild' ),
+			$this->asset_version( 'assets/js/largest.js' ),
+			true
+		);
+
 		wp_set_script_translations( 'ajax-thumbnail-rebuild', 'ajax-thumbnail-rebuild', ATR_PATH . 'languages' );
 		wp_set_script_translations( 'ajax-thumbnail-rebuild-cleanup', 'ajax-thumbnail-rebuild', ATR_PATH . 'languages' );
+		wp_set_script_translations( 'ajax-thumbnail-rebuild-largest', 'ajax-thumbnail-rebuild', ATR_PATH . 'languages' );
 	}
 
 	/**

@@ -54,6 +54,7 @@ class ATR_Admin_Page {
 			'rebuild' => __( 'Rebuild', 'ajax-thumbnail-rebuild' ),
 			'sizes'   => __( 'Registered sizes', 'ajax-thumbnail-rebuild' ),
 			'cleanup' => __( 'Cleanup', 'ajax-thumbnail-rebuild' ),
+			'largest' => __( 'Largest images', 'ajax-thumbnail-rebuild' ),
 		);
 
 		/* The settings are a tab each. All of them on one page was a wall of
@@ -103,6 +104,8 @@ class ATR_Admin_Page {
 					<?php $this->render_sizes_tab( $sizes ); ?>
 				<?php elseif ( 'cleanup' === $tab ) : ?>
 					<?php $this->render_cleanup_tab(); ?>
+				<?php elseif ( 'largest' === $tab ) : ?>
+					<?php $this->render_largest_tab(); ?>
 				<?php elseif ( isset( ATR_Settings::pages()[ $tab ] ) ) : ?>
 					<?php $this->render_settings_tab( $tab ); ?>
 				<?php else : ?>
@@ -185,8 +188,8 @@ class ATR_Admin_Page {
 									<p>
 										<?php
 										printf(
-											/* translators: %s: number of images selected in the media library. */
-											esc_html( _n( 'Working on the %s image you picked in the media library.', 'Working on the %s images you picked in the media library.', count( $selected ), 'ajax-thumbnail-rebuild' ) ),
+											/* translators: %s: number of images picked in the media library or on the Largest images tab. */
+											esc_html( _n( 'Working on the %s image you picked.', 'Working on the %s images you picked.', count( $selected ), 'ajax-thumbnail-rebuild' ) ),
 											'<strong>' . esc_html( number_format_i18n( count( $selected ) ) ) . '</strong>'
 										);
 										?>
@@ -375,6 +378,106 @@ class ATR_Admin_Page {
 								<button type="button" class="button button-large delete" id="atr-cleanup-delete"
 									data-confirm="<?php esc_attr_e( 'Delete these files? This cannot be undone.', 'ajax-thumbnail-rebuild' ); ?>">
 									<?php esc_html_e( 'Delete the listed files', 'ajax-thumbnail-rebuild' ); ?>
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * The heaviest images that still need optimising, to optimise those first.
+	 *
+	 * Only finds and lists. Optimising what is picked here is the Rebuild tab's
+	 * job, handed over the way the media library hands over a selection, so there
+	 * is one runner with one Stop button and one list of what it skipped.
+	 */
+	private function render_largest_tab(): void {
+		?>
+		<div id="poststuff">
+			<div id="post-body" class="metabox-holder columns-2">
+
+				<div id="post-body-content">
+					<div class="postbox">
+						<div class="postbox-header"><h2 class="hndle"><span><?php esc_html_e( 'Heaviest images', 'ajax-thumbnail-rebuild' ); ?></span></h2></div>
+						<div class="inside">
+							<p>
+								<?php esc_html_e( 'Optimising a large library takes a while, and an optimisation service counts every image against its quota. The heaviest images are where most of the saving is, so this finds them: optimise those first and the rest can wait.', 'ajax-thumbnail-rebuild' ); ?>
+							</p>
+							<p class="description">
+								<?php esc_html_e( 'An image weighs what optimising would work on - the uploaded file and its sizes, and the untouched original where the settings say so. Images already optimised at the current settings are left out, and so are formats the optimiser does not handle, such as SVG.', 'ajax-thumbnail-rebuild' ); ?>
+							</p>
+
+							<div id="atr-largest-result"></div>
+
+							<table class="wp-list-table widefat fixed striped table-view-list atr-largest" hidden>
+								<thead>
+									<tr>
+										<td class="manage-column column-cb check-column"><input type="checkbox" id="atr-largest-toggle" aria-label="<?php esc_attr_e( 'Select every image that needs optimising', 'ajax-thumbnail-rebuild' ); ?>" /></td>
+										<th scope="col" class="manage-column column-primary"><?php esc_html_e( 'Image', 'ajax-thumbnail-rebuild' ); ?></th>
+										<th scope="col" class="manage-column atr-largest__bytes"><?php esc_html_e( 'Weight', 'ajax-thumbnail-rebuild' ); ?></th>
+										<th scope="col" class="manage-column atr-largest__files"><?php esc_html_e( 'Files', 'ajax-thumbnail-rebuild' ); ?></th>
+									</tr>
+								</thead>
+								<tbody id="atr-largest-results"></tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<div id="postbox-container-1" class="postbox-container">
+					<div class="postbox">
+						<div class="postbox-header"><h2 class="hndle"><span><?php esc_html_e( 'Scan', 'ajax-thumbnail-rebuild' ); ?></span></h2></div>
+						<div class="inside">
+							<p class="atr-library-count">
+								<?php
+								$total = ATR_Attachments::count();
+								printf(
+									/* translators: %s: number of images in the media library. */
+									esc_html( _n( '%s image in the media library.', '%s images in the media library.', $total, 'ajax-thumbnail-rebuild' ) ),
+									'<strong>' . esc_html( number_format_i18n( $total ) ) . '</strong>'
+								);
+								?>
+							</p>
+
+							<p>
+								<label>
+									<input type="checkbox" id="atr-largest-all" />
+									<?php esc_html_e( 'Include images that are already optimised', 'ajax-thumbnail-rebuild' ); ?>
+								</label>
+							</p>
+
+							<div id="atr-largest-progress" class="atr-progress" hidden>
+								<div class="atr-progress__track">
+									<div class="atr-progress__bar" id="atr-largest-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+								</div>
+								<p class="atr-progress__status" id="atr-largest-status" aria-live="polite"></p>
+							</div>
+						</div>
+						<div id="major-publishing-actions">
+							<span class="spinner" id="atr-largest-spinner"></span>
+							<div id="publishing-action">
+								<button type="button" class="button button-primary button-large" id="atr-largest-scan">
+									<?php esc_html_e( 'Find the heaviest', 'ajax-thumbnail-rebuild' ); ?>
+								</button>
+							</div>
+						</div>
+					</div>
+
+					<div class="postbox" id="atr-largest-optimize-box" hidden>
+						<div class="postbox-header"><h2 class="hndle"><span><?php esc_html_e( 'Optimise', 'ajax-thumbnail-rebuild' ); ?></span></h2></div>
+						<div class="inside">
+							<p id="atr-largest-summary" aria-live="polite"></p>
+							<p class="description"><?php esc_html_e( 'The Rebuild tab opens with these images, heaviest first. Nothing is changed until you press Start there.', 'ajax-thumbnail-rebuild' ); ?></p>
+						</div>
+						<div id="major-publishing-actions">
+							<div id="publishing-action">
+								<button type="button" class="button button-primary button-large" id="atr-largest-optimize" disabled>
+									<?php esc_html_e( 'Optimise selected', 'ajax-thumbnail-rebuild' ); ?>
 								</button>
 							</div>
 						</div>

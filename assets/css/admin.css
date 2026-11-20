@@ -153,3 +153,17 @@
 		transition: none;
 	}
 }
+
+/* Largest images. */
+.atr-largest .atr-largest__bytes {
+	width: 7em;
+}
+
+.atr-largest .atr-largest__files {
+	width: 4em;
+}
+
+.atr-largest .atr-badge {
+	margin-left: 4px;
+	vertical-align: baseline;
+}
