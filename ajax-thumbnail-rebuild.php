@@ -46,6 +46,12 @@ require_once ATR_PATH . 'includes/class-atr-admin-page.php';
 require_once ATR_PATH . 'includes/class-atr-plugin.php';
 require_once ATR_PATH . 'includes/deprecated.php';
 
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	require_once ATR_PATH . 'includes/class-atr-cli.php';
+
+	WP_CLI::add_command( 'atr', 'ATR_CLI' );
+}
+
 /**
  * Main plugin instance.
  *
