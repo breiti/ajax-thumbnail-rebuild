@@ -75,7 +75,13 @@ class ATR_Attachments {
 			$params[] = '%' . self::pattern_to_like( $filename );
 		}
 
-		$sql = $select . $from . $join . $where . ' ORDER BY p.post_date DESC';
+		/* A selection is worked through in the order it was handed over: the media
+		   library hands over what was ticked, the Largest images tab hands over the
+		   heaviest first, and a Stop or a spent quota halfway should leave the
+		   right ones done. Anything else is newest first. */
+		$order = $include ? 'FIELD( p.ID, ' . implode( ',', $include ) . ' )' : 'p.post_date DESC';
+
+		$sql = $select . $from . $join . $where . ' ORDER BY ' . $order;
 
 		if ( $params ) {
 			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- built from fixed fragments above.
