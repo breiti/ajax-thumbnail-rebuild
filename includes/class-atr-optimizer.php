@@ -129,34 +129,12 @@ class ATR_Optimizer {
 
 		ATR_Regenerator::load_image_api();
 
-		$directory = trailingslashit( dirname( $file ) );
-		$saved     = 0;
-		$files     = 0;
+		$saved   = 0;
+		$files   = 0;
+		$archive = self::archive_path( $file, $metadata );
+		$mimes   = array();
 
-		$paths = array( $file );
-
-		foreach ( (array) ( $metadata['sizes'] ?? array() ) as $size ) {
-			if ( ! empty( $size['file'] ) ) {
-				$paths[] = $directory . $size['file'];
-			}
-		}
-
-		/* The untouched original is the archive copy, so it is left alone unless a
-		   site asks for it - and then only the lossless programs touch it: never a
-		   re-encode, never a lossy pass, never sent to a service. */
-		$archive = '';
-
-		if ( ATR_Settings::get( 'optimize_original' ) && ! empty( $metadata['original_image'] ) ) {
-			$archive = $directory . $metadata['original_image'];
-
-			if ( file_exists( $archive ) ) {
-				$paths[] = $archive;
-			}
-		}
-
-		$mimes = array();
-
-		foreach ( array_unique( $paths ) as $path ) {
+		foreach ( self::paths( $file, $metadata ) as $path ) {
 			$mime = file_exists( $path ) ? wp_get_image_mime( $path ) : '';
 
 			if ( $mime ) {
@@ -189,6 +167,91 @@ class ATR_Optimizer {
 			'message'  => '',
 			'reason'   => self::reason_for_nothing( $saved, $mimes ),
 		);
+	}
+
+	/**
+	 * Every file of one attachment the optimiser works on, each once.
+	 *
+	 * The attached file, every size the metadata records, and the untouched
+	 * original where the site has asked for that too. Several sizes can come out
+	 * as the same file, which is optimised - and weighed - once. Whatever ranks
+	 * images by what optimising could win reads this same list, so the two
+	 * cannot drift apart.
+	 *
+	 * @param string $file     Path of the attached file.
+	 * @param array  $metadata Attachment metadata.
+	 * @return string[] Absolute paths.
+	 */
+	public static function paths( string $file, array $metadata ): array {
+		$directory = trailingslashit( dirname( $file ) );
+		$paths     = array( $file );
+
+		foreach ( (array) ( $metadata['sizes'] ?? array() ) as $size ) {
+			if ( is_array( $size ) && ! empty( $size['file'] ) ) {
+				$paths[] = $directory . $size['file'];
+			}
+		}
+
+		$archive = self::archive_path( $file, $metadata );
+
+		if ( '' !== $archive ) {
+			$paths[] = $archive;
+		}
+
+		return array_values( array_unique( $paths ) );
+	}
+
+	/**
+	 * The untouched original, when the site wants it optimised and it is there.
+	 *
+	 * It is the archive copy, so it is left alone unless a site asks for it - and
+	 * then only the lossless programs touch it: never a re-encode, never a lossy
+	 * pass, never sent to a service.
+	 *
+	 * @param string $file     Path of the attached file.
+	 * @param array  $metadata Attachment metadata.
+	 * @return string Empty when it is not one of the files to work on.
+	 */
+	private static function archive_path( string $file, array $metadata ): string {
+		if ( ! ATR_Settings::get( 'optimize_original' ) || empty( $metadata['original_image'] ) ) {
+			return '';
+		}
+
+		$archive = trailingslashit( dirname( $file ) ) . $metadata['original_image'];
+
+		return file_exists( $archive ) ? $archive : '';
+	}
+
+	/**
+	 * Whether the optimiser would do anything with this attachment now.
+	 *
+	 * The inverse of the mark it leaves, read against today's settings: an image
+	 * optimised at a lower quality, without a program installed since, or without
+	 * lossy compression that has since been turned on, needs it again.
+	 *
+	 * @param array $metadata Attachment metadata.
+	 */
+	public static function needs_optimizing( array $metadata ): bool {
+		return ! self::already_done( $metadata, (int) ATR_Settings::get( 'optimize_quality', ATR_Uploads::CORE_QUALITY ) );
+	}
+
+	/**
+	 * Optimise one attachment and keep what came of it.
+	 *
+	 * The metadata is written only when the attachment was worked on: a missing
+	 * file leaves it as it was.
+	 *
+	 * @param int $attachment_id Attachment id.
+	 * @return array{metadata:array,saved:int,files:int,message:string,reason:string}
+	 */
+	public static function optimize_and_store( int $attachment_id ): array {
+		$result = self::optimize_attachment( $attachment_id );
+
+		if ( '' === $result['message'] ) {
+			wp_update_attachment_metadata( $attachment_id, $result['metadata'] );
+		}
+
+		return $result;
 	}
 
 	/**

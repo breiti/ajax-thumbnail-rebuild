@@ -303,11 +303,7 @@ class ATR_Rest_Controller {
 			);
 		}
 
-		$result = ATR_Optimizer::optimize_attachment( $id );
-
-		if ( '' === $result['message'] ) {
-			wp_update_attachment_metadata( $id, $result['metadata'] );
-		}
+		$result = ATR_Optimizer::optimize_and_store( $id );
 
 		return rest_ensure_response( array(
 			'id'      => $id,
