@@ -127,7 +127,7 @@ class ATR_Largest {
 		// An old import can leave anything here; the optimiser reads it the same way.
 		$stored   = wp_get_attachment_metadata( $id, true );
 		$metadata = is_array( $stored ) ? $stored : array();
-		$done     = ! ATR_Optimizer::needs_optimizing( $metadata );
+		$done     = ! ATR_Optimizer::needs_optimizing( $metadata, (string) $post->post_mime_type );
 
 		if ( $done && ! $all ) {
 			return null;

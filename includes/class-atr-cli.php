@@ -163,7 +163,7 @@ class ATR_CLI {
 			return;
 		}
 
-		self::announce( count( $ids ) );
+		self::announce( $rows );
 
 		if ( $dry_run ) {
 			self::print_rows( $rows, 'table', (bool) $args );
@@ -201,9 +201,15 @@ class ATR_CLI {
 	/**
 	 * What the optimiser has to work with, and where a service will spend quota.
 	 *
-	 * @param int $images Number of images about to be optimised.
+	 * A service counts every file it is sent, and an image is its upload plus a
+	 * dozen sizes or more, so the warning counts files: twenty images can be
+	 * three hundred compressions. It is an upper bound - an image already
+	 * optimised is skipped, the untouched original is never sent, and a service
+	 * turns some formats away.
+	 *
+	 * @param array $rows Rows from ATR_Largest for the images about to be optimised.
 	 */
-	private static function announce( int $images ): void {
+	private static function announce( array $rows ): void {
 		$programs = array_keys( ATR_Tools::available() );
 
 		WP_CLI::log(
@@ -214,9 +220,26 @@ class ATR_CLI {
 
 		$service = ATR_Service::chosen();
 
-		if ( '' !== $service ) {
-			WP_CLI::log( sprintf( 'Up to %1$d images will be sent to %2$s.', $images, ATR_Service::services()[ $service ]['label'] ) );
+		if ( '' === $service ) {
+			return;
 		}
+
+		$waiting = array_filter(
+			$rows,
+			static function ( array $row ): bool {
+				return ! $row['done'];
+			}
+		);
+
+		WP_CLI::log(
+			sprintf(
+				'Up to %1$d files from %2$d %3$s will be sent to %4$s, which counts each file against its quota.',
+				array_sum( wp_list_pluck( $waiting, 'files' ) ),
+				count( $waiting ),
+				1 === count( $waiting ) ? 'image' : 'images',
+				ATR_Service::services()[ $service ]['label']
+			)
+		);
 	}
 
 	/**

@@ -55,7 +55,28 @@ $dry = $run( "atr optimize --dry-run --largest=1 $only_fixtures" );
 
 atr_check( 'names the image it would optimise', false !== strpos( $dry->stdout, wp_basename( get_attached_file( $big ) ) ), wp_json_encode( $dry ) );
 atr_check( 'says which programs it would use', false !== stripos( $dry->stdout, 'jpegoptim' ), $dry->stdout );
-atr_check( 'and does not optimise it', ATR_Optimizer::needs_optimizing( wp_get_attachment_metadata( $big, true ) ) );
+atr_check( 'and does not optimise it', ATR_Optimizer::needs_optimizing( wp_get_attachment_metadata( $big, true ), 'image/jpeg' ) );
+
+echo "wp atr optimize --dry-run, with a service set up\n";
+
+/* A service bills every file it is sent, and an image is a dozen files or more,
+   so the warning has to count files. A dry run sends nothing, so a made-up key
+   is safe here - and it is taken away again straight after. */
+$with_service = static function ( $settings ) {
+	return array_merge( (array) $settings, array( 'optimize_service' => 'shortpixel', 'optimize_service_key' => 'not-a-real-key' ) );
+};
+
+add_filter( 'option_' . ATR_Settings::OPTION, $with_service, PHP_INT_MAX );
+
+$quota = $run( "atr optimize --dry-run --largest=1 $only_fixtures" );
+
+remove_filter( 'option_' . ATR_Settings::OPTION, $with_service, PHP_INT_MAX );
+
+$files = count( ATR_Optimizer::paths( get_attached_file( $big ), wp_get_attachment_metadata( $big, true ) ) );
+
+atr_check( 'names the service', false !== strpos( $quota->stdout, 'ShortPixel' ), $quota->stdout );
+atr_check( "counts the $files files it would send", 1 === preg_match( '/Up to ' . $files . ' files/', $quota->stdout ), $quota->stdout );
+atr_check( 'the service is gone again', '' === ATR_Service::chosen() );
 
 echo "wp atr optimize <id>...\n";
 
@@ -63,7 +84,7 @@ $real = $run( "atr optimize $big 999999999" );
 
 atr_check( 'warns about the id that is not an image', false !== strpos( $real->stderr, '999999999' ), wp_json_encode( $real ) );
 atr_check( 'and carries on', 0 === $real->return_code, (string) $real->return_code );
-atr_check( 'optimises the one that is', ! ATR_Optimizer::needs_optimizing( wp_get_attachment_metadata( $big, true ) ) );
+atr_check( 'optimises the one that is', ! ATR_Optimizer::needs_optimizing( wp_get_attachment_metadata( $big, true ), 'image/jpeg' ) );
 atr_check( 'and says so', false !== strpos( $real->stdout, 'Success' ), $real->stdout );
 
 $again = $run( "atr optimize $big" );

@@ -68,16 +68,16 @@ echo "Whether it still needs optimising\n";
 
 atr_settings( array() );
 
-atr_check( 'a fresh upload does', ATR_Optimizer::needs_optimizing( wp_get_attachment_metadata( $id, true ) ) );
+atr_check( 'a fresh upload does', ATR_Optimizer::needs_optimizing( wp_get_attachment_metadata( $id, true ), 'image/jpeg' ) );
 
 $result = ATR_Optimizer::optimize_and_store( $id );
 
 atr_check( 'optimising it saved something', $result['saved'] > 0, wp_json_encode( array_diff_key( $result, array( 'metadata' => 1 ) ) ) );
-atr_check( 'and stored the mark', ! ATR_Optimizer::needs_optimizing( wp_get_attachment_metadata( $id, true ) ) );
+atr_check( 'and stored the mark', ! ATR_Optimizer::needs_optimizing( wp_get_attachment_metadata( $id, true ), 'image/jpeg' ) );
 
 $quality = (int) ATR_Settings::get( 'optimize_quality', ATR_Uploads::CORE_QUALITY );
 atr_settings( array( 'optimize_quality' => $quality + 1 ) );
 
-atr_check( 'a higher quality asks for it again', ATR_Optimizer::needs_optimizing( wp_get_attachment_metadata( $id, true ) ) );
+atr_check( 'a higher quality asks for it again', ATR_Optimizer::needs_optimizing( wp_get_attachment_metadata( $id, true ), 'image/jpeg' ) );
 
 atr_report();

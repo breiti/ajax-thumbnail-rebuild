@@ -29,6 +29,13 @@ class ATR_Optimizer {
 	 */
 	const NEVER_REENCODE = array( 'image/gif' );
 
+	/**
+	 * The formats the optimiser worked on before 2.3.0, for a mark that does not
+	 * say. GIF was not among them: those versions marked a GIF done without
+	 * touching it.
+	 */
+	const MIMES_BEFORE_2_3 = array( 'image/jpeg', 'image/png', 'image/webp' );
+
 	/** Anything below this is not worth the write, on a file of any size. */
 	const MIN_SAVING_BYTES = 512;
 
@@ -57,10 +64,23 @@ class ATR_Optimizer {
 	 * file, and anything that lists images worth optimising asks it too, so the
 	 * two can never disagree.
 	 *
+	 * A format that is never written out again depends on this server: with no
+	 * program for it and no service that takes it, nothing can make it smaller,
+	 * and listing it would put files at the top of the list that then save
+	 * nothing.
+	 *
 	 * @param string $mime Mime type.
 	 */
 	public static function optimizes( string $mime ): bool {
-		return in_array( $mime, self::MIMES, true );
+		if ( ! in_array( $mime, self::MIMES, true ) ) {
+			return false;
+		}
+
+		if ( ! in_array( $mime, self::NEVER_REENCODE, true ) ) {
+			return true;
+		}
+
+		return (bool) ATR_Tools::programs_for( $mime, (bool) ATR_Settings::get( 'optimize_lossy' ) ) || ATR_Service::handles( $mime );
 	}
 
 	/**
@@ -117,7 +137,7 @@ class ATR_Optimizer {
 		   encoded at this quality would only degrade them for a few bytes. A rebuild
 		   clears the mark, because it writes the files afresh - and so does
 		   installing an optimiser the last pass did not have. */
-		if ( self::already_done( $metadata, $quality ) ) {
+		if ( self::already_done( $metadata, $quality, (string) get_post_mime_type( $attachment_id ) ) ) {
 			return array(
 				'metadata' => $metadata,
 				'saved'    => 0,
@@ -158,6 +178,8 @@ class ATR_Optimizer {
 			'quality' => $quality,
 			'tools'   => ATR_Tools::signature(),
 			'lossy'   => (bool) ATR_Settings::get( 'optimize_lossy' ),
+			// So a format the optimiser takes up later is not counted as done before it could be.
+			'mimes'   => self::MIMES,
 		);
 
 		return array(
@@ -227,12 +249,14 @@ class ATR_Optimizer {
 	 *
 	 * The inverse of the mark it leaves, read against today's settings: an image
 	 * optimised at a lower quality, without a program installed since, or without
-	 * lossy compression that has since been turned on, needs it again.
+	 * lossy compression that has since been turned on, needs it again - and so
+	 * does one in a format the optimiser did not handle when it left the mark.
 	 *
-	 * @param array $metadata Attachment metadata.
+	 * @param array  $metadata Attachment metadata.
+	 * @param string $mime     The attachment's mime type.
 	 */
-	public static function needs_optimizing( array $metadata ): bool {
-		return ! self::already_done( $metadata, (int) ATR_Settings::get( 'optimize_quality', ATR_Uploads::CORE_QUALITY ) );
+	public static function needs_optimizing( array $metadata, string $mime ): bool {
+		return ! self::already_done( $metadata, (int) ATR_Settings::get( 'optimize_quality', ATR_Uploads::CORE_QUALITY ), $mime );
 	}
 
 	/**
@@ -257,13 +281,24 @@ class ATR_Optimizer {
 	/**
 	 * Whether this attachment has already been through exactly this treatment.
 	 *
-	 * @param array $metadata Attachment metadata.
-	 * @param int   $quality  Quality it would be optimised at now.
+	 * @param array  $metadata Attachment metadata.
+	 * @param int    $quality  Quality it would be optimised at now.
+	 * @param string $mime     The attachment's mime type.
 	 */
-	private static function already_done( array $metadata, int $quality ): bool {
+	private static function already_done( array $metadata, int $quality, string $mime ): bool {
 		$mark = $metadata[ self::DONE_KEY ] ?? null;
 
 		if ( null === $mark || $quality <= 0 ) {
+			return false;
+		}
+
+		/* A mark only speaks for the formats the optimiser worked on when it was
+		   left. Before 2.3.0 a GIF was marked done untouched; that mark says nothing
+		   about what gifsicle could do with it now. A JPEG's old mark still holds -
+		   optimising it again would re-encode a lossy file for a few bytes. */
+		$handled = is_array( $mark ) && isset( $mark['mimes'] ) ? (array) $mark['mimes'] : self::MIMES_BEFORE_2_3;
+
+		if ( ! in_array( $mime, $handled, true ) ) {
 			return false;
 		}
 

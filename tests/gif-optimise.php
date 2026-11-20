@@ -24,6 +24,27 @@ foreach ( array( 'image/jpeg', 'image/png', 'image/webp' ) as $mime ) {
 	atr_check( "$mime still is", ATR_Optimizer::optimizes( $mime ) );
 }
 
+echo "A GIF on a server with nothing to shrink it\n";
+
+/* Without gifsicle and without a service that takes GIFs, nothing can make a
+   GIF smaller - and it is never written out again - so it is not a format the
+   optimiser works on here. Listing it would put the heaviest files on the page
+   at the top of a list that then saves nothing. */
+$no_gif_programs = static function ( array $definitions ): array {
+	unset( $definitions['image/gif'] );
+
+	return $definitions;
+};
+
+add_filter( 'ajax_thumbnail_rebuild_tools', $no_gif_programs );
+
+atr_check( 'a GIF is not optimised', ! ATR_Optimizer::optimizes( 'image/gif' ) );
+atr_check( 'a JPEG still is', ATR_Optimizer::optimizes( 'image/jpeg' ) );
+
+remove_filter( 'ajax_thumbnail_rebuild_tools', $no_gif_programs );
+
+atr_check( 'with gifsicle back, a GIF is', ATR_Optimizer::optimizes( 'image/gif' ) );
+
 echo "An animated GIF stored the long way\n";
 
 $path   = atr_fixture_gif( false );
