@@ -15,8 +15,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class ATR_Optimizer {
 
-	/** Formats worth re-encoding. */
-	const MIMES = array( 'image/jpeg', 'image/png', 'image/webp' );
+	/** Formats the optimiser works on. */
+	const MIMES = array( 'image/jpeg', 'image/png', 'image/webp', 'image/gif' );
+
+	/**
+	 * Formats that go to the programs and the service only, and are never written
+	 * out again through the image editor.
+	 *
+	 * The editor keeps the first frame of an animated GIF and drops the rest, so
+	 * the fallback that re-encodes a file nothing else could shrink would turn an
+	 * animated banner into a still one. gifsicle re-packs every frame; that is
+	 * the only treatment a GIF gets.
+	 */
+	const NEVER_REENCODE = array( 'image/gif' );
 
 	/** Anything below this is not worth the write, on a file of any size. */
 	const MIN_SAVING_BYTES = 512;
@@ -37,6 +48,19 @@ class ATR_Optimizer {
 
 	public static function is_enabled(): bool {
 		return (bool) apply_filters( 'ajax_thumbnail_rebuild_optimize_enabled', (bool) ATR_Settings::get( 'optimize_enabled' ) );
+	}
+
+	/**
+	 * Whether the optimiser does anything with this format at all.
+	 *
+	 * The one place that says so: the optimiser itself asks it before touching a
+	 * file, and anything that lists images worth optimising asks it too, so the
+	 * two can never disagree.
+	 *
+	 * @param string $mime Mime type.
+	 */
+	public static function optimizes( string $mime ): bool {
+		return in_array( $mime, self::MIMES, true );
 	}
 
 	/**
@@ -242,9 +266,9 @@ class ATR_Optimizer {
 			return 0;
 		}
 
-		$mime = wp_get_image_mime( $path );
+		$mime = (string) wp_get_image_mime( $path );
 
-		if ( ! in_array( $mime, self::MIMES, true ) ) {
+		if ( ! self::optimizes( $mime ) ) {
 			return 0;
 		}
 
@@ -268,7 +292,7 @@ class ATR_Optimizer {
 		   re-encoding it, which is both a real saving and not lossy. */
 		$gain = self::run_tools( $path, $mime, $before, $lossless_only );
 
-		if ( $gain > 0 || $lossless_only ) {
+		if ( $gain > 0 || $lossless_only || in_array( $mime, self::NEVER_REENCODE, true ) ) {
 			return $gain;
 		}
 
