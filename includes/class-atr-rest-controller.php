@@ -132,6 +132,34 @@ class ATR_Rest_Controller {
 				),
 			),
 		) );
+
+		register_rest_route( self::REST_NAMESPACE, '/weigh', array(
+			array(
+				'methods'             => WP_REST_Server::CREATABLE,
+				'callback'            => array( $this, 'weigh' ),
+				'permission_callback' => array( $this, 'check_permission' ),
+				'args'                => array(
+					/* A page of the library at a time: the browser sends the ids in
+					   chunks, so no one request measures more files than fits in the
+					   time a host allows it. */
+					'ids' => array(
+						'type'     => 'array',
+						'required' => true,
+						'minItems' => 1,
+						'maxItems' => 500,
+						'items'    => array(
+							'type'    => 'integer',
+							'minimum' => 1,
+						),
+					),
+					'all' => array(
+						'type'        => 'boolean',
+						'default'     => false,
+						'description' => 'Include images that are already optimised.',
+					),
+				),
+			),
+		) );
 	}
 
 	/**
@@ -314,6 +342,21 @@ class ATR_Rest_Controller {
 			// Why nothing was saved, so the screen can say more than "0 B".
 			'reason'  => (string) ( $result['reason'] ?? '' ),
 			'quality' => (int) ATR_Settings::get( 'optimize_quality', ATR_Uploads::CORE_QUALITY ),
+		) );
+	}
+
+	/**
+	 * What these images weigh, for the Largest images tab to rank.
+	 *
+	 * Ids that are not images the optimiser works on are left out of the answer
+	 * rather than refused: the browser sends the whole library's ids, and most
+	 * libraries have a PDF or an SVG among them.
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function weigh( WP_REST_Request $request ) {
+		return rest_ensure_response( array(
+			'items' => ATR_Largest::weigh( (array) $request['ids'], (bool) $request['all'] ),
 		) );
 	}
 
