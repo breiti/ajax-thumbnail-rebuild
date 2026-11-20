@@ -5,7 +5,7 @@ Tags: thumbnail, rebuild, regenerate, image, optimize
 Requires at least: 5.7
 Requires PHP: 7.4
 Tested up to: 7.1
-Stable tag: 2.2.1
+Stable tag: 2.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -24,8 +24,11 @@ On its screen under Tools you can:
 * Watch it run: a progress bar, the image being worked on, a Stop button, and a list of anything it had to skip.
 * See every image size registered on the site with its dimensions and crop setting.
 * Clean up the resized files left behind by sizes that no longer exist.
+* Find the heaviest images that still need optimising, and optimise those first - where most of the saving is, and what an optimisation service's quota is best spent on.
 
 You can also work on one image at a time without leaving the media library: a row action rebuilds or optimises a single image, a bulk action hands a selection to the plugin's screen, and the attachment details panel - wherever it opens - rebuilds, optimises, or **replaces the file**. A replaced image keeps its id, title and address, so every post and product already pointing at it shows the new picture.
+
+Where there is a shell, a big library is better done from the command line: no browser tab has to stay open and no time limit on a web request applies. `wp atr largest` lists the heaviest images that still need optimising, and `wp atr optimize --largest=50` optimises the fifty heaviest. `wp help atr` has the rest.
 
 Beyond rebuilding, each of these is off until you turn it on:
 
@@ -42,7 +45,7 @@ Contributions are welcome at [Github](https://github.com/breiti/ajax-thumbnail-r
 
 == Installation ==
 
-Upload the plugin to your blog, activate it, done. Everything is under Tools -> Rebuild Thumbnails: the rebuild screen itself, the registered sizes, cleanup, and a tab per group of settings.
+Upload the plugin to your blog, activate it, done. Everything is under Tools -> Rebuild Thumbnails: the rebuild screen itself, the registered sizes, cleanup, the largest images, and a tab per group of settings.
 
 == Frequently Asked Questions ==
 
@@ -84,6 +87,10 @@ No - a JPEG can only be replaced by a JPEG, a PNG by a PNG. The attachment keeps
 
 Only resized files left on disk that no image size on this site refers to any more - what a removed theme or a size you no longer register leaves behind. It shows you the list and what it would free before anything is deleted, and the files your attachments actually use are never among them.
 
+= Images I optimised with another plugin are listed as needing it. Why? =
+
+The Largest images list, and `wp atr largest`, know an image is done by the mark this plugin's own optimiser leaves on it. Smush, EWWW, ShortPixel's own plugin and the like leave none, so what they optimised looks untouched. Optimising it again with the lossless programs - jpegoptim, optipng, gifsicle - is harmless and saves next to nothing. With lossy compression on, or through a service, it would be compressed a second time and lose a little more quality, so leave those images unticked.
+
 = Does it need JavaScript? =
 
 Yes. The screen talks to the site over a REST API of its own, one image at a time, which is what keeps a large library from running into a script timeout.
@@ -103,6 +110,13 @@ To have it behave as it did before, cutting every size the moment such a field i
 `add_filter( 'ajax_thumbnail_rebuild_on_demand_while_enumerating', '__return_true' );`
 
 == Changelog ==
+
+= 2.3.0 =
+
+* New tab **Largest images**: the heaviest images that still need optimising, heaviest first. An image weighs what optimising would work on - the uploaded file, its sizes, and the untouched original where the settings say to optimise that too - and images already optimised at the current settings are left out unless asked for. "Optimise selected" opens the Rebuild tab with them, heaviest first, so a Stop or a spent service quota halfway still leaves the heaviest done.
+* New WP-CLI commands: `wp atr largest` lists the heaviest images that still need optimising, and `wp atr optimize` optimises the images given, the heaviest few with `--largest`, or every image that still needs it, heaviest first. It says before starting which optimisers the server has and, where TinyPNG or ShortPixel is set up, how many images will be sent there; `--dry-run` stops there.
+* GIFs are optimised. gifsicle was listed among the optimisers all along but never ran on anything, because GIF was missing from the formats the optimiser works on. A GIF goes to gifsicle, or to ShortPixel where that is set up, and is never written out again through the image editor, which would keep only the first frame of an animation. On a site with gifsicle installed, GIFs are now made smaller.
+* A selection handed to the Rebuild tab - from the media library or the Largest images tab - is worked through in the order it was handed over, rather than newest first.
 
 = 2.2.1 =
 
@@ -298,6 +312,10 @@ Fixed:
 6. AVIF and WebP copies of every generated image, served through a picture element.
 
 == Upgrade Notice ==
+
+= 2.3.0 =
+
+Find the heaviest images that still need optimising - on a new Largest images tab or with `wp atr largest` - and optimise those first. GIFs are now optimised too, through gifsicle, without losing their animation.
 
 = 2.2.1 =
 
