@@ -207,10 +207,12 @@
 				addRow( row, tick );
 			} );
 
-			notice( 'info', found.length > SHOWN
+			if ( found.length > SHOWN ) {
 				/* translators: 1: rows shown, 2: images found. */
-				? sprintf( __( 'The heaviest %1$s of %2$s images.', 'ajax-thumbnail-rebuild' ), SHOWN.toLocaleString(), found.length.toLocaleString() )
-				: '' );
+				notice( 'info', sprintf( __( 'The heaviest %1$s of %2$s images.', 'ajax-thumbnail-rebuild' ), SHOWN.toLocaleString(), found.length.toLocaleString() ) );
+			} else {
+				notice( 'info', '' );
+			}
 
 			table.hidden = false;
 			optimizeBox.hidden = false;
